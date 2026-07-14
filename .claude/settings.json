@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/python:*)",
+      "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/jupytext:*)",
+      "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/jupyter:*)",
+      "Bash(pdftotext:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(mkdir:*)",
+      "Bash(timeout:*)",
+      "Read(./**)",
+      "Write(./course-materials/*.md)",
+      "Write(./jax-examples/**)",
+      "Write(./.dev/agents/work/**)"
+    ],
+    "deny": [
+      "Write(./course-materials/Master Plan*)",
+      "Write(./course-materials/Templates/**)",
+      "Write(./references/**)",
+      "Write(./.git/**)",
+      "Write(./.obsidian/**)",
+      "Write(./.claude/**)",
+      "Write(./CLAUDE.md)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(git push:*)",
+      "Bash(sudo:*)"
+    ]
+  }
+}
