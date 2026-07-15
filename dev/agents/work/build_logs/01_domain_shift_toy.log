@@ -1,0 +1,4 @@
+[NbConvertApp] Converting notebook jax-examples/01_domain_shift_toy.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 1190307 bytes to jax-examples/01_domain_shift_toy.ipynb
+BUILD GREEN: 01_domain_shift_toy executed in 5.5s, 34 cells, assets: toy_2d_4class.npz nb1_encoder_source.pkl nb1_head_source.pkl nb1_encoder_targetonly.pkl nb1_head_targetonly.pkl nb1_encoder_ssda.pkl nb1_head_ssda.pkl nb1_ksweep.npz nb1_fig_gmm.png nb1_fig_decision_source.png nb1_fig_decision_target.png nb1_fig_latent_shift.png nb1_fig_comparison.png nb1_fig_k_sweep.png nb1_fig_latent_ssda.png

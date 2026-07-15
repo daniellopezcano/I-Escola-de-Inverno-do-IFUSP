@@ -1,0 +1,8 @@
+[NbConvertApp] Converting notebook jax-examples/02_contrastive_embeddings.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 1358146 bytes to jax-examples/02_contrastive_embeddings.ipynb
+--- Second execution (determinism check) ---
+[NbConvertApp] Converting notebook jax-examples/02_contrastive_embeddings.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 1358146 bytes to jax-examples/02_contrastive_embeddings.ipynb
+BUILD GREEN: 02_contrastive_embeddings executed in 11s, 35 cells, assets: mnist_4k.npz nb2_sandbox_initial.npz nb2_sandbox_collapsed.npz nb2_sandbox_final.npz nb2_encoder_epoch0.pkl nb2_encoder_early.pkl nb2_encoder_late.pkl nb2_encoder_16d_late.pkl nb2_fig_sandbox_final.png nb2_fig_evolution.png nb2_fig_tsne.png nb2_fig_umap.png
