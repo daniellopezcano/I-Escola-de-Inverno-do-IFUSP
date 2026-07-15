@@ -1,10 +1,7 @@
 # Coherence Report — I Escola de Inverno do IFUSP
 # Pass 4 QA Review | Generated: 2026-07-15 | Reviewer: course-reviewer agent
-
 ---
-
 ## SUMMARY
-
 ### Assets found
 
 | Asset type | Expected | Found | Status |
@@ -18,13 +15,9 @@
 | Static PNG fallbacks (NB2) | 4 | 4 | OK (`nb2_fig_sandbox_final.png`, `nb2_fig_evolution.png`, `nb2_fig_tsne.png`, `nb2_fig_umap.png`) |
 | PKL checkpoints | 15 | 15 | OK |
 | NPZ data files | 6 | 6 | OK |
-
 ### Missing vs manifest
-
 1. **Manifest-specified PKL names not on disk**: `nb0_epoch10_params.pkl` and `nb0_epoch100_params.pkl` (manifest §NB0 brief). The actual assets are `nb0_epoch200_params.pkl` and `nb0_epoch500_params.pkl`. The notebook and block L01_B02 correctly use the as-built names; the manifest asset-name list is stale. No functional impact.
-
 2. **Optional assets not produced**: `galaxy10_1k.npz`, `nb2_sandbox_animation.gif`. Both were explicitly optional per manifest decisions D1 and NB2 brief. No action needed.
-
 3. **Three static PNGs referenced in L03_B02 block but absent from `jax-examples/assets/`**:
    - `nb2_fig_sandbox_initial.png` — the initial particle scatter (NB2 cell 4 renders live)
    - `nb2_sandbox_collapsed.png` — collapse demo (NB2 cell 8 loads from `nb2_sandbox_collapsed.npz` and renders live; the `.npz` exists but no PNG fallback)
@@ -32,9 +25,7 @@
    These three wikilinks in L03_B02's "Visualização e Slides" section will appear as broken images in Obsidian.
 
 ---
-
 ## NARRATIVE CONTINUITY
-
 All eight block transitions are coherent and internally consistent. The recap/teaser chain holds end-to-end.
 
 | Transition | Teaser in block N | Recap in block N+1 | Match? |
@@ -46,23 +37,16 @@ All eight block transitions are coherent and internally consistent. The recap/te
 | L03_B01 → L03_B02 | "no próximo bloco, vamos VER um espaço se organizar em tempo real" | "primeiro dinâmica molecular; depois deep learning; no fim vocês percebem que era a mesma coisa" | Yes |
 | L03_B02 → L04_B01 | "amanhã: esta máquina exata prevendo onde nascem os halos de matéria escura" (cell 31 and Ato 2 gancho) | "Três dias de ingredientes; hoje, a cozinha de verdade. Regra do dia: vocês vão RECONHECER, não aprender do zero." | Yes |
 | L04_B01 → L04_B02 | "no próximo bloco, vemos o mesmo princípio — encoder + cabeça, três regimes — aplicado a quasares reais no J-PAS" | "O experimento de três regimes que você executou na quarta-feira em 2D, com nuvens gaussianas deslocadas, agora aparece em escala real" | Yes |
-
 **No narrative continuity mismatches found.**
 
 ---
-
 ## NOTEBOOK ↔ BLOCK ALIGNMENT
-
 ### NB0 / L01_B02
-
 All 6 notebook parts match the block description. Cell numbering in the block matches the notebook (trophy at cell 30, overfit at cell 33, vocab map at cell 34, etc.). Polling question in cell 31 matches the 🟡 description in the block. Learning objectives, timing table, and takeaway are consistent.
-
 **ONE DIVERGENCE — trophy epoch checkpoints:**
-
 - L01_B02 (block for NB0) correctly states "épocas 0, 200, 500 e 1000" in the learning objectives and timing plan. Consistent with notebook cell 30: `EPOCAS_TROPHY = [0, 200, 500, 1000]`. ✓
 - L01_B01 (day-1 theory block, "Demonstração Prática" section, line ~161): states "acompanhe como os parâmetros θ evoluem ao longo das épocas **(0, 10, 100, 1000)**". This does not match the notebook. The correct values are 0, 200, 500, 1000.
 - The manifest NB0 brief (cell 16) also lists "epochs 0, 10, 100, 1000" — this is stale in the manifest.
-
 **Numeric verification (NB0 actual outputs vs. block claims):**
 
 | Claim | Source | Actual notebook output | Match? |
@@ -72,27 +56,20 @@ All 6 notebook parts match the block description. Cell numbering in the block ma
 | Overfit loss < σ²=0.0225 | L01_B02 | 0.013914 | Yes |
 | CPU timing ~27 ms | L01_B02 | 26.7 ms | Yes |
 | GPU < 5 ms | L01_B02 | printed as "<5 ms" (no GPU available; text claim) | Consistent |
-
 ### NB1 / L02_B02
-
 **CRITICAL DIVERGENCE — domain classifier AUC = NaN:**
-
 NB1 cell 17 (`treinar_classificador_dominio`) produces:
 ```
 AUC do classificador de domínio: nan
 → AUC ≈ 0,5: domínios indistinguíveis — sem shift relevante.
 ```
 with sklearn warning: "Only one class is present in y_true. ROC AUC score is not defined in that case."
-
 This is a bug in the y_true construction: the binary label array appears to contain only one class when passed to `roc_auc_score`. The printed message ("AUC ≈ 0,5: domínios indistinguíveis") is factually wrong — the domains ARE highly distinguishable (shift of ~2.5σ), as confirmed by the decision-map catastrophe already shown. The AUC nan is purely a code error.
-
 Impact: the pedagogical point ("shift is detectable without class labels") is visually supported by the ROC curve shape (the notebook still plots it), but the quantitative claim fails. The instructor notes in L02_B02 acknowledge this: "Note: the AUC metric has a known y_true construction issue (returns NaN); emphasize the ROC curve shape and the pedagogical point verbally." This workaround is insufficient for independent student use.
-
 Blocks that reference this AUC value:
 - L02_B01 "Hábitos de detecção de shift" (line ~138): "o classificador de domínio detecta o covariate shift com **AUC > 0,99**"
 - L02_B02 "Ato 3" description: "o classificador atinge AUC próxima de 1,0"
 - Both are contradicted by the notebook output.
-
 **Numeric verification (NB1 actual outputs vs. block claims):**
 
 | Claim | Source | Actual notebook output | Match? |

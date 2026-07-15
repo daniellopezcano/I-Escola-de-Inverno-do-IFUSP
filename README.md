@@ -5,7 +5,6 @@ Bem-vindo ao repositório oficial do curso **"Das representações de redes neur
 Este repositório contém todo o material do curso, incluindo:
 - 📚 **[Material de Estudo](course-materials/)**: Guias de estudo em Markdown para cada bloco de 40 minutos, com conceitos, intuições e referências.
 - 💻 **[Exemplos Práticos em JAX](jax-examples/)**: Notebooks prontos para serem executados no Google Colab.
-- 🤖 **[Fluxo de Trabalho com Agentes](.dev/agents/)**: (Opcional) Os prompts utilizados para auxiliar na construção deste material, demonstrando um fluxo de trabalho moderno de pesquisa computacional.
 
 ## 🗓️ Estrutura do Curso
 O curso é dividido em 4 aulas de 90 minutos, cada uma composta por 2 blocos conceituais de 40 minutos:
