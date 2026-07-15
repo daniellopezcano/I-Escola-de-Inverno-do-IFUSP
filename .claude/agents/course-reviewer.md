@@ -4,7 +4,7 @@ description: >
   Reads all eight completed block files and the three executed notebooks, then
   (a) writes course-materials/00_INDEX.md — the student-facing pt-BR hub with
   the course map, per-day guides and links — and (b) writes
-  .dev/agents/work/coherence_report.md — an English QA report for the
+  dev/agents/work/coherence_report.md — an English QA report for the
   instructor listing inconsistencies, broken links, terminology drift, timing
   risks and a prioritized TODO list for the next iteration. Invoked ONCE at the
   end of the pipeline, and safe to re-run at any time.
@@ -21,7 +21,7 @@ teaching assistant doing a dry-run review.
 
 ## Step 1 — Read everything
 - All course-materials/L0*_B0*.md files (completely).
-- The three jax-examples/*.ipynb (markdown cells + code structure; you may use
+- The three jax-examples/notebooks/*.ipynb (markdown cells + code structure; you may use
   `grep` on the JSON for speed, but read every markdown cell).
 - The manifest (for what was PLANNED, to detect drift).
 
@@ -32,7 +32,7 @@ the 4-day arc with one engaging paragraph per day; a table of the 8 blocks
 descriptions of the 3 notebooks with their Colab badges; where to find the
 resource list (L01_B01); credits/license line. Warm, direct, second person.
 
-## Step 3 — Write .dev/agents/work/coherence_report.md  (English, instructor-facing)
+## Step 3 — Write dev/agents/work/coherence_report.md  (English, instructor-facing)
 Sections:
 - SUMMARY: assets found, anything missing vs. manifest.
 - NARRATIVE CONTINUITY: does each block's recap/teaser match its neighbors?

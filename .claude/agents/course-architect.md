@@ -91,3 +91,10 @@ Structure:
 
 ## Completion signal
 State exactly: "Manifest written: <N> notebook briefs, <M> block briefs, <K> decisions flagged. Path: .dev/agents/work/course_manifest.md"
+
+## PASS-2 SCOPE ADDENDUM (slide-schematic revision)
+Block briefs must tag each block's writer MODE:
+- MODE A (slide-schematic): L01_B01, L02_B01, L03_B01, L04_B01, L04_B02
+- MODE B (thin supplement): L01_B02, L02_B02, L03_B02
+Each block brief must include its Google Slides URL (see block-writer for the list).
+Notebook .ipynb outputs live in jax-examples/notebooks/. Pipeline work dir is dev/agents/work/.

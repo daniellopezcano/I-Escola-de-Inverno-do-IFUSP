@@ -70,9 +70,9 @@ Run it with /home/dlopez/miniconda3/envs/WinterSchool/bin/python and verify the 
 ### 4. Convert and execute (the verification loop)
 ``
 
-ENV=/home/dlopez/miniconda3/envs/WinterSchool/bin $ENV/jupytext --to ipynb jax-examples/src_<name>.py -o jax-examples/<name>.ipynb timeout 240 $ENV/jupyter nbconvert --to notebook --execute --inplace  
+ENV=/home/dlopez/miniconda3/envs/WinterSchool/bin $ENV/jupytext --to ipynb jax-examples/src_<name>.py -o jax-examples/notebooks/<name>.ipynb timeout 240 $ENV/jupyter nbconvert --to notebook --execute --inplace  
 --ExecutePreprocessor.kernel_name=WinterSchool  
-jax-examples/<name>.ipynb 2>&1 | tee -a .dev/agents/work/build_logs/<name>.log
+jax-examples/notebooks/<name>.ipynb 2>&1 | tee -a .dev/agents/work/build_logs/<name>.log
 
 ``
 If execution fails or exceeds the timeout: read the traceback, fix the SOURCE
@@ -83,7 +83,7 @@ After success, run once more from scratch to confirm determinism.
 - Ensure the executed .ipynb (with outputs) is the committed artifact — the
   instructor projects outputs even without connectivity.
 - Add at top of the notebook a Colab badge markdown placeholder:
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/<name>.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/<name>.ipynb)
 - Keep src_<name>.py in place (it is the maintainable source for iteration).
 - Append any new pip requirements to jax-examples/requirements.txt (only if
   truly needed).

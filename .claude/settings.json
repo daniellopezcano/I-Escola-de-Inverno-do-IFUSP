@@ -1,23 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3:*)",
       "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/python:*)",
       "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/jupytext:*)",
       "Bash(/home/dlopez/miniconda3/envs/WinterSchool/bin/jupyter:*)",
-      "Bash(pdftotext:*)",
-      "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(wc:*)",
-      "Bash(sort:*)",
-      "Bash(mkdir:*)",
-      "Bash(timeout:*)",
+      "Bash(pdftotext:*)", "Bash(find:*)", "Bash(ls:*)", "Bash(cat:*)",
+      "Bash(grep:*)", "Bash(wc:*)", "Bash(sort:*)", "Bash(mkdir:*)", "Bash(timeout:*)",
       "Read(./**)",
       "Write(./course-materials/*.md)",
       "Write(./jax-examples/**)",
-      "Write(./.dev/agents/work/**)"
+      "Write(./dev/agents/work/**)",
+      "Write(./README.md)",
+      "Write(./GoogleCollab_and_notebooks_setup.md)"
     ],
     "deny": [
       "Write(./course-materials/Master Plan*)",
@@ -27,10 +21,7 @@
       "Write(./.obsidian/**)",
       "Write(./.claude/**)",
       "Write(./CLAUDE.md)",
-      "Bash(rm:*)",
-      "Bash(mv:*)",
-      "Bash(git push:*)",
-      "Bash(sudo:*)"
+      "Bash(rm:*)", "Bash(mv:*)", "Bash(git push:*)", "Bash(sudo:*)"
     ]
   }
 }
