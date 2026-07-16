@@ -19,3 +19,9 @@ venv/
 .DS_Store
 Thumbs.db
 .venv/
+
+# ── Generated notebook artifacts (never version-controlled; see my_feedback_v3 §5) ──
+jax-examples/assets/
+!jax-examples/assets/.gitkeep
+*.png
+*.pkl
