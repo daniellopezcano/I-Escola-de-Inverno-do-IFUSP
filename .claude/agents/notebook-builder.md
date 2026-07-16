@@ -23,7 +23,7 @@ background. The notebook will be projected live by the instructor and shared
 afterwards. It must be beautiful, minimal, robust, and in pt-BR.
 
 ## Inputs
-- Your brief: the "NOTEBOOK BRIEF: <name>" section of .dev/agents/work/course_manifest.md
+- Your brief: the "NOTEBOOK BRIEF: <name>" section of dev/agents/work/course_manifest.md
   plus the GLOBAL CONVENTIONS section. Read both completely.
 - Python: the conda env "WinterSchool". ALWAYS call binaries by absolute path:
   /home/dlopez/miniconda3/envs/WinterSchool/bin/python
@@ -72,7 +72,7 @@ Run it with /home/dlopez/miniconda3/envs/WinterSchool/bin/python and verify the 
 
 ENV=/home/dlopez/miniconda3/envs/WinterSchool/bin $ENV/jupytext --to ipynb jax-examples/src_<name>.py -o jax-examples/notebooks/<name>.ipynb timeout 240 $ENV/jupyter nbconvert --to notebook --execute --inplace  
 --ExecutePreprocessor.kernel_name=WinterSchool  
-jax-examples/notebooks/<name>.ipynb 2>&1 | tee -a .dev/agents/work/build_logs/<name>.log
+jax-examples/notebooks/<name>.ipynb 2>&1 | tee -a dev/agents/work/build_logs/<name>.log
 
 ``
 If execution fails or exceeds the timeout: read the traceback, fix the SOURCE
@@ -99,5 +99,26 @@ After success, run once more from scratch to confirm determinism.
 - Prefer 10 readable lines over 3 clever ones. No lambdas-of-lambdas. Name
   variables in pt-BR or transparent English (perda, gradiente, params).
 
+
+## ARTIFACT HYGIENE (my_feedback_v2 §5 — MANDATORY)
+The repo must never version-control generated artifacts. For every notebook you build
+or revise:
+- Figures (*.png), checkpoints/params (*.pkl), and PRODUCED training data (*.npz such
+  as sandbox states, k-sweeps) MUST be written ONLY under jax-examples/assets/, which
+  is gitignored. Never write them to a committed path.
+- The notebook must SELF-GENERATE or DOWNLOAD-AT-RUNTIME everything it loads. With no
+  committed artifacts present, a clean run must still succeed:
+    * cheap-to-produce data/checkpoints → compute in-notebook (guard with a "generate
+      if absent" pattern; the make_assets_<name>.py generator writes into assets/).
+    * genuine small INPUT datasets that are impractical to regenerate → download at
+      runtime into assets/ (e.g. MNIST via a fetch cell), or regenerate; do NOT rely
+      on a committed copy.
+- Update utils/make_assets_<name>.py so all outputs land in the gitignored assets/ path.
+- VERIFY the clean-run guarantee: before declaring BUILD GREEN, move/hide any existing
+  assets (e.g. run from a temp check) OR confirm by code inspection that every load has
+  a generate/download fallback, then execute end-to-end and confirm success.
+- Colab reality check: the notebook must run top-to-bottom on a fresh Colab with an
+  empty assets/ — assume nothing is pre-present.
+
 ## Completion signal
-State exactly: "BUILD GREEN: <name> — <C> cells, executed end-to-end in <T>s, <A> asset files, log at .dev/agents/work/build_logs/<name>.log"
+State exactly: "BUILD GREEN: <name> — <C> cells, executed end-to-end in <T>s, <A> asset files, log at dev/agents/work/build_logs/<name>.log"

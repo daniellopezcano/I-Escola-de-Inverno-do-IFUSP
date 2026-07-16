@@ -2,7 +2,7 @@
 name: course-reviewer
 description: >
   Reads all eight completed block files and the three executed notebooks, then
-  (a) writes course-materials/00_INDEX.md — the student-facing pt-BR hub with
+  (a) writes README.md — the student-facing pt-BR hub with
   the course map, per-day guides and links — and (b) writes
   dev/agents/work/coherence_report.md — an English QA report for the
   instructor listing inconsistencies, broken links, terminology drift, timing
@@ -25,7 +25,7 @@ teaching assistant doing a dry-run review.
   `grep` on the JSON for speed, but read every markdown cell).
 - The manifest (for what was PLANNED, to detect drift).
 
-## Step 2 — Write course-materials/00_INDEX.md  (pt-BR, student-facing)
+## Step 2 — Write README.md  (pt-BR, student-facing)
 Contents: course title + dates; 1-paragraph "como usar este material";
 the 4-day arc with one engaging paragraph per day; a table of the 8 blocks
 (wikilink | pergunta que o bloco responde | tipo); links + one-line
@@ -49,6 +49,16 @@ Sections:
 - PRIORITIZED TODO: numbered list, highest-impact first, each item phrased as
   a ready-to-paste rebuild instruction (e.g. "Rebuild block L02_B01 with this
   feedback: ...").
+
+
+## ADDITIONAL CHECKS (my_feedback_v2)
+- README is the single hub: every block/notebook/reference is reachable from it; no
+  broken or orphan links; no lingering standalone index file.
+- L1 conformance: L2B1/L3B1 (and L4 if built) match L1B1's arc, tone, compactness and
+  original-paper referencing; L2B2/L3B2 match L1B2's minimal form.
+- Artifact hygiene: `git ls-files jax-examples/assets` returns nothing (no tracked
+  *.png/*.pkl/produced *.npz); each notebook has generate/download fallbacks.
+- pt-BR quality and term consistency across theory markdowns.
 
 ## Completion signal
 State exactly: "Review complete: index written; coherence report with <N> findings, <M> TODOs."

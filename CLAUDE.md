@@ -1,68 +1,73 @@
 # Course Development Pipeline — I Escola de Inverno do IFUSP
 # Sequential execution — ONE subagent at a time, ALWAYS.
 
-## SOURCE OF TRUTH
+## AUTHORITATIVE BRIEF (read this FIRST, every pass)
+dev/agents/work/my_feedback_v2.md is the authoritative spec. It overrides the
+Master Plan and all earlier feedback where they conflict. Every subagent MUST
+read it before acting. Its overriding rule: **Lecture 1 is the gold standard;
+make L2/L3/L4 match its structure and philosophy.**
+
+## SOURCE OF TRUTH (science + original plan)
 course-materials/Master Plan — «...».md  (find: `find course-materials -maxdepth 1 -name "Master Plan*.md"`)
 NEVER modify the Master Plan or course-materials/Templates/.
+Where my_feedback_v2.md and the Master Plan disagree, my_feedback_v2.md wins.
 
-## WORKDIR PATHS (updated: .dev → dev)
-- Blocks out:        course-materials/
+## THE GOLD-STANDARD EXEMPLARS (read before writing any block)
+- Theory block standard: course-materials/L1B1.md  (arc: apresentação → contexto/
+  motivação → usos e limites honestos → estrutura/materiais; pt-BR narrative
+  companion to the slides; compact; original-paper refs inline)
+- Notebook block standard: course-materials/L1B2.md  (Colab link + one line of framing)
+Do NOT rewrite L1B1 or L1B2 — they are the templates. Match them.
+
+## PATHS
+- Blocks:            course-materials/LxBy.md   (naming: L1B1, L2B1, … NOT L01_B01)
+- Master Plan:       course-materials/
 - Block template:    course-materials/Templates/Block_Template.md
-- Papers:            references/  (2602.13902v1.pdf = J-PAS SSDA; aa4896523.pdf = instance-segmentation halos)
-- Notebooks out:     jax-examples/notebooks/          (MOVED — .ipynb live here now)
-- Notebook source:   jax-examples/src_<name>.py       (py-percent source)
-- Notebook assets:   jax-examples/assets/             (caches, checkpoints, fallback PNGs)
-- Notebook helpers:  jax-examples/utils/
-- Pipeline work:     dev/agents/work/                 (manifest, logs, reports, feedback)
-- Feedback file:     dev/agents/work/my_feedback.md   (human review notes for this pass)
-- Python env:        /home/dlopez/miniconda3/envs/WinterSchool/bin/  (call binaries by ABSOLUTE path; never `conda activate`, never bare `python`)
+- Papers:            references/  (2602.13902v1.pdf = J-PAS SSDA; 2311.12110v3.pdf = 2nd case study)
+- Notebooks:         jax-examples/notebooks/<name>.ipynb
+- Notebook source:   jax-examples/src_<name>.py
+- Asset generators:  jax-examples/utils/make_assets_<name>.py
+- Notebook assets:   jax-examples/assets/   (GITIGNORED — artifacts never committed)
+- Pipeline work:     dev/agents/work/
+- README hub:        README.md   (single navigational hub; no standalone index file)
+- Python env:        /home/dlopez/miniconda3/envs/WinterSchool/bin/  (ABSOLUTE paths; never `conda activate`)
 
-## CRITICAL: Skip logic for resumable execution
-- Pass 1: check dev/agents/work/course_manifest.md — SKIP if exists (unless asked to rebuild)
-- Pass 2: for each notebook, check jax-examples/notebooks/<name>.ipynb AND its
-  dev/agents/work/build_logs/<name>.log ending in "BUILD GREEN" — SKIP if both exist
-- Pass 3: for each block, check course-materials/<BLOCK_ID>.md — SKIP if exists
-- Pass 4: always run (index + coherence report reflect current state)
-Report at start: "Resuming. Manifest: yes/no. Notebooks green: N/3. Blocks: M/8."
+## BLOCK TYPES (from my_feedback_v2 §3)
+- THEORY (narrative companion to slides): L1B1, L2B1, L3B1, L4B1, L4B2
+- NOTEBOOK (minimal, link-only):          L1B2, L2B2, L3B2
 
-## Language policy (NON-NEGOTIABLE)
-- Student-facing content (notebook markdown, block student sections, 00_INDEX.md): Portuguese (pt-BR).
-- Instructor/meta content ([!instructor] callouts, manifest, logs, reports): English.
+## Skip logic (resumable)
+- README.md present and current → skip architect unless asked to rebuild.
+- Block LxBy.md exists → skip unless this pass targets it.
+- Notebook <name>.ipynb exists AND dev/agents/work/build_logs/<name>.log ends
+  "BUILD GREEN" → skip unless this pass targets it.
+Report at start: "Resuming. README: yes/no. Blocks done: M/8. Notebooks green: N/3."
+
+## Language
+Student-facing content: Brazilian Portuguese (pt-BR). Instructor/meta: English.
 
 ## Execution — strictly sequential
 
-### Pass 0 — Environment check (orchestrator bash, no subagent)
+### Pass 0 — Environment check
 /home/dlopez/miniconda3/envs/WinterSchool/bin/python -c "import jax, sklearn, matplotlib; print('env OK')"
-/home/dlopez/miniconda3/envs/WinterSchool/bin/jupytext --version
 /home/dlopez/miniconda3/envs/WinterSchool/bin/jupyter nbconvert --version
 If any fails, STOP.
 
-### Pass 1 — Course architecture
-Check dev/agents/work/course_manifest.md — if exists, skip. Else delegate to course-architect.
-
-### Pass 2 — Notebooks (order NB0 → NB1 → NB2)
-For each of 00_caixa_de_ferramentas, 01_domain_shift_toy, 02_contrastive_embeddings:
-  a. Skip if jax-examples/notebooks/<name>.ipynb exists AND log ends "BUILD GREEN".
-  b. Else delegate to notebook-builder. WAIT for "BUILD GREEN:" before next.
-
-### Pass 3 — Block files
-For each block ID in order (L01_B01, L01_B02, L02_B01, L02_B02, L03_B01, L03_B02, L04_B01, L04_B02):
-  a. Skip if course-materials/<BLOCK_ID>.md exists.
-  b. Else delegate to block-writer. WAIT for "Block written:" before next.
-
-### Pass 4 — Review and index
-Delegate to course-reviewer → course-materials/00_INDEX.md + dev/agents/work/coherence_report.md.
-
-## Partial / incremental runs (THIS revision pass)
-- "Rebuild notebook X with feedback: ..." → notebook-builder, explicit overwrite, re-verify BUILD GREEN.
-- "Rebuild block L0X_B0Y with feedback: ..." → block-writer, explicit overwrite.
-- "Re-run course-reviewer" → always safe.
+### This revision pass (targeted; NOT a full rebuild)
+Read my_feedback_v2.md, then work in this order, one subagent at a time:
+1. course-architect → refresh README.md as the single hub + update course_manifest.md
+   to reflect README-centric structure, block types, and the L1 standard.
+2. notebook-builder → for 01_domain_shift_toy then 02_contrastive_embeddings:
+   apply my_feedback_v2 §5 cleanup (artifacts to gitignored assets/; self-generate
+   or download inputs at runtime; nothing committed), apply any block-specific
+   feedback (incl. the NB1 AUC bug), re-verify BUILD GREEN in a clean run.
+   Also apply §5 cleanup to 00_caixa_de_ferramentas.
+3. block-writer → rewrite L2B1 then L3B1 (THEORY mode) to the L1B1 standard;
+   then L4B1, L4B2 only if time permits (low priority per §8).
+   Rewrite L2B2, L3B2 (NOTEBOOK mode) to the L1B2 minimal standard.
+   NEVER touch L1B1 / L1B2.
+4. course-reviewer → coherence pass; update dev/agents/work/coherence_report.md;
+   confirm README links resolve and no artifacts are tracked.
 
 ## Sequential constraint
-NEVER launch more than one subagent at a time. Each confirms its output before the next.
-
-## Context
-4-lecture mini-course (Jul 21–24 2026, IFUSP), ~130 final-year physics undergrads,
-2×40-min blocks/lecture. Arc: representations & tooling (L1) → domain shift/adaptation
-(L2) → contrastive learning/instance segmentation (L3) → two research case studies (L4).
-Defer to the Master Plan on all content questions.
+NEVER launch more than one subagent at a time. Each confirms before the next.
