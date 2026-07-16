@@ -25,3 +25,9 @@ jax-examples/assets/
 !jax-examples/assets/.gitkeep
 *.png
 *.pkl
+
+# ── Generated notebook artifacts (never version-controlled; see my_feedback_v2 §5) ──
+jax-examples/assets/
+!jax-examples/assets/.gitkeep
+*.png
+*.pkl
