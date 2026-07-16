@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/01_domain_shift_toy.ipynb)
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)
 #
 # # 🟢 Notebook 01 — Domain Shift: Quebrar e Consertar um Classificador
 # ### O ciclo de vida do domain shift em 4 atos
@@ -95,8 +95,12 @@ CHAVE    = jax.random.PRNGKey(SEMENTE)
 # ── Número de classes
 N_CLASSES = 4
 
-# ── Caminho dos assets
-ASSETS = pathlib.Path("assets")
+# ── Caminho dos assets: resolve corretamente tanto ao executar como script
+# ── quanto como notebook Jupyter/Colab (notebooks/ → ../assets).
+try:
+    ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
+except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
+    ASSETS = pathlib.Path("../assets")
 
 # ── Paleta de cores das classes (consistente em todos os plots)
 CORES_CLASSES  = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"]
@@ -552,9 +556,15 @@ print(f"Confiança média — predições CORRETAS: "
 def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
     """
     Treina MLP binário [2→16→1] para separar Fonte (y=0) de Alvo (y=1).
-    Retorna (params, probabilidades no alvo, AUC).
+
+    Retorna (params, prob_all, y_true_all, auc) onde:
+      - prob_all   : probabilidades de ser "alvo" para TODOS os pontos
+                     (fonte concatenado com alvo, mesma ordem)
+      - y_true_all : rótulos verdadeiros (0=fonte, 1=alvo) para todos os pontos
+      - auc        : AUC-ROC calculado no conjunto combinado (válido pois tem
+                     duas classes presentes)
     """
-    # Dados binários: 0 = fonte, 1 = alvo
+    # Dados binários: 0 = fonte, 1 = alvo (combinados para treino e avaliação)
     X_bin = np.concatenate([X_src, X_tgt]).astype(np.float32)
     y_bin = np.concatenate([np.zeros(len(X_src)), np.ones(len(X_tgt))])
     y_bin = y_bin.astype(np.float32)
@@ -562,7 +572,7 @@ def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
     Xj = jnp.array(X_bin)
     yj = jnp.array(y_bin)
 
-    # Inicialização
+    # Inicialização do MLP binário [2→16→1]
     chave, ke = jax.random.split(chave)
     params = init_mlp([2, 16, 1], ke)
 
@@ -582,19 +592,23 @@ def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
         g  = grad_fn(params, Xj, yj)
         params, m, v = adam_passo(params, g, m, v, t, lr=lr)
 
-    # Probabilidades no alvo
-    h = jnp.array(X_tgt, dtype=jnp.float32)
+    # Probabilidades no conjunto COMBINADO (fonte + alvo)
+    # É necessário usar o conjunto completo para ter as duas classes em y_true,
+    # o que torna o cálculo de AUC válido (roc_auc_score exige ≥2 classes).
+    h = jnp.array(X_bin, dtype=jnp.float32)
     for W, b in params[:-1]:
         h = jnp.tanh(h @ W + b)
     W, b = params[-1]
-    logit_tgt = (h @ W + b).squeeze(-1)
-    prob_tgt  = np.array(jax.nn.sigmoid(logit_tgt))
-    auc       = roc_auc_score(np.ones(len(X_tgt)), prob_tgt)
-    return params, prob_tgt, auc
+    logit_all  = (h @ W + b).squeeze(-1)
+    prob_all   = np.array(jax.nn.sigmoid(logit_all))
+    y_true_all = np.concatenate([np.zeros(len(X_src)), np.ones(len(X_tgt))])
+
+    auc = roc_auc_score(y_true_all, prob_all)
+    return params, prob_all, y_true_all, auc
 
 
 chave_dom = jax.random.PRNGKey(7)
-_, prob_dom, auc_dom = treinar_classificador_dominio(
+_, prob_dom, y_true_dom, auc_dom = treinar_classificador_dominio(
     X_fonte, X_alvo, chave_dom)
 
 print(f"AUC do classificador de domínio: {auc_dom:.3f}")
@@ -603,8 +617,8 @@ if auc_dom > 0.7:
 else:
     print("→ AUC ≈ 0,5: domínios indistinguíveis — sem shift relevante.")
 
-# Curva ROC
-fpr, tpr, _ = roc_curve(np.ones(len(X_alvo)), prob_dom)
+# Curva ROC: usa o conjunto combinado (fonte+alvo) com rótulos binários corretos
+fpr, tpr, _ = roc_curve(y_true_dom, prob_dom)
 fig, ax = plt.subplots(figsize=(5.5, 4.5))
 ax.plot(fpr, tpr, lw=2, color="#8e44ad",
         label=f"Classificador de Domínio (AUC = {auc_dom:.2f})")

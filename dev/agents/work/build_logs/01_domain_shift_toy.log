@@ -1,4 +1,41 @@
-[NbConvertApp] Converting notebook jax-examples/01_domain_shift_toy.ipynb to notebook
+[NbConvertApp] Converting notebook 01_domain_shift_toy.ipynb to notebook
 [IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 1190307 bytes to jax-examples/01_domain_shift_toy.ipynb
-BUILD GREEN: 01_domain_shift_toy executed in 5.5s, 34 cells, assets: toy_2d_4class.npz nb1_encoder_source.pkl nb1_head_source.pkl nb1_encoder_targetonly.pkl nb1_head_targetonly.pkl nb1_encoder_ssda.pkl nb1_head_ssda.pkl nb1_ksweep.npz nb1_fig_gmm.png nb1_fig_decision_source.png nb1_fig_decision_target.png nb1_fig_latent_shift.png nb1_fig_comparison.png nb1_fig_k_sweep.png nb1_fig_latent_ssda.png
+[NbConvertApp] Writing 1195425 bytes to 01_domain_shift_toy.ipynb
+
+--- Rebuild pass: 2026-07-15 ---
+Fixes applied to jax-examples/src_01_domain_shift_toy.py:
+  1. ASSETS path: replaced pathlib.Path("assets") with try/__file__/NameError pattern
+     (resolves to jax-examples/assets/ whether run as script or from notebooks/ CWD).
+  2. Colab badge URL: corrected to .../blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb
+  3. AUC bug: treinar_classificador_dominio now computes probabilities on the
+     COMBINED source+target set and passes y_true_all (0=source, 1=target) to
+     roc_auc_score. ROC curve call also updated to use (y_true_dom, prob_dom).
+     Return signature changed from (params, prob_tgt, auc) to (params, prob_all, y_true_all, auc).
+     All call sites updated accordingly.
+
+Execution results:
+  AUC do classificador de dominio: 0.785 (> 0.7 => shift detectavel)
+  ROC curve cell: rendered image/png without error
+  Assets resolved to: jax-examples/assets/ (correct)
+  Wall-clock: ~12.6s (budget: <180s)
+  Total cells: 34 (20 code, 14 markdown)
+  Errors in any cell: 0
+
+Assets reused (unchanged):
+  jax-examples/assets/toy_2d_4class.npz
+  jax-examples/assets/nb1_encoder_source.pkl
+  jax-examples/assets/nb1_head_source.pkl
+  jax-examples/assets/nb1_encoder_targetonly.pkl
+  jax-examples/assets/nb1_head_targetonly.pkl
+  jax-examples/assets/nb1_encoder_ssda.pkl
+  jax-examples/assets/nb1_head_ssda.pkl
+  jax-examples/assets/nb1_ksweep.npz
+  jax-examples/assets/nb1_fig_gmm.png
+  jax-examples/assets/nb1_fig_decision_source.png
+  jax-examples/assets/nb1_fig_decision_target.png
+  jax-examples/assets/nb1_fig_latent_shift.png
+  jax-examples/assets/nb1_fig_comparison.png
+  jax-examples/assets/nb1_fig_k_sweep.png
+  jax-examples/assets/nb1_fig_latent_ssda.png
+
+BUILD GREEN: 01_domain_shift_toy executed in 12.6s, 34 cells, assets: toy_2d_4class.npz, nb1_encoder_source.pkl, nb1_head_source.pkl, nb1_encoder_targetonly.pkl, nb1_head_targetonly.pkl, nb1_encoder_ssda.pkl, nb1_head_ssda.pkl, nb1_ksweep.npz, nb1_fig_gmm.png, nb1_fig_decision_source.png, nb1_fig_decision_target.png, nb1_fig_latent_shift.png, nb1_fig_comparison.png, nb1_fig_k_sweep.png, nb1_fig_latent_ssda.png

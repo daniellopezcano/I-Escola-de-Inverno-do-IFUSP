@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/00_caixa_de_ferramentas.ipynb)
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)
 #
 # # 🟢 Notebook 00 — A Caixa de Ferramentas
 # ### Python, Google Colab e JAX na prática
@@ -87,7 +87,11 @@ CHAVE   = jax.random.PRNGKey(SEMENTE)
 PRETRAINED = True
 
 # ── Caminho dos assets (checkpoints e figuras pré-geradas)
-ASSETS = pathlib.Path("assets")
+# Resolve assets/ independente de onde o notebook é executado (scripts vs. Jupyter)
+try:
+    ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
+except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
+    ASSETS = pathlib.Path("../assets")
 
 # ── Estilo global dos gráficos
 plt.rcParams.update({

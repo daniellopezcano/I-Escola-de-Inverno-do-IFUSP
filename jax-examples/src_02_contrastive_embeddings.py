@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/02_contrastive_embeddings.ipynb)
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb)
 #
 # # 🟢 Notebook 02 — Embeddings Contrastivos: Esculpindo Espaços
 # ### Em três atos — de partículas a dígitos a halos
@@ -96,7 +96,10 @@ SEMENTE = 42
 CHAVE   = jax.random.PRNGKey(SEMENTE)
 
 # ── Caminho dos assets
-ASSETS = pathlib.Path("assets")
+try:
+    ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
+except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
+    ASSETS = pathlib.Path("../assets")
 
 # ── Hiperparâmetros do sandbox (Ato 1)
 N_GRUPOS      = 5      # grupos de partículas
