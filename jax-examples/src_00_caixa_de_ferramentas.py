@@ -76,22 +76,27 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from IPython.display import Image, display
+from IPython.display import display
 
 # ── Chave de reprodutibilidade
 SEMENTE = 42
 CHAVE   = jax.random.PRNGKey(SEMENTE)
 
-# ── Modo PRETRAINED: True  → carrega checkpoints pré-computados (padrão)
-#                   False → treina do zero (mais lento; para exploração)
+# ── Modo PRETRAINED:
+#   True  → carrega checkpoints do cache se existirem; gera com Adam na 1ª execução.
+#   False → treina do zero com SGD ao vivo (modo demonstração).
 PRETRAINED = True
 
-# ── Caminho dos assets (checkpoints e figuras pré-geradas)
-# Resolve assets/ independente de onde o notebook é executado (scripts vs. Jupyter)
+# ── Caminho dos assets (checkpoints pré-computados, gitignored)
+# Resolve independente de onde o notebook é executado (script vs. Jupyter/Colab).
 try:
     ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
 except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
-    ASSETS = pathlib.Path("../assets")
+    _cand = pathlib.Path("../assets").resolve()
+    ASSETS = _cand if _cand.parent.name == "jax-examples" \
+             else pathlib.Path("/tmp/nb00_assets")
+
+ASSETS.mkdir(exist_ok=True, parents=True)
 
 # ── Estilo global dos gráficos
 plt.rcParams.update({
@@ -100,6 +105,53 @@ plt.rcParams.update({
     "axes.labelsize": 11,
     "legend.fontsize": 9,
 })
+
+
+# ── Helpers de I/O de checkpoints ─────────────────────────────────────────────
+
+def carregar_pkl(fname):
+    """Carrega lista de (W, b) a partir de um arquivo pickle."""
+    with open(ASSETS / fname, "rb") as f:
+        return pickle.load(f)
+
+
+def salvar_pkl(params, fname):
+    """Salva lista de (W, b) como numpy arrays (portabilidade entre JAX/numpy)."""
+    params_np = [(np.array(W), np.array(b)) for W, b in params]
+    with open(ASSETS / fname, "wb") as f:
+        pickle.dump(params_np, f)
+
+
+def _checkpoints_ok(*fnames):
+    """Retorna True se PRETRAINED=True e todos os arquivos existem em assets/."""
+    return PRETRAINED and all((ASSETS / f).exists() for f in fnames)
+
+
+# ── Helpers de Adam (manual, sem optax) ───────────────────────────────────────
+# Usados apenas na geração automática de checkpoints (PRETRAINED=True, 1ª exec.).
+
+def adam_init(params):
+    """Inicializa estados de momento (m, v) zerados."""
+    m = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
+    v = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
+    return m, v
+
+
+def adam_passo(params, grads, m, v, t,
+               lr=0.01, b1=0.9, b2=0.999, eps=1e-8):
+    """Um passo de Adam com correção de bias."""
+    new_m = [(b1*mW + (1-b1)*gW, b1*mb + (1-b1)*gb)
+             for (mW, mb), (gW, gb) in zip(m, grads)]
+    new_v = [(b2*vW + (1-b2)*gW**2, b2*vb + (1-b2)*gb**2)
+             for (vW, vb), (gW, gb) in zip(v, grads)]
+    mhat  = [(mW/(1-b1**t), mb/(1-b1**t)) for mW, mb in new_m]
+    vhat  = [(vW/(1-b2**t), vb/(1-b2**t)) for vW, vb in new_v]
+    new_p = [(W - lr*mWh/(jnp.sqrt(vWh)+eps),
+              b - lr*mbh/(jnp.sqrt(vbh)+eps))
+             for (W, b), (mWh, mbh), (vWh, vbh)
+             in zip(params, mhat, vhat)]
+    return new_p, new_m, new_v
+
 
 print(f"JAX versão : {jax.__version__}")
 print(f"Dispositivo: {jax.devices()[0]}")
@@ -212,7 +264,6 @@ ax.set_title("Senoide amortecida — a função que vamos aprender a ajustar", f
 ax.legend()
 ax.grid(True, alpha=0.35)
 plt.tight_layout()
-plt.savefig(ASSETS / "nb0_fig_senoide_intro.png", dpi=100, bbox_inches="tight")
 plt.show()
 
 # %% [markdown]
@@ -383,6 +434,9 @@ x_grade      = np.linspace(0.0, X_MAX, 500)
 y_grade      = funcao_alvo(x_grade)
 x_grade_norm = normalizar_x(x_grade)
 
+# Pré-computa o input do grid em JAX (usado em vários plots abaixo)
+xg_in = jnp.array(x_grade_norm, dtype=jnp.float32).reshape(-1, 1)
+
 # ── Visualizar ────────────────────────────────────────────────────────────────
 fig, ax = plt.subplots(figsize=(8, 3.5))
 ax.scatter(x_dados, y_ruidoso, s=12, alpha=0.5, color="#aaaaaa",
@@ -479,17 +533,59 @@ print("(Esperado: perda ≈ variância quando o modelo prevê a média)")
 # ## 🔵 Loop de treino — descida do gradiente explícita
 
 # %%
-# ── Configuração ───────────────────────────────────────────────────────────────
-N_EPOCAS = 1000           # número de épocas
-TAXA_APRENDIZADO = 0.01   # lr — taxa de aprendizado
+# ── Nomes dos checkpoints da rede normal ──────────────────────────────────────
+CKPT_NORMAL = [
+    "nb0_epoch0_params.pkl",
+    "nb0_epoch200_params.pkl",
+    "nb0_epoch500_params.pkl",
+    "nb0_fcnn_params.pkl",
+]
 
-# ── Laço de treino ou carregamento de checkpoint ───────────────────────────────
-if not PRETRAINED:
-    # Inicializa o modelo do zero
+N_EPOCAS          = 1000   # épocas de treino
+TAXA_APRENDIZADO  = 0.01   # lr — taxa de aprendizado para SGD
+
+if _checkpoints_ok(*CKPT_NORMAL):
+    # ── Carga rápida (modo aula ou segunda execução) ──────────────────────────
+    params = carregar_pkl("nb0_fcnn_params.pkl")
+    perda_final = float(perda_mse(params, x_in_jax, y_in_jax))
+    print(f"Pesos carregados de  : nb0_fcnn_params.pkl")
+    print(f"Perda do modelo      : {perda_final:.6f}")
+    print(f"Piso do ruído (σ²)   : {SIGMA_EP**2:.4f}")
+
+elif PRETRAINED:
+    # ── Primeira execução: gera os checkpoints com Adam e os salva ───────────
+    # (Adam converge rapidamente; os checkpoints ficam disponíveis para reuso.)
+    print("Checkpoints ausentes — gerando com Adam (primeira execução)...")
+    chave_adam = jax.random.PRNGKey(0)
+    params = init_params(CAMADAS_NORMAL, chave_adam)
+    salvar_pkl(params, "nb0_epoch0_params.pkl")   # época 0 (antes do treino)
+
+    m_state, v_state = adam_init(params)
+    grad_fn = jax.jit(jax.grad(perda_mse))
+
+    for t in range(1, 1001):
+        g = grad_fn(params, x_in_jax, y_in_jax)
+        params, m_state, v_state = adam_passo(params, g, m_state, v_state, t)
+        if t == 200:
+            salvar_pkl(params, "nb0_epoch200_params.pkl")
+        if t == 500:
+            salvar_pkl(params, "nb0_epoch500_params.pkl")
+        if t % 200 == 0:
+            l = float(perda_mse(params, x_in_jax, y_in_jax))
+            print(f"  época {t:4d}  perda={l:.6f}")
+
+    salvar_pkl(params, "nb0_fcnn_params.pkl")     # época 1000 (final)
+    perda_final = float(perda_mse(params, x_in_jax, y_in_jax))
+    print(f"Geração concluída — checkpoints salvos em assets/")
+    print(f"Perda final: {perda_final:.6f}  (piso do ruído σ²={SIGMA_EP**2:.4f})")
+
+else:
+    # ── PRETRAINED=False: treino ao vivo com SGD (demonstração pedagógica) ───
     chave_treino = jax.random.PRNGKey(0)
     params = init_params(CAMADAS_NORMAL, chave_treino)
+    salvar_pkl(params, "nb0_epoch0_params.pkl")   # salva época 0
 
-    grad_perda = jax.grad(perda_mse)   # função que calcula ∇_params(MSE)
+    grad_perda = jax.jit(jax.grad(perda_mse))    # gradiente compilado
 
     print(f"Treinando {N_EPOCAS} épocas com SGD explícito "
           f"(lr={TAXA_APRENDIZADO})...")
@@ -497,40 +593,34 @@ if not PRETRAINED:
     print("-" * 22)
 
     t_inicio = time.perf_counter()
-    for epoca in range(N_EPOCAS + 1):
-        # Calcula gradientes
+    for epoca in range(1, N_EPOCAS + 1):
+        # Calcula gradientes e atualiza com SGD puro
         grads = grad_perda(params, x_in_jax, y_in_jax)
-
-        # Atualização explícita de SGD — sem nenhuma biblioteca de otimização
         params = [
             (W - TAXA_APRENDIZADO * dW, b - TAXA_APRENDIZADO * db)
             for (W, b), (dW, db) in zip(params, grads)
         ]
-
+        # Salva checkpoints intermediários para a figura-troféu
+        if epoca == 200:
+            salvar_pkl(params, "nb0_epoch200_params.pkl")
+        if epoca == 500:
+            salvar_pkl(params, "nb0_epoch500_params.pkl")
         if epoca % 100 == 0:
             perda_atual = float(perda_mse(params, x_in_jax, y_in_jax))
             print(f"{epoca:>8}  {perda_atual:>10.6f}")
 
     t_fim = time.perf_counter()
+    salvar_pkl(params, "nb0_fcnn_params.pkl")     # salva época 1000 (final)
     print(f"\nTreino concluído em {t_fim - t_inicio:.1f}s")
     print(f"Perda final: {float(perda_mse(params, x_in_jax, y_in_jax)):.6f}")
     print(f"(Piso do ruído = {SIGMA_EP**2:.4f})")
-
-else:
-    # Carrega os pesos pré-treinados
-    with open(ASSETS / "nb0_fcnn_params.pkl", "rb") as f:
-        params = pickle.load(f)
-    perda_final = float(perda_mse(params, x_in_jax, y_in_jax))
-    print(f"Pesos carregados de  : nb0_fcnn_params.pkl")
-    print(f"Perda do modelo      : {perda_final:.6f}")
-    print(f"Piso do ruído (σ²)   : {SIGMA_EP**2:.4f}")
 
 # %% [markdown]
 # ## 🔵 Figura-troféu — o modelo aprendendo época a época
 
 # %%
 # Carrega os 4 checkpoints e plota a progressão do ajuste
-EPOCAS_TROPHY = [0, 200, 500, 1000]
+EPOCAS_TROPHY  = [0, 200, 500, 1000]
 ARQUIVOS_TROPHY = [
     "nb0_epoch0_params.pkl",
     "nb0_epoch200_params.pkl",
@@ -538,44 +628,36 @@ ARQUIVOS_TROPHY = [
     "nb0_fcnn_params.pkl",
 ]
 
-try:
-    fig, axes = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
-    fig.suptitle(
-        "Progressão do treino — senoide amortecida",
-        fontsize=13, fontweight="bold"
-    )
+fig, axes = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
+fig.suptitle(
+    "Progressão do treino — senoide amortecida",
+    fontsize=13, fontweight="bold"
+)
 
-    xg_in = jnp.array(x_grade_norm, dtype=jnp.float32).reshape(-1, 1)
+for ax, epoca, nome_arq in zip(axes, EPOCAS_TROPHY, ARQUIVOS_TROPHY):
+    p_ckpt = carregar_pkl(nome_arq)
 
-    for ax, epoca, nome_arq in zip(axes, EPOCAS_TROPHY, ARQUIVOS_TROPHY):
-        with open(ASSETS / nome_arq, "rb") as f:
-            p_ckpt = pickle.load(f)
+    y_pred = np.array(forward(p_ckpt, xg_in).squeeze(-1))
+    perda  = float(perda_mse(p_ckpt, x_in_jax, y_in_jax))
 
-        y_pred = np.array(forward(p_ckpt, xg_in).squeeze(-1))
-        perda  = float(perda_mse(p_ckpt, x_in_jax, y_in_jax))
+    ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.45, color="#aaaaaa",
+               label="dados ruidosos", zorder=2)
+    ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
+            label="função verdadeira", zorder=3)
+    ax.plot(x_grade, y_pred, "-",  lw=2.0, color="#e74c3c",
+            label="modelo", zorder=4)
 
-        ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.45, color="#aaaaaa",
-                   label="dados ruidosos", zorder=2)
-        ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-                label="função verdadeira", zorder=3)
-        ax.plot(x_grade, y_pred, "-",  lw=2.0, color="#e74c3c",
-                label="modelo", zorder=4)
+    ax.set_title(f"Época {epoca}\n(perda = {perda:.3f})", fontsize=11)
+    ax.set_xlabel("x")
+    if ax is axes[0]:
+        ax.set_ylabel("y")
+    ax.set_xlim(0, X_MAX)
+    ax.set_ylim(-2.2, 2.2)
+    ax.grid(True, alpha=0.3)
 
-        ax.set_title(f"Época {epoca}\n(perda = {perda:.3f})", fontsize=11)
-        ax.set_xlabel("x")
-        if ax is axes[0]:
-            ax.set_ylabel("y")
-        ax.set_xlim(0, X_MAX)
-        ax.set_ylim(-2.2, 2.2)
-        ax.grid(True, alpha=0.3)
-
-    axes[-1].legend(loc="upper right", fontsize=9)
-    plt.tight_layout()
-    plt.show()
-
-except Exception as exc:
-    print(f"Renderização ao vivo falhou ({exc}). Exibindo figura pré-computada:")
-    display(Image(str(ASSETS / "nb0_fig_trophy.png")))
+axes[-1].legend(loc="upper right", fontsize=9)
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## 🟡 Pergunta-relâmpago — o que acontece com uma rede maior?
@@ -601,14 +683,49 @@ except Exception as exc:
 # ── A rede grande: [1, 128, 128, 128, 1] ─────────────────────────────────────
 CAMADAS_GRANDE = [1, 128, 128, 128, 1]
 
-if not PRETRAINED:
-    # Treino da rede grande (mais lento — pode demorar ~2 min)
+if _checkpoints_ok("nb0_overfit_params.pkl"):
+    # ── Carga rápida ─────────────────────────────────────────────────────────
+    params_overfit = carregar_pkl("nb0_overfit_params.pkl")
+    perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
+    print(f"Modelo pré-treinado carregado.")
+    print(f"Perda de treino da rede grande : {perda_of:.6f}")
+    print(f"Perda de treino da rede normal : {float(perda_mse(params, x_in_jax, y_in_jax)):.6f}")
+    print(f"Piso do ruído (σ²)             : {SIGMA_EP**2:.4f}")
+    print()
+    print("A rede grande atingiu perda MENOR que o piso do ruído — ela")
+    print("está ajustando o ruído, não a função! Isso é sobreajuste.")
+
+elif PRETRAINED:
+    # ── Primeira execução: gera com Adam (5000 épocas, lr reduzida) ──────────
+    print("Gerando rede de sobreajuste com Adam (primeira execução)...")
     chave_of = jax.random.PRNGKey(1)
     params_overfit = init_params(CAMADAS_GRANDE, chave_of)
-    grad_of = jax.grad(perda_mse)
+    m_of, v_of = adam_init(params_overfit)
+    grad_of = jax.jit(jax.grad(perda_mse))
+
+    for t in range(1, 5001):
+        g = grad_of(params_overfit, x_in_jax, y_in_jax)
+        params_overfit, m_of, v_of = adam_passo(
+            params_overfit, g, m_of, v_of, t, lr=0.005)
+        if t % 1000 == 0:
+            l = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
+            print(f"  época {t:5d}  perda={l:.6f}")
+
+    salvar_pkl(params_overfit, "nb0_overfit_params.pkl")
+    perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
+    print(f"Geração concluída — checkpoint salvo.")
+    print(f"Perda da rede grande : {perda_of:.6f}  (σ²={SIGMA_EP**2:.4f})")
+    if perda_of < SIGMA_EP**2:
+        print("Sobreajuste confirmado: perda < piso do ruído.")
+
+else:
+    # ── PRETRAINED=False: treino ao vivo com SGD ──────────────────────────────
+    chave_of = jax.random.PRNGKey(1)
+    params_overfit = init_params(CAMADAS_GRANDE, chave_of)
+    grad_of = jax.jit(jax.grad(perda_mse))
 
     print(f"Treinando rede grande {CAMADAS_GRANDE} por 5000 épocas...")
-    for ep in range(5001):
+    for ep in range(1, 5001):
         g = grad_of(params_overfit, x_in_jax, y_in_jax)
         params_overfit = [
             (W - TAXA_APRENDIZADO * dW, b - TAXA_APRENDIZADO * db)
@@ -617,69 +734,55 @@ if not PRETRAINED:
         if ep % 1000 == 0:
             l = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
             print(f"  época {ep:5d}: perda = {l:.6f}")
-else:
-    # Carrega o modelo pré-treinado
-    with open(ASSETS / "nb0_overfit_params.pkl", "rb") as f:
-        params_overfit = pickle.load(f)
+
+    salvar_pkl(params_overfit, "nb0_overfit_params.pkl")
     perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
-    print(f"Modelo pré-treinado carregado.")
-    print(f"Perda de treino da rede grande : {perda_of:.6f}")
-    print(f"Perda de treino da rede normal : {float(perda_mse(params, x_in_jax, y_in_jax)):.6f}")
-    print(f"Piso do ruído (σ²)             : {SIGMA_EP**2:.4f}")
-    print()
-    print("⚠️  A rede grande atingiu perda MENOR que o piso do ruído — ela")
-    print("   está ajustando o ruído, não a função! Isso é sobreajuste.")
 
 # ── Comparação visual ─────────────────────────────────────────────────────────
-try:
-    y_pred_normal = np.array(forward(params, xg_in).squeeze(-1))
-    y_pred_of     = np.array(forward(params_overfit, xg_in).squeeze(-1))
+y_pred_normal = np.array(forward(params, xg_in).squeeze(-1))
+y_pred_of     = np.array(forward(params_overfit, xg_in).squeeze(-1))
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
-    fig.suptitle("Generalização vs. Sobreajuste (overfitting)",
-                 fontsize=13, fontweight="bold")
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
+fig.suptitle("Generalização vs. Sobreajuste (overfitting)",
+             fontsize=13, fontweight="bold")
 
-    # ─ Rede normal ─
-    ax1.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
-                label="dados ruidosos")
-    ax1.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-             label="função verdadeira")
-    ax1.plot(x_grade, y_pred_normal, "-", lw=2, color="#e74c3c",
-             label="modelo [1,32,32,1]")
-    ax1.set_title("Rede pequena — generaliza bem\n"
-                  f"perda de treino = "
-                  f"{float(perda_mse(params, x_in_jax, y_in_jax)):.4f}",
-                  fontsize=11)
-    ax1.set_xlabel("x"); ax1.set_ylabel("y")
-    ax1.set_xlim(0, X_MAX); ax1.set_ylim(-2.2, 2.2)
-    ax1.legend(fontsize=9); ax1.grid(alpha=0.3)
+# ─ Rede normal ─
+ax1.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
+            label="dados ruidosos")
+ax1.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
+         label="função verdadeira")
+ax1.plot(x_grade, y_pred_normal, "-", lw=2, color="#e74c3c",
+         label="modelo [1,32,32,1]")
+ax1.set_title("Rede pequena — generaliza bem\n"
+              f"perda de treino = "
+              f"{float(perda_mse(params, x_in_jax, y_in_jax)):.4f}",
+              fontsize=11)
+ax1.set_xlabel("x"); ax1.set_ylabel("y")
+ax1.set_xlim(0, X_MAX); ax1.set_ylim(-2.2, 2.2)
+ax1.legend(fontsize=9); ax1.grid(alpha=0.3)
 
-    # ─ Rede grande (sobreajuste) ─
-    ax2.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
-                label="dados ruidosos")
-    ax2.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-             label="função verdadeira")
-    ax2.plot(x_grade, y_pred_of, "-", lw=2, color="#e67e22",
-             label="modelo [1,128,128,128,1]")
-    ax2.set_title("Rede grande — sobreajuste!\n"
-                  f"perda de treino = "
-                  f"{float(perda_mse(params_overfit, x_in_jax, y_in_jax)):.4f}"
-                  f"  < σ²={SIGMA_EP**2:.4f}",
-                  fontsize=11)
-    ax2.set_xlabel("x")
-    ax2.set_xlim(0, X_MAX)
-    ax2.legend(fontsize=9); ax2.grid(alpha=0.3)
+# ─ Rede grande (sobreajuste) ─
+ax2.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
+            label="dados ruidosos")
+ax2.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
+         label="função verdadeira")
+ax2.plot(x_grade, y_pred_of, "-", lw=2, color="#e67e22",
+         label="modelo [1,128,128,128,1]")
+ax2.set_title("Rede grande — sobreajuste!\n"
+              f"perda de treino = "
+              f"{float(perda_mse(params_overfit, x_in_jax, y_in_jax)):.4f}"
+              f"  < σ²={SIGMA_EP**2:.4f}",
+              fontsize=11)
+ax2.set_xlabel("x")
+ax2.set_xlim(0, X_MAX)
+ax2.legend(fontsize=9); ax2.grid(alpha=0.3)
 
-    plt.tight_layout()
-    plt.show()
+plt.tight_layout()
+plt.show()
 
-    print("\n💡 A rede grande memorizou o ruído — não generalizou.")
-    print("   Na quarta-feira, veremos o que acontece quando a distribuição")
-    print("   de TESTE é diferente da distribuição de TREINO.")
-
-except Exception as exc:
-    print(f"Renderização falhou ({exc}). Exibindo figura pré-computada:")
-    display(Image(str(ASSETS / "nb0_fig_overfit.png")))
+print("\n💡 A rede grande memorizou o ruído — não generalizou.")
+print("   Na quarta-feira, veremos o que acontece quando a distribuição")
+print("   de TESTE é diferente da distribuição de TREINO.")
 
 # %% [markdown]
 # ## 🟢 Mapa de vocabulário
@@ -726,7 +829,7 @@ if not PRETRAINED:
     print("-" * 45)
     for N in larguras:
         p_exp = init_params([1, N, N, 1], jax.random.PRNGKey(0))
-        g_fn  = jax.grad(perda_mse)
+        g_fn  = jax.jit(jax.grad(perda_mse))
         for _ in range(200):
             g  = g_fn(p_exp, x_in_jax, y_in_jax)
             p_exp = [(W - 0.01 * dW, b - 0.01 * db)

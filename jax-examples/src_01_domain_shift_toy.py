@@ -66,9 +66,10 @@
 #    alvo. O experimento aqui é **exatamente o mesmo** do artigo do J-PAS
 #    que veremos na sexta-feira.
 #
-# > **PRETRAINED = True** (padrão): todos os treinos pesados são pulados e
-# > os resultados pré-calculados são carregados de `assets/`. Você pode
-# > mudar para `False` para ver o treino ao vivo (mais lento).
+# > **PRETRAINED = True** (padrão): se os checkpoints pré-computados estiverem
+# > em `assets/`, são carregados. Caso contrário o notebook os gera
+# > automaticamente e os salva para uso futuro. Mude para `False` para
+# > forçar treino ao vivo.
 
 # %%
 # ── Setup: importações e configuração global ──────────────────────────────────
@@ -81,11 +82,11 @@ import jax.numpy as jnp
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from IPython.display import Image, display
 from sklearn.metrics import (confusion_matrix, f1_score,
                               roc_auc_score, roc_curve)
+from sklearn.model_selection import train_test_split
 
-# ── Flag global: True = carrega checkpoints pré-computados (padrão para aula)
+# ── Flag global: True = carrega checkpoints (ou gera se ausentes)
 PRETRAINED = True
 
 # ── Semente de reprodutibilidade
@@ -95,12 +96,17 @@ CHAVE    = jax.random.PRNGKey(SEMENTE)
 # ── Número de classes
 N_CLASSES = 4
 
-# ── Caminho dos assets: resolve corretamente tanto ao executar como script
-# ── quanto como notebook Jupyter/Colab (notebooks/ → ../assets).
+# ── Caminho dos assets: resolve tanto ao executar como script quanto como
+# ── notebook Jupyter/Colab. Cria o diretório se não existir.
 try:
     ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
-except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
-    ASSETS = pathlib.Path("../assets")
+except NameError:
+    # Jupyter/Colab: __file__ não existe; tenta relativo ao CWD
+    _candidate = pathlib.Path("../assets").resolve()
+    ASSETS = _candidate if _candidate.parent.name == "jax-examples" \
+             else pathlib.Path("/tmp/nb01_assets")
+
+ASSETS.mkdir(exist_ok=True, parents=True)
 
 # ── Paleta de cores das classes (consistente em todos os plots)
 CORES_CLASSES  = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"]
@@ -113,6 +119,26 @@ plt.rcParams.update({
     "axes.labelsize": 11,
     "legend.fontsize": 9,
 })
+
+# ── Helpers de I/O de checkpoints ─────────────────────────────────────────────
+
+def carregar_pkl(fname):
+    """Carrega lista de (W, b) a partir de um arquivo pickle."""
+    with open(ASSETS / fname, "rb") as f:
+        return pickle.load(f)
+
+
+def salvar_pkl(params, fname):
+    """Salva lista de (W, b) como numpy arrays (portabilidade entre JAX/numpy)."""
+    params_np = [(np.array(W), np.array(b)) for W, b in params]
+    with open(ASSETS / fname, "wb") as f:
+        pickle.dump(params_np, f)
+
+
+def _checkpoints_ok(*fnames):
+    """Retorna True se todos os arquivos existem em assets/."""
+    return PRETRAINED and all((ASSETS / f).exists() for f in fnames)
+
 
 print(f"JAX versão : {jax.__version__}")
 print(f"Dispositivo: {jax.devices()[0]}")
@@ -169,12 +195,12 @@ def gerar_gmm(n_por_classe, medias, chave):
     return np.concatenate(X_list), np.concatenate(y_list)
 
 
-# Carrega dados pré-gerados (semente fixada no script de assets)
-dados = np.load(ASSETS / "toy_2d_4class.npz")
-X_fonte = dados["X_source"].astype(np.float32)
-y_fonte = dados["y_source"].astype(np.int32)
-X_alvo  = dados["X_target"].astype(np.float32)
-y_alvo  = dados["y_target"].astype(np.int32)
+# Dados gerados inline com semente fixa — sem dependência de arquivos externos.
+# As mesmas sementes garantem reprodutibilidade exata entre execuções.
+chave_dados = jax.random.PRNGKey(SEMENTE)
+chave_dados, k_src, k_tgt = jax.random.split(chave_dados, 3)
+X_fonte, y_fonte = gerar_gmm(N_POR_CLASSE, MEDIAS_FONTE, k_src)
+X_alvo,  y_alvo  = gerar_gmm(N_POR_CLASSE, MEDIAS_ALVO,  k_tgt)
 
 print(f"Fonte: {X_fonte.shape}  |  Alvo: {X_alvo.shape}")
 print(f"Distribuição de classes (fonte): {np.bincount(y_fonte)}")
@@ -182,28 +208,27 @@ print(f"Distribuição de classes (alvo) : {np.bincount(y_alvo)}")
 
 # %%
 # ── ATO 1.2: Visualização Fonte vs. Alvo ─────────────────────────────────────
-if PRETRAINED:
-    try:
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
-        fig.suptitle("Universo de brinquedo: domínio fonte vs. domínio alvo",
-                     fontsize=13)
-        for c in range(N_CLASSES):
-            ax1.scatter(X_fonte[y_fonte==c, 0], X_fonte[y_fonte==c, 1],
-                        s=18, color=CORES_CLASSES[c], alpha=0.65,
-                        edgecolors="none", label=NOMES_CLASSES[c])
-        ax1.set_title("Fonte (Source)"); ax1.set_xlabel("x₁"); ax1.set_ylabel("x₂")
-        ax1.legend(); ax1.grid(True, alpha=0.3)
-        for c in range(N_CLASSES):
-            ax2.scatter(X_alvo[y_alvo==c, 0], X_alvo[y_alvo==c, 1],
-                        s=18, color=CORES_CLASSES[c], alpha=0.65,
-                        edgecolors="none", label=NOMES_CLASSES[c])
-        ax2.set_title("Alvo (Target)"); ax2.set_xlabel("x₁"); ax2.set_ylabel("x₂")
-        ax2.legend(); ax2.grid(True, alpha=0.3)
-        plt.tight_layout(); plt.show()
-    except Exception:
-        display(Image(str(ASSETS / "nb1_fig_gmm.png")))
-else:
-    display(Image(str(ASSETS / "nb1_fig_gmm.png")))
+# Os dados são gerados inline acima, então esta figura sempre funciona.
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+fig.suptitle("Universo de brinquedo: domínio fonte vs. domínio alvo",
+             fontsize=13)
+for c in range(N_CLASSES):
+    ax1.scatter(X_fonte[y_fonte==c, 0], X_fonte[y_fonte==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax1.set_title("Fonte (Source)"); ax1.set_xlabel("x₁"); ax1.set_ylabel("x₂")
+ax1.legend(); ax1.grid(True, alpha=0.3)
+
+for c in range(N_CLASSES):
+    ax2.scatter(X_alvo[y_alvo==c, 0], X_alvo[y_alvo==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax2.set_title("Alvo (Target)"); ax2.set_xlabel("x₁"); ax2.set_ylabel("x₂")
+ax2.legend(); ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## 🟡 Poll — Ato 1
@@ -352,15 +377,21 @@ def adam_passo(params, grads, m, v, t,
 
 # %%
 # ── ATO 2.3: Treino no Source ─────────────────────────────────────────────────
-# (Execute apenas se PRETRAINED=False; padrão é carregar checkpoints pré-salvos)
+# Padrão "gerar se ausente": carrega checkpoints se existirem; caso contrário
+# treina inline e salva para execuções futuras (incluindo Colab limpo).
 
 pesos_jnp = jnp.array(PESOS_CLASSES)
 X_fonte_j = jnp.array(X_fonte, dtype=jnp.float32)
 y_fonte_j = jnp.array(y_fonte, dtype=jnp.int32)
 
-if not PRETRAINED:
-    # ── Treino ao vivo (demora ~30 s no CPU) ──────────────────────────────────
-    print("Treinando modelo na fonte... (rode com PRETRAINED=True para pular)")
+if _checkpoints_ok("nb1_encoder_source.pkl", "nb1_head_source.pkl"):
+    # ── Carga rápida (modo aula ou segunda execução) ──────────────────────────
+    enc_fonte  = carregar_pkl("nb1_encoder_source.pkl")
+    head_fonte = carregar_pkl("nb1_head_source.pkl")
+    print("Checkpoints do modelo fonte carregados.")
+else:
+    # ── Treino ao vivo e salvo para reusar ────────────────────────────────────
+    print("Treinando modelo na fonte... (pode levar ~10 s no CPU)")
     chave_treino = jax.random.PRNGKey(0)
     chave_treino, ke, kh = jax.random.split(chave_treino, 3)
 
@@ -380,16 +411,10 @@ if not PRETRAINED:
             l = float(perda_ce_ponderada(enc_fonte, head_fonte,
                                          X_fonte_j, y_fonte_j, pesos_jnp))
             print(f"  época {t:4d}  perda={l:.4f}")
-    print("Treino concluído!")
-else:
-    # ── Carrega checkpoints pré-treinados ─────────────────────────────────────
-    def carregar_pkl(fname):
-        with open(ASSETS / fname, "rb") as f:
-            return pickle.load(f)
 
-    enc_fonte  = carregar_pkl("nb1_encoder_source.pkl")
-    head_fonte = carregar_pkl("nb1_head_source.pkl")
-    print("Checkpoints do modelo fonte carregados.")
+    salvar_pkl(enc_fonte,  "nb1_encoder_source.pkl")
+    salvar_pkl(head_fonte, "nb1_head_source.pkl")
+    print("Treino concluído — checkpoints salvos em assets/.")
 
 # Acurácias
 acc_fonte = np.mean(predizer_classes(enc_fonte, head_fonte, X_fonte) == y_fonte)
@@ -450,25 +475,20 @@ def plotar_mapa_decisao(ax, enc_params, head_params,
     ax.set_ylim(yy.min(), yy.max())
 
 
-try:
-    xx, yy = criar_malha()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    fig.suptitle("Mapa de Decisão — modelo treinado na fonte", fontsize=13)
+xx, yy = criar_malha()
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig.suptitle("Mapa de Decisão — modelo treinado na fonte", fontsize=13)
 
-    plotar_mapa_decisao(ax1, enc_fonte, head_fonte, X_fonte, y_fonte,
-                        "Fonte (Source) — perfeito", xx, yy)
-    ax1.legend(fontsize=8)
+plotar_mapa_decisao(ax1, enc_fonte, head_fonte, X_fonte, y_fonte,
+                    "Fonte (Source) — perfeito", xx, yy)
+ax1.legend(fontsize=8)
 
-    plotar_mapa_decisao(ax2, enc_fonte, head_fonte, X_alvo, y_alvo,
-                        "Alvo (Target) — falha catastrófica!", xx, yy)
-    ax2.legend(fontsize=8)
+plotar_mapa_decisao(ax2, enc_fonte, head_fonte, X_alvo, y_alvo,
+                    "Alvo (Target) — falha catastrófica!", xx, yy)
+ax2.legend(fontsize=8)
 
-    plt.tight_layout()
-    plt.show()
-except Exception:
-    print("(Usando imagens pré-geradas)")
-    display(Image(str(ASSETS / "nb1_fig_decision_source.png")))
-    display(Image(str(ASSETS / "nb1_fig_decision_target.png")))
+plt.tight_layout()
+plt.show()
 
 # %%
 # ── ATO 2.5: Matrizes de confusão e histograma de confiança ──────────────────
@@ -557,20 +577,29 @@ def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
     """
     Treina MLP binário [2→16→1] para separar Fonte (y=0) de Alvo (y=1).
 
-    Retorna (params, prob_all, y_true_all, auc) onde:
-      - prob_all   : probabilidades de ser "alvo" para TODOS os pontos
-                     (fonte concatenado com alvo, mesma ordem)
-      - y_true_all : rótulos verdadeiros (0=fonte, 1=alvo) para todos os pontos
-      - auc        : AUC-ROC calculado no conjunto combinado (válido pois tem
-                     duas classes presentes)
-    """
-    # Dados binários: 0 = fonte, 1 = alvo (combinados para treino e avaliação)
-    X_bin = np.concatenate([X_src, X_tgt]).astype(np.float32)
-    y_bin = np.concatenate([np.zeros(len(X_src)), np.ones(len(X_tgt))])
-    y_bin = y_bin.astype(np.float32)
+    O AUC é calculado num subconjunto de TESTE (20% dos dados, nunca vistos
+    durante o treino). Isso evita viés de avaliação: um classificador que
+    simplesmente memoriza os dados de treino teria AUC artificialmente alto.
+    Um AUC de teste > 0,7 é evidência genuína de shift detectável.
 
-    Xj = jnp.array(X_bin)
-    yj = jnp.array(y_bin)
+    Retorna (params, prob_teste, y_true_teste, auc)
+    """
+    # Dados binários: 0 = fonte, 1 = alvo
+    X_bin = np.concatenate([X_src, X_tgt]).astype(np.float32)
+    y_bin = np.concatenate([np.zeros(len(X_src)),
+                            np.ones(len(X_tgt))]).astype(np.float32)
+
+    # ── Divisão 80/20 estratificada (treino / teste) ──────────────────────────
+    # Estratificada: garante mesma proporção 0/1 em treino e teste.
+    X_tr, X_te, y_tr, y_te = train_test_split(
+        X_bin, y_bin,
+        test_size=0.2,
+        random_state=SEMENTE,
+        stratify=y_bin.astype(int),
+    )
+
+    Xj = jnp.array(X_tr, dtype=jnp.float32)
+    yj = jnp.array(y_tr, dtype=jnp.float32)
 
     # Inicialização do MLP binário [2→16→1]
     chave, ke = jax.random.split(chave)
@@ -592,32 +621,30 @@ def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
         g  = grad_fn(params, Xj, yj)
         params, m, v = adam_passo(params, g, m, v, t, lr=lr)
 
-    # Probabilidades no conjunto COMBINADO (fonte + alvo)
-    # É necessário usar o conjunto completo para ter as duas classes em y_true,
-    # o que torna o cálculo de AUC válido (roc_auc_score exige ≥2 classes).
-    h = jnp.array(X_bin, dtype=jnp.float32)
+    # ── Avaliar no CONJUNTO DE TESTE (não visto durante treino) ──────────────
+    h_te = jnp.array(X_te, dtype=jnp.float32)
     for W, b in params[:-1]:
-        h = jnp.tanh(h @ W + b)
+        h_te = jnp.tanh(h_te @ W + b)
     W, b = params[-1]
-    logit_all  = (h @ W + b).squeeze(-1)
-    prob_all   = np.array(jax.nn.sigmoid(logit_all))
-    y_true_all = np.concatenate([np.zeros(len(X_src)), np.ones(len(X_tgt))])
+    logit_te  = (h_te @ W + b).squeeze(-1)
+    prob_te   = np.array(jax.nn.sigmoid(logit_te))
+    y_true_te = y_te
 
-    auc = roc_auc_score(y_true_all, prob_all)
-    return params, prob_all, y_true_all, auc
+    auc = roc_auc_score(y_true_te, prob_te)
+    return params, prob_te, y_true_te, auc
 
 
 chave_dom = jax.random.PRNGKey(7)
 _, prob_dom, y_true_dom, auc_dom = treinar_classificador_dominio(
     X_fonte, X_alvo, chave_dom)
 
-print(f"AUC do classificador de domínio: {auc_dom:.3f}")
+print(f"AUC do classificador de domínio (teste): {auc_dom:.3f}")
 if auc_dom > 0.7:
     print("→ AUC > 0,7: shift detectável — os domínios são separáveis!")
 else:
     print("→ AUC ≈ 0,5: domínios indistinguíveis — sem shift relevante.")
 
-# Curva ROC: usa o conjunto combinado (fonte+alvo) com rótulos binários corretos
+# Curva ROC no conjunto de teste
 fpr, tpr, _ = roc_curve(y_true_dom, prob_dom)
 fig, ax = plt.subplots(figsize=(5.5, 4.5))
 ax.plot(fpr, tpr, lw=2, color="#8e44ad",
@@ -625,39 +652,36 @@ ax.plot(fpr, tpr, lw=2, color="#8e44ad",
 ax.plot([0, 1], [0, 1], "--", color="gray", lw=1, label="Aleatório (AUC = 0,5)")
 ax.set_xlabel("Taxa de Falso Positivo")
 ax.set_ylabel("Taxa de Verdadeiro Positivo")
-ax.set_title("Curva ROC — Diagnóstico do Shift")
+ax.set_title("Curva ROC — Diagnóstico do Shift (conjunto de teste)")
 ax.legend(); ax.grid(True, alpha=0.3)
 plt.tight_layout(); plt.show()
 
 # %%
 # ── ATO 3.2: Scatter latente — shift visível no espaço latente ───────────────
 
-try:
-    Z_fonte = obter_embeddings(enc_fonte, X_fonte)
-    Z_alvo  = obter_embeddings(enc_fonte, X_alvo)
+Z_fonte = obter_embeddings(enc_fonte, X_fonte)
+Z_alvo  = obter_embeddings(enc_fonte, X_alvo)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
-    fig.suptitle("Espaço Latente do Encoder — shift visível", fontsize=13)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+fig.suptitle("Espaço Latente do Encoder — shift visível", fontsize=13)
 
-    for c in range(N_CLASSES):
-        ax1.scatter(Z_fonte[y_fonte==c, 0], Z_fonte[y_fonte==c, 1],
-                    s=18, color=CORES_CLASSES[c], alpha=0.65,
-                    edgecolors="none", label=NOMES_CLASSES[c])
-    ax1.set_title("Fonte no espaço latente")
-    ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
-    ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
+for c in range(N_CLASSES):
+    ax1.scatter(Z_fonte[y_fonte==c, 0], Z_fonte[y_fonte==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax1.set_title("Fonte no espaço latente")
+ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
+ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
 
-    for c in range(N_CLASSES):
-        ax2.scatter(Z_alvo[y_alvo==c, 0], Z_alvo[y_alvo==c, 1],
-                    s=18, color=CORES_CLASSES[c], alpha=0.65,
-                    edgecolors="none", label=NOMES_CLASSES[c])
-    ax2.set_title("Alvo no espaço latente (shift!)")
-    ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
-    ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
+for c in range(N_CLASSES):
+    ax2.scatter(Z_alvo[y_alvo==c, 0], Z_alvo[y_alvo==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax2.set_title("Alvo no espaço latente (shift!)")
+ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
+ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
 
-    plt.tight_layout(); plt.show()
-except Exception:
-    display(Image(str(ASSETS / "nb1_fig_latent_shift.png")))
+plt.tight_layout(); plt.show()
 
 # %% [markdown]
 # ---
@@ -704,18 +728,22 @@ def amostrar_k_rotulos(X, y, K, chave, n_classes=N_CLASSES):
     return X[np.concatenate(idx_list)], y[np.concatenate(idx_list)]
 
 
-if not PRETRAINED:
-    print(f"=== Regime (B): Target-only (K={K}) — treinando do zero... ===")
-    chave_k = jax.random.PRNGKey(1)
-    X_k, y_k = amostrar_k_rotulos(X_alvo, y_alvo, K, chave_k)
+# Amostrar K rótulos do alvo (sempre definido — também usado no SSDA)
+chave_k = jax.random.PRNGKey(1)
+X_k, y_k = amostrar_k_rotulos(X_alvo, y_alvo, K, chave_k)
+Xk_j = jnp.array(X_k, dtype=jnp.float32)
+yk_j = jnp.array(y_k, dtype=jnp.int32)
 
+if _checkpoints_ok("nb1_encoder_targetonly.pkl", "nb1_head_targetonly.pkl"):
+    enc_to  = carregar_pkl("nb1_encoder_targetonly.pkl")
+    head_to = carregar_pkl("nb1_head_targetonly.pkl")
+    print(f"=== Regime (B): Target-only (K={K}) — checkpoint carregado. ===")
+else:
+    print(f"=== Regime (B): Target-only (K={K}) — treinando do zero... ===")
     chave_b = jax.random.PRNGKey(2)
     chave_b, ke, kh = jax.random.split(chave_b, 3)
     enc_to   = init_mlp([2, 32, 32, 2], ke)
     head_to  = init_mlp([2, N_CLASSES], kh)
-
-    Xk_j = jnp.array(X_k, dtype=jnp.float32)
-    yk_j = jnp.array(y_k, dtype=jnp.int32)
 
     grad_fn_b = jax.jit(jax.grad(perda_ce_ponderada, argnums=(0, 1)))
     m_e, v_e = adam_init(enc_to)
@@ -725,11 +753,10 @@ if not PRETRAINED:
         g_e, g_h = grad_fn_b(enc_to, head_to, Xk_j, yk_j, pesos_jnp)
         enc_to,  m_e, v_e = adam_passo(enc_to,  g_e, m_e, v_e, t)
         head_to, m_h, v_h = adam_passo(head_to, g_h, m_h, v_h, t)
-    print("  Treino concluído.")
-else:
-    enc_to  = pickle.load(open(ASSETS / "nb1_encoder_targetonly.pkl", "rb"))
-    head_to = pickle.load(open(ASSETS / "nb1_head_targetonly.pkl",    "rb"))
-    print(f"=== Regime (B): Target-only (K={K}) — checkpoint carregado. ===")
+
+    salvar_pkl(enc_to,  "nb1_encoder_targetonly.pkl")
+    salvar_pkl(head_to, "nb1_head_targetonly.pkl")
+    print("  Treino concluído — checkpoints salvos.")
 
 preds_B = predizer_classes(enc_to, head_to, X_alvo)
 f1_B    = f1_score(y_alvo, preds_B, average="macro", zero_division=0)
@@ -747,11 +774,15 @@ def perda_ce_so_encoder(enc_params, head_params_congelado, X, y, pesos):
     return perda_ce_ponderada(enc_params, head_params_congelado, X, y, pesos)
 
 
-if not PRETRAINED:
+if _checkpoints_ok("nb1_encoder_ssda.pkl", "nb1_head_ssda.pkl"):
+    enc_ssda  = carregar_pkl("nb1_encoder_ssda.pkl")
+    head_ssda = carregar_pkl("nb1_head_ssda.pkl")
+    print(f"=== Regime (C): SSDA (K={K}) — checkpoint carregado. ===")
+else:
     print(f"=== Regime (C): SSDA (K={K}) — adaptando encoder... ===")
-    # Reutiliza os K mesmos exemplos do regime B
-    enc_ssda  = enc_fonte   # parte do encoder pré-treinado na fonte
-    head_ssda = head_fonte  # cabeça CONGELADA (vocabulário fixo)
+    # Parte do encoder pré-treinado na fonte; cabeça CONGELADA
+    enc_ssda  = enc_fonte
+    head_ssda = head_fonte
 
     grad_fn_c = jax.jit(jax.grad(perda_ce_so_encoder, argnums=0))
     m_e2, v_e2 = adam_init(enc_ssda)
@@ -759,11 +790,10 @@ if not PRETRAINED:
     for t in range(1, 601):
         g_e = grad_fn_c(enc_ssda, head_ssda, Xk_j, yk_j, pesos_jnp)
         enc_ssda, m_e2, v_e2 = adam_passo(enc_ssda, g_e, m_e2, v_e2, t)
-    print("  Adaptação concluída.")
-else:
-    enc_ssda  = pickle.load(open(ASSETS / "nb1_encoder_ssda.pkl",  "rb"))
-    head_ssda = pickle.load(open(ASSETS / "nb1_head_ssda.pkl",     "rb"))
-    print(f"=== Regime (C): SSDA (K={K}) — checkpoint carregado. ===")
+
+    salvar_pkl(enc_ssda,  "nb1_encoder_ssda.pkl")
+    salvar_pkl(head_ssda, "nb1_head_ssda.pkl")
+    print("  Adaptação concluída — checkpoints salvos.")
 
 preds_C = predizer_classes(enc_ssda, head_ssda, X_alvo)
 f1_C    = f1_score(y_alvo, preds_C, average="macro", zero_division=0)
@@ -778,62 +808,120 @@ print(f"  (C) SSDA         : {f1_C:.3f}")
 # %%
 # ── ATO 4.4: Comparação — 3 mapas de decisão lado a lado ─────────────────────
 
-try:
-    xx, yy = criar_malha()
-    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
-    fig.suptitle("Comparação dos 3 Regimes — Alvo sobreposto", fontsize=13)
+xx, yy = criar_malha()
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
+fig.suptitle("Comparação dos 3 Regimes — Alvo sobreposto", fontsize=13)
 
-    regimes = [
-        (f"(A) Zero-shot\nMacro-F1 = {f1_A:.2f}", enc_fonte, head_fonte),
-        (f"(B) Somente alvo (K={K})\nMacro-F1 = {f1_B:.2f}", enc_to,   head_to),
-        (f"(C) SSDA (K={K})\nMacro-F1 = {f1_C:.2f}",          enc_ssda, head_ssda),
-    ]
-    for ax, (titulo, enc_, head_) in zip(axes, regimes):
-        plotar_mapa_decisao(ax, enc_, head_, X_alvo, y_alvo, titulo, xx, yy)
-        ax.legend(fontsize=7, loc="upper right")
+regimes = [
+    (f"(A) Zero-shot\nMacro-F1 = {f1_A:.2f}", enc_fonte, head_fonte),
+    (f"(B) Somente alvo (K={K})\nMacro-F1 = {f1_B:.2f}", enc_to,   head_to),
+    (f"(C) SSDA (K={K})\nMacro-F1 = {f1_C:.2f}",          enc_ssda, head_ssda),
+]
+for ax, (titulo, enc_, head_) in zip(axes, regimes):
+    plotar_mapa_decisao(ax, enc_, head_, X_alvo, y_alvo, titulo, xx, yy)
+    ax.legend(fontsize=7, loc="upper right")
 
-    plt.tight_layout(); plt.show()
-except Exception:
-    display(Image(str(ASSETS / "nb1_fig_comparison.png")))
+plt.tight_layout(); plt.show()
 
 # %%
 # ── ATO 4.5: Figura-síntese — Macro-F1 × K ───────────────────────────────────
-# A varredura em K é pré-computada (muito lenta para executar ao vivo).
+# Padrão "gerar se ausente": carrega varredura pré-computada se disponível;
+# caso contrário calcula inline (5 K × 3 repetições ≈ 15–20 s no CPU).
 
-try:
-    ksweep = np.load(ASSETS / "nb1_ksweep.npz")
-    K_vals = ksweep["K_values"]
-    f1_zs  = ksweep["f1_zeroshot"]
-    f1_to  = ksweep["f1_targetonly"]
-    f1_ss  = ksweep["f1_ssda"]
+_ksweep_path = ASSETS / "nb1_ksweep.npz"
 
-    fig, ax = plt.subplots(figsize=(7.5, 4.8))
-    ax.plot(K_vals, f1_zs, "o--", color="#7f8c8d", lw=2,
-            label="(A) Zero-shot")
-    ax.plot(K_vals, f1_to, "s-",  color="#3498db", lw=2,
-            label="(B) Somente alvo")
-    ax.plot(K_vals, f1_ss, "^-",  color="#e74c3c", lw=2,
-            label="(C) SSDA")
-    ax.set_xlabel("K (rótulos do alvo disponíveis)")
-    ax.set_ylabel("Macro-F1 no alvo")
-    ax.set_title("Macro-F1 × K — curvas dos 3 regimes de adaptação")
-    ax.legend(fontsize=10); ax.grid(True, alpha=0.3)
-    ax.set_xticks(K_vals)
+if _ksweep_path.exists():
+    ksweep = np.load(_ksweep_path)
+    K_vals  = ksweep["K_values"]
+    f1_zs   = ksweep["f1_zeroshot"]
+    f1_to_k = ksweep["f1_targetonly"]
+    f1_ss_k = ksweep["f1_ssda"]
+    print("K-sweep carregado de assets/.")
+else:
+    print("Computando K-sweep inline... (pode levar ~20 s no CPU)")
+    K_vals     = np.array([10, 25, 50, 100, 200])
+    N_REPEATS  = 3
+    f1_zs_list, f1_to_list, f1_ss_list = [], [], []
 
-    # Anotar a região onde SSDA vence
-    ax.annotate("SSDA vence\n(K pequeno)",
-                xy=(K_vals[0], f1_ss[0]), xytext=(K_vals[0]+5, f1_ss[0]-0.08),
-                fontsize=9, color="#e74c3c",
-                arrowprops=dict(arrowstyle="->", color="#e74c3c"))
+    chave_ks = jax.random.PRNGKey(55)
+    grad_fn_to = jax.jit(jax.grad(perda_ce_ponderada, argnums=(0, 1)))
+    grad_fn_ss = jax.jit(jax.grad(perda_ce_so_encoder, argnums=0))
 
-    plt.tight_layout(); plt.show()
+    for K_v in K_vals:
+        to_rep, ss_rep = [], []
+        for rep in range(N_REPEATS):
+            chave_ks, kk, kt, ks = jax.random.split(chave_ks, 4)
+            Xkv, ykv = amostrar_k_rotulos(X_alvo, y_alvo, int(K_v), kk)
+            Xkv_j = jnp.array(Xkv, dtype=jnp.float32)
+            ykv_j = jnp.array(ykv, dtype=jnp.int32)
 
-    print("Valores do K-sweep:")
-    print(f"{'K':>5}  {'Zero-shot':>10}  {'Somente alvo':>13}  {'SSDA':>6}")
-    for i, k in enumerate(K_vals):
-        print(f"{k:5d}  {f1_zs[i]:10.3f}  {f1_to[i]:13.3f}  {f1_ss[i]:6.3f}")
-except Exception:
-    display(Image(str(ASSETS / "nb1_fig_k_sweep.png")))
+            # Regime B: target-only do zero
+            kt, ke_b, kh_b = jax.random.split(kt, 3)
+            e_to = init_mlp([2, 32, 32, 2], ke_b)
+            h_to = init_mlp([2, N_CLASSES], kh_b)
+            m_eb, v_eb = adam_init(e_to)
+            m_hb, v_hb = adam_init(h_to)
+            for t in range(1, 401):
+                g_e, g_h = grad_fn_to(e_to, h_to, Xkv_j, ykv_j, pesos_jnp)
+                e_to, m_eb, v_eb = adam_passo(e_to, g_e, m_eb, v_eb, t)
+                h_to, m_hb, v_hb = adam_passo(h_to, g_h, m_hb, v_hb, t)
+            to_rep.append(f1_score(y_alvo,
+                                   predizer_classes(e_to, h_to, X_alvo),
+                                   average="macro", zero_division=0))
+
+            # Regime C: SSDA
+            e_ss = enc_fonte
+            h_ss = head_fonte
+            m_es, v_es = adam_init(e_ss)
+            for t in range(1, 401):
+                g_e = grad_fn_ss(e_ss, h_ss, Xkv_j, ykv_j, pesos_jnp)
+                e_ss, m_es, v_es = adam_passo(e_ss, g_e, m_es, v_es, t)
+            ss_rep.append(f1_score(y_alvo,
+                                   predizer_classes(e_ss, h_ss, X_alvo),
+                                   average="macro", zero_division=0))
+
+        # Regime A: zero-shot (constante em K)
+        f1_zs_list.append(f1_score(y_alvo, preds_A, average="macro",
+                                   zero_division=0))
+        f1_to_list.append(float(np.mean(to_rep)))
+        f1_ss_list.append(float(np.mean(ss_rep)))
+        print(f"  K={K_v:3d}  zero-shot={f1_zs_list[-1]:.3f}  "
+              f"target-only={f1_to_list[-1]:.3f}  ssda={f1_ss_list[-1]:.3f}")
+
+    f1_zs   = np.array(f1_zs_list)
+    f1_to_k = np.array(f1_to_list)
+    f1_ss_k = np.array(f1_ss_list)
+
+    np.savez(_ksweep_path,
+             K_values=K_vals,
+             f1_zeroshot=f1_zs,
+             f1_targetonly=f1_to_k,
+             f1_ssda=f1_ss_k)
+    print("K-sweep salvo em assets/ para reusar.")
+
+# Gráfico
+fig, ax = plt.subplots(figsize=(7.5, 4.8))
+ax.plot(K_vals, f1_zs,   "o--", color="#7f8c8d", lw=2, label="(A) Zero-shot")
+ax.plot(K_vals, f1_to_k, "s-",  color="#3498db", lw=2, label="(B) Somente alvo")
+ax.plot(K_vals, f1_ss_k, "^-",  color="#e74c3c", lw=2, label="(C) SSDA")
+ax.set_xlabel("K (rótulos do alvo disponíveis)")
+ax.set_ylabel("Macro-F1 no alvo")
+ax.set_title("Macro-F1 × K — curvas dos 3 regimes de adaptação")
+ax.legend(fontsize=10); ax.grid(True, alpha=0.3)
+ax.set_xticks(K_vals)
+
+# Anotar a região onde SSDA vence
+ax.annotate("SSDA vence\n(K pequeno)",
+            xy=(K_vals[0], f1_ss_k[0]), xytext=(K_vals[0]+5, f1_ss_k[0]-0.08),
+            fontsize=9, color="#e74c3c",
+            arrowprops=dict(arrowstyle="->", color="#e74c3c"))
+
+plt.tight_layout(); plt.show()
+
+print("Valores do K-sweep:")
+print(f"{'K':>5}  {'Zero-shot':>10}  {'Somente alvo':>13}  {'SSDA':>6}")
+for i, k in enumerate(K_vals):
+    print(f"{k:5d}  {f1_zs[i]:10.3f}  {f1_to_k[i]:13.3f}  {f1_ss_k[i]:6.3f}")
 
 # %% [markdown]
 # ## 🟡 Poll — Ato 4
@@ -869,32 +957,29 @@ except Exception:
 # %%
 # ── ATO 4.6: Latente pós-SSDA — alvo entrou nas regiões da cabeça ────────────
 
-try:
-    Z_antes = obter_embeddings(enc_fonte, X_alvo)
-    Z_depois = obter_embeddings(enc_ssda, X_alvo)
+Z_antes  = obter_embeddings(enc_fonte, X_alvo)
+Z_depois = obter_embeddings(enc_ssda,  X_alvo)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.8))
-    fig.suptitle("Espaço Latente: antes vs. após SSDA", fontsize=13)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.8))
+fig.suptitle("Espaço Latente: antes vs. após SSDA", fontsize=13)
 
-    for c in range(N_CLASSES):
-        ax1.scatter(Z_antes[y_alvo==c, 0], Z_antes[y_alvo==c, 1],
-                    s=18, color=CORES_CLASSES[c], alpha=0.65,
-                    edgecolors="none", label=NOMES_CLASSES[c])
-    ax1.set_title("Antes da adaptação\n(alvo fora das regiões da cabeça)")
-    ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
-    ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
+for c in range(N_CLASSES):
+    ax1.scatter(Z_antes[y_alvo==c, 0], Z_antes[y_alvo==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax1.set_title("Antes da adaptação\n(alvo fora das regiões da cabeça)")
+ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
+ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
 
-    for c in range(N_CLASSES):
-        ax2.scatter(Z_depois[y_alvo==c, 0], Z_depois[y_alvo==c, 1],
-                    s=18, color=CORES_CLASSES[c], alpha=0.65,
-                    edgecolors="none", label=NOMES_CLASSES[c])
-    ax2.set_title("Após SSDA\n(alvo entrou nas regiões fixas da cabeça)")
-    ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
-    ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
+for c in range(N_CLASSES):
+    ax2.scatter(Z_depois[y_alvo==c, 0], Z_depois[y_alvo==c, 1],
+                s=18, color=CORES_CLASSES[c], alpha=0.65,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax2.set_title("Após SSDA\n(alvo entrou nas regiões fixas da cabeça)")
+ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
+ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
 
-    plt.tight_layout(); plt.show()
-except Exception:
-    display(Image(str(ASSETS / "nb1_fig_latent_ssda.png")))
+plt.tight_layout(); plt.show()
 
 # %% [markdown]
 # ## 🟢 Takeaway
@@ -908,7 +993,8 @@ except Exception:
 #    treino (fonte) e inferência (alvo). O modelo fica confiante — e errado.
 #
 # 2. **Diagnóstico sem rótulos**: um classificador de domínio detecta shift
-#    com AUC > 0,7 sem precisar de nenhum rótulo de classe do alvo.
+#    com AUC > 0,7 no conjunto de teste sem precisar de nenhum rótulo de
+#    classe do alvo.
 #
 # 3. **SSDA vence para K pequeno**: se você tem poucos rótulos do alvo,
 #    o pré-treino na fonte é um ativo valioso. Congele a cabeça (os conceitos)

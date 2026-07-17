@@ -63,13 +63,17 @@
 # as classes **sem usar rótulos na inferência**. Isso É segmentação de
 # instâncias. Depois, inspecionamos o espaço latente com t-SNE e UMAP.
 #
-# > **PRETRAINED = True** (padrão): todo treino pesado é pulado e os
-# > resultados pré-computados são carregados de `assets/`.
+# > **PRETRAINED = True** (padrão): se os assets pré-computados estiverem
+# > disponíveis, são carregados. Se não estiverem (execução limpa no Colab),
+# > o notebook baixa o MNIST e computa tudo do zero automaticamente.
 
 # %%
 # ── Setup: importações e configuração global ──────────────────────────────────
 import os
+import gzip
+import struct
 import pickle
+import urllib.request
 import pathlib
 import numpy as np
 import jax
@@ -88,18 +92,21 @@ try:
 except ImportError:
     UMAP_DISPONIVEL = False
 
-# ── Flag global: True = carrega checkpoints pré-computados (padrão para aula)
+# ── Flag global: True = carrega checkpoints pré-computados quando disponíveis
 PRETRAINED = True
 
 # ── Semente de reprodutibilidade
 SEMENTE = 42
 CHAVE   = jax.random.PRNGKey(SEMENTE)
 
-# ── Caminho dos assets
+# ── Caminho dos assets (gitignored — nunca versionado)
 try:
     ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
 except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
     ASSETS = pathlib.Path("../assets")
+
+# Garante que o diretório assets/ existe
+ASSETS.mkdir(parents=True, exist_ok=True)
 
 # ── Hiperparâmetros do sandbox (Ato 1)
 N_GRUPOS      = 5      # grupos de partículas
@@ -192,14 +199,18 @@ def gerar_particulas(n_grupos, n_por_grupo, chave):
     return np.array(posicoes, dtype=np.float32), np.array(rotulos, dtype=np.int32)
 
 
-# Carrega ou gera posições iniciais
-if (ASSETS / "nb2_sandbox_initial.npz").exists():
-    _d = np.load(ASSETS / "nb2_sandbox_initial.npz")
+# Padrão "gera se ausente": carrega de assets/ ou gera inline
+_path_init = ASSETS / "nb2_sandbox_initial.npz"
+if _path_init.exists():
+    _d = np.load(_path_init)
     x_init_np  = _d["positions"]
     rotulos_np = _d["labels"]
+    print("Posições iniciais carregadas de assets/.")
 else:
     CHAVE, kp = jax.random.split(CHAVE)
     x_init_np, rotulos_np = gerar_particulas(N_GRUPOS, N_POR_GRUPO, kp)
+    np.savez(str(_path_init), positions=x_init_np, labels=rotulos_np)
+    print("Posições iniciais geradas e salvas em assets/.")
 
 print(f"Partículas: {x_init_np.shape}  rótulos: {rotulos_np.shape}")
 print(f"Grupos    : {N_GRUPOS}  Partículas/grupo: {N_POR_GRUPO}")
@@ -299,15 +310,19 @@ print(f"Gradiente shape: {grad_sandbox(x_teste, r_teste, DELTA_PULL, DELTA_PUSH,
 #
 # ATENÇÃO: para demonstrar o colapso usamos lambda_reg=10.0 (forte),
 # que faz com que a regularização domine sobre o pull.
+#
+# Padrão "gera se ausente": carrega de assets/ se disponível, caso contrário
+# computa inline (alguns segundos com JAX JIT) e salva para reutilização.
 
 LAMBDA_COLAPSO = 10.0   # forte o suficiente para forçar colapso à origem
 
-if PRETRAINED:
-    _dc = np.load(ASSETS / "nb2_sandbox_collapsed.npz")
+_path_col = ASSETS / "nb2_sandbox_collapsed.npz"
+if PRETRAINED and _path_col.exists():
+    _dc = np.load(_path_col)
     x_colapsado = _dc["positions"]
     print("Posições colapsadas carregadas dos assets.")
 else:
-    # Otimização ao vivo (poucos segundos)
+    # Computa ao vivo — também é o fallback para execução limpa
     print("Rodando colapso ao vivo (δ_push=0, lambda_reg=10.0)...")
     x_col = jnp.array(x_init_np)
     lb_j  = jnp.array(rotulos_np)
@@ -315,7 +330,8 @@ else:
         g = grad_sandbox(x_col, lb_j, DELTA_PULL, 0.0, LAMBDA_COLAPSO)
         x_col = x_col - ETA_SANDBOX * g
     x_colapsado = np.array(x_col)
-    print("Otimização concluída.")
+    np.savez(str(_path_col), positions=x_colapsado, labels=rotulos_np)
+    print("Colapso computado e salvo em assets/.")
 
 # Verificação: centros devem estar próximos
 centros_col = np.stack([x_colapsado[rotulos_np == c].mean(axis=0)
@@ -356,45 +372,23 @@ print("  O mínimo global de L_pull + L_reg (sem L_push) é todo mundo na origem
 #
 # Com a repulsão ativada, os grupos não podem colapsar — a perda os empurra
 # para fora até atingirem um equilíbrio: grupos tight + centros afastados.
+#
+# Padrão "gera se ausente": carrega de assets/ se disponível, caso contrário
+# computa inline e salva.
 
-if PRETRAINED:
-    _df = np.load(ASSETS / "nb2_sandbox_final.npz")
-    x_final    = _df["positions"]
-    snaps      = _df["snapshots"]   # (3, 200, 2): inicial, meio, final
+_path_fin = ASSETS / "nb2_sandbox_final.npz"
+if PRETRAINED and _path_fin.exists():
+    _df    = np.load(_path_fin)
+    x_final = _df["positions"]
+    snaps   = _df["snapshots"]   # (3, N, 2): inicial, meio, final
     print("Sandbox final carregado dos assets (δ_push > 0).")
-    # Exibe o filmstrip estático como fallback
-    try:
-        fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
-        fig.suptitle("Sandbox pull/push — δ_push = 1.5 (repulsão ativada)", fontsize=12)
-        titulos = ["Estado inicial\n(misturado)",
-                   "Intermediário\n(começa a separar)",
-                   "Estado final\n(grupos distintos)"]
-        for ax, snap, titulo in zip(axes, snaps, titulos):
-            lim_plot = max(abs(snap).max() * 1.2, 3.5)
-            for c in range(N_GRUPOS):
-                mask = rotulos_np == c
-                ax.scatter(snap[mask, 0], snap[mask, 1],
-                           s=20, color=CORES_5[c], alpha=0.85,
-                           edgecolors="none", label=f"Grupo {c}")
-            # Centros com X
-            ctrs = np.stack([snap[rotulos_np == c].mean(0) for c in range(N_GRUPOS)])
-            for c in range(N_GRUPOS):
-                ax.scatter(ctrs[c, 0], ctrs[c, 1], s=80, color=CORES_5[c],
-                           marker="X", edgecolors="k", linewidths=0.8, zorder=5)
-            ax.set_title(titulo, fontsize=10)
-            ax.set_xlabel("x₁"); ax.set_ylabel("x₂")
-            ax.set_xlim(-lim_plot, lim_plot); ax.set_ylim(-lim_plot, lim_plot)
-            ax.legend(fontsize=7); ax.grid(True, alpha=0.2)
-        plt.tight_layout(); plt.show()
-    except Exception:
-        display(Image(str(ASSETS / "nb2_fig_sandbox_final.png")))
 else:
     # Otimização ao vivo
     print("Rodando sandbox ao vivo (δ_push=1.5, lambda_reg=0.01)...")
-    x_sep  = jnp.array(x_init_np)
-    lb_j   = jnp.array(rotulos_np)
+    x_sep      = jnp.array(x_init_np)
+    lb_j       = jnp.array(rotulos_np)
     snaps_list = [np.array(x_sep)]
-    mid_step = N_PASSOS // 2
+    mid_step   = N_PASSOS // 2
     for passo in range(N_PASSOS):
         g = grad_sandbox(x_sep, lb_j, DELTA_PULL, DELTA_PUSH, LAMBDA_REG)
         x_sep = x_sep - ETA_SANDBOX * g
@@ -403,20 +397,32 @@ else:
     x_final = np.array(x_sep)
     snaps_list.append(x_final)
     snaps = np.stack(snaps_list)
+    np.savez(str(_path_fin), positions=x_final, labels=rotulos_np, snapshots=snaps)
+    print("Sandbox computado e salvo em assets/.")
 
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
-    fig.suptitle("Sandbox pull/push — δ_push = 1.5 (repulsão ativada)", fontsize=12)
-    titulos = ["Inicial", "Intermediário", "Final"]
-    for ax, snap, titulo in zip(axes, snaps, titulos):
-        for c in range(N_GRUPOS):
-            mask = rotulos_np == c
-            ax.scatter(snap[mask, 0], snap[mask, 1],
-                       s=20, color=CORES_5[c], alpha=0.85,
-                       edgecolors="none", label=f"Grupo {c}")
-        ax.set_title(titulo, fontsize=10)
-        ax.set_xlabel("x₁"); ax.set_ylabel("x₂")
-        ax.legend(fontsize=7); ax.grid(True, alpha=0.2)
-    plt.tight_layout(); plt.show()
+# Filmstrip: initial / mid / final — sempre plota diretamente dos dados
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
+fig.suptitle("Sandbox pull/push — δ_push = 1.5 (repulsão ativada)", fontsize=12)
+titulos = ["Estado inicial\n(misturado)",
+           "Intermediário\n(começa a separar)",
+           "Estado final\n(grupos distintos)"]
+for ax, snap, titulo in zip(axes, snaps, titulos):
+    lim_plot = max(abs(snap).max() * 1.2, 3.5)
+    for c in range(N_GRUPOS):
+        mask = rotulos_np == c
+        ax.scatter(snap[mask, 0], snap[mask, 1],
+                   s=20, color=CORES_5[c], alpha=0.85,
+                   edgecolors="none", label=f"Grupo {c}")
+    # Centros com X
+    ctrs = np.stack([snap[rotulos_np == c].mean(0) for c in range(N_GRUPOS)])
+    for c in range(N_GRUPOS):
+        ax.scatter(ctrs[c, 0], ctrs[c, 1], s=80, color=CORES_5[c],
+                   marker="X", edgecolors="k", linewidths=0.8, zorder=5)
+    ax.set_title(titulo, fontsize=10)
+    ax.set_xlabel("x₁"); ax.set_ylabel("x₂")
+    ax.set_xlim(-lim_plot, lim_plot); ax.set_ylim(-lim_plot, lim_plot)
+    ax.legend(fontsize=7); ax.grid(True, alpha=0.2)
+plt.tight_layout(); plt.show()
 
 # Métricas finais
 centros_fin = np.stack([x_final[rotulos_np == c].mean(axis=0) for c in range(N_GRUPOS)])
@@ -495,6 +501,74 @@ print("Experimento sugerido: compare T=0.1, T=0.5, T=2.0 com a versão pull/push
 
 # %%
 # ── ATO 2.1 — Carregar subset MNIST ───────────────────────────────────────────
+#
+# Padrão "gera se ausente": se mnist_4k.npz não existe em assets/, baixa os
+# arquivos brutos do MNIST (Google CVDF storage, ~12 MB) e cria um subset
+# balanceado de 4000 treino + 1000 teste.
+
+
+def _parse_mnist_gz(fpath, kind="images"):
+    """Lê um arquivo IDX gzipado do MNIST."""
+    with gzip.open(str(fpath), "rb") as f:
+        raw = f.read()
+    if kind == "images":
+        _, n, rows, cols = struct.unpack(">IIII", raw[:16])
+        data = np.frombuffer(raw[16:], dtype=np.uint8).reshape(n, rows * cols)
+        return data.astype(np.float32) / 255.0
+    else:
+        _, n = struct.unpack(">II", raw[:8])
+        return np.frombuffer(raw[8:], dtype=np.uint8).astype(np.int32)
+
+
+def _baixar_e_preparar_mnist(assets_dir, n_train=4000, n_test=1000, seed=42):
+    """
+    Baixa os 4 arquivos gz do MNIST (se não estiverem em cache) e cria
+    um subset balanceado. Salva em assets/mnist_4k.npz.
+    """
+    url_base = "https://storage.googleapis.com/cvdf-datasets/mnist/"
+    fnames = {
+        "train_images": "train-images-idx3-ubyte.gz",
+        "train_labels": "train-labels-idx1-ubyte.gz",
+        "test_images":  "t10k-images-idx3-ubyte.gz",
+        "test_labels":  "t10k-labels-idx1-ubyte.gz",
+    }
+    raw_dir = assets_dir / "_mnist_raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+
+    paths = {}
+    for key, fname in fnames.items():
+        local = raw_dir / fname
+        if not local.exists():
+            print(f"  Baixando {fname} ...")
+            urllib.request.urlretrieve(url_base + fname, str(local))
+            print(f"  OK ({local.stat().st_size // 1024} KB)")
+        else:
+            print(f"  {fname} em cache.")
+        paths[key] = local
+
+    rng      = np.random.default_rng(seed)
+    X_tr_all = _parse_mnist_gz(paths["train_images"], "images")
+    y_tr_all = _parse_mnist_gz(paths["train_labels"], "labels")
+    X_te_all = _parse_mnist_gz(paths["test_images"],  "images")
+    y_te_all = _parse_mnist_gz(paths["test_labels"],  "labels")
+
+    ntr = n_train // 10
+    nte = n_test  // 10
+    tr_idx, te_idx = [], []
+    for c in range(10):
+        idx = np.where(y_tr_all == c)[0]
+        tr_idx.append(rng.choice(idx, ntr, replace=False))
+        idx_te = np.where(y_te_all == c)[0]
+        te_idx.append(rng.choice(idx_te, nte, replace=False))
+    tr_idx = np.concatenate(tr_idx); rng.shuffle(tr_idx)
+    te_idx = np.concatenate(te_idx); rng.shuffle(te_idx)
+
+    out_path = assets_dir / "mnist_4k.npz"
+    np.savez(str(out_path),
+             X_train=X_tr_all[tr_idx], y_train=y_tr_all[tr_idx],
+             X_test=X_te_all[te_idx],  y_test=y_te_all[te_idx])
+    print(f"  Salvo: {out_path.name} ({out_path.stat().st_size // 1024} KB)")
+
 
 def carregar_mnist(caminho):
     """Carrega subset MNIST do arquivo .npz. Retorna (X_train, y_train, X_test, y_test)."""
@@ -505,7 +579,14 @@ def carregar_mnist(caminho):
             d["y_test"].astype(np.int32))
 
 
-X_train, y_train, X_test, y_test = carregar_mnist(ASSETS / "mnist_4k.npz")
+# Gera se ausente (suporta execução limpa no Colab sem assets pré-existentes)
+_mnist_path = ASSETS / "mnist_4k.npz"
+if not _mnist_path.exists():
+    print("mnist_4k.npz não encontrado — baixando MNIST e criando subset...")
+    _baixar_e_preparar_mnist(ASSETS)
+    print("MNIST pronto.")
+
+X_train, y_train, X_test, y_test = carregar_mnist(_mnist_path)
 
 print(f"X_train: {X_train.shape}  y_train: {y_train.shape}")
 print(f"X_test : {X_test.shape}   y_test : {y_test.shape}")
@@ -679,42 +760,64 @@ print(f"LR={LR_ENCODER}  batch={BATCH_SZ} (50 amostras/classe × 10 classes)")
 
 # %%
 # ── ATO 2.5 — Treino do encoder 2D ──────────────────────────────────────────
-# (execute apenas se PRETRAINED=False; padrão = carregar checkpoints)
+#
+# Padrão "gera se ausente": se PRETRAINED=True e os checkpoints existirem,
+# carrega. Caso contrário (execução limpa ou PRETRAINED=False), treina do zero
+# e salva os checkpoints em assets/ para reutilização futura.
 
 def carregar_pkl(fname):
     """Carrega parâmetros de encoder de arquivo pickle."""
-    with open(ASSETS / fname, "rb") as f:
+    with open(str(ASSETS / fname), "rb") as f:
         return pickle.load(f)
 
 
+def salvar_pkl(params, fname):
+    """Salva parâmetros de encoder em arquivo pickle."""
+    with open(str(ASSETS / fname), "wb") as f:
+        pickle.dump([(np.array(W), np.array(b)) for W, b in params], f)
+
+
 def obter_embeddings(enc, X):
-    """Retorna embeddings 2D como array numpy."""
+    """Retorna embeddings como array numpy."""
     z = forward_encoder(enc, jnp.array(X, dtype=jnp.float32))
     return np.array(z)
 
 
-if not PRETRAINED:
-    print("Treinando encoder 2D do zero...")
-    print(f"(muda para PRETRAINED=True para carregar checkpoints e economizar tempo)")
+_enc_late_path = ASSETS / "nb2_encoder_late.pkl"
+if PRETRAINED and _enc_late_path.exists():
+    enc_2d = carregar_pkl("nb2_encoder_late.pkl")
+    print("Encoder 2D (época 250) carregado dos assets.")
+else:
+    # Treina do zero — também é o fallback para execução limpa no Colab
+    print("Treinando encoder 2D do zero (pode levar ~20-40s no CPU)...")
+    print(f"(PRETRAINED={PRETRAINED}, arquivo {'ausente' if not _enc_late_path.exists() else 'presente'})")
     rng_batch = np.random.default_rng(0)
     CHAVE, ke3 = jax.random.split(CHAVE)
     enc_2d   = iniciar_encoder([784, 256, 64, DIM_2D], ke3)
-    m_e, v_e = adam_init(enc_2d)
 
+    # Salva epoch 0 (inicialização aleatória) para o filmstrip
+    salvar_pkl(enc_2d, "nb2_encoder_epoch0.pkl")
+
+    m_e, v_e = adam_init(enc_2d)
     for epoca in range(1, EPOCAS_2D + 1):
         Xb, yb = batch_estratificado(rng_batch, X_train, y_train, BATCH_SZ)
         g = grad_2d(enc_2d, Xb, yb, DP_PULL_ENC, DP_PUSH_ENC, LAMBDA_ENC)
         enc_2d, m_e, v_e = adam_passo(enc_2d, g, m_e, v_e, epoca, lr=LR_ENCODER)
+
+        # Salva checkpoint cedo (época 20) para o filmstrip
+        if epoca == 20:
+            salvar_pkl(enc_2d, "nb2_encoder_early.pkl")
+
         if epoca % 50 == 0:
             Xj = jnp.array(X_train, dtype=jnp.float32)
             yj = jnp.array(y_train, dtype=jnp.int32)
             lv = float(perda_discriminativa_2d(enc_2d, Xj, yj,
                                                DP_PULL_ENC, DP_PUSH_ENC, LAMBDA_ENC))
             print(f"  Época {epoca:3d}  perda={lv:.4f}")
-    print("Treino concluído!")
-else:
-    enc_2d = carregar_pkl("nb2_encoder_late.pkl")
-    print("Encoder 2D (época 250) carregado dos assets.")
+
+    # Salva checkpoint final
+    salvar_pkl(enc_2d, "nb2_encoder_late.pkl")
+    print("Treino concluído! Checkpoints salvos em assets/.")
 
 # %% [markdown]
 # ## 🟢 ATO 2.6 — Filmstrip: Evolução do Espaço de Embeddings
@@ -727,44 +830,43 @@ else:
 
 # %%
 # ── ATO 2.6 — Filmstrip de evolução do embedding ─────────────────────────────
-
-if PRETRAINED:
-    enc_epoca0  = carregar_pkl("nb2_encoder_epoch0.pkl")
-    enc_cedo    = carregar_pkl("nb2_encoder_early.pkl")
-    enc_tarde   = carregar_pkl("nb2_encoder_late.pkl")
-    print("Checkpoints das 3 épocas carregados.")
-else:
-    # No modo ao vivo, enc_2d é o encoder treinado acima.
-    # Época 0 e cedo precisariam ter sido salvos durante o treino.
-    # Usamos o encoder atual como proxy para "tarde".
-    enc_epoca0  = iniciar_encoder([784, 256, 64, DIM_2D],
-                                   jax.random.PRNGKey(42))
-    enc_cedo    = enc_2d   # aproximação
-    enc_tarde   = enc_2d
+#
+# Tenta carregar os 3 checkpoints de assets/. Se a célula ATO 2.5 treinou
+# do zero, os checkpoints foram salvos acima e estarão disponíveis.
+# Fallback: usa o encoder atual como proxy para os estágios em falta.
 
 try:
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    fig.suptitle("Evolução do Espaço de Embeddings — encoder 2D (MNIST)", fontsize=13)
+    enc_epoca0 = carregar_pkl("nb2_encoder_epoch0.pkl")
+    enc_cedo   = carregar_pkl("nb2_encoder_early.pkl")
+    enc_tarde  = carregar_pkl("nb2_encoder_late.pkl")
+    print("Checkpoints das 3 épocas carregados.")
+except FileNotFoundError:
+    # Fallback: sem checkpoints de estágios anteriores
+    enc_epoca0 = iniciar_encoder([784, 256, 64, DIM_2D], jax.random.PRNGKey(42))
+    enc_cedo   = enc_2d
+    enc_tarde  = enc_2d
+    print("Fallback: usando encoder atual para épocas cedo/tarde.")
 
-    for ax, (enc, titulo) in zip(axes, [
-        (enc_epoca0, "Época 0 — caos\n(inicialização aleatória)"),
-        (enc_cedo,   "Época 20 — início do agrupamento"),
-        (enc_tarde,  "Época 250 — classes separadas"),
-    ]):
-        Z = obter_embeddings(enc, X_test)
-        for c in range(N_CLASSES):
-            mask = y_test == c
-            ax.scatter(Z[mask, 0], Z[mask, 1],
-                       s=8, color=CORES_10[c], alpha=0.7,
-                       edgecolors="none", label=str(c))
-        ax.set_title(titulo, fontsize=10)
-        ax.set_xlabel("z₁"); ax.set_ylabel("z₂")
-        ax.legend(fontsize=7, title="Dígito", markerscale=2)
-        ax.grid(True, alpha=0.15)
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+fig.suptitle("Evolução do Espaço de Embeddings — encoder 2D (MNIST)", fontsize=13)
 
-    plt.tight_layout(); plt.show()
-except Exception:
-    display(Image(str(ASSETS / "nb2_fig_evolution.png")))
+for ax, (enc, titulo) in zip(axes, [
+    (enc_epoca0, "Época 0 — caos\n(inicialização aleatória)"),
+    (enc_cedo,   "Época 20 — início do agrupamento"),
+    (enc_tarde,  "Época 250 — classes separadas"),
+]):
+    Z = obter_embeddings(enc, X_test)
+    for c in range(N_CLASSES):
+        mask = y_test == c
+        ax.scatter(Z[mask, 0], Z[mask, 1],
+                   s=8, color=CORES_10[c], alpha=0.7,
+                   edgecolors="none", label=str(c))
+    ax.set_title(titulo, fontsize=10)
+    ax.set_xlabel("z₁"); ax.set_ylabel("z₂")
+    ax.legend(fontsize=7, title="Dígito", markerscale=2)
+    ax.grid(True, alpha=0.15)
+
+plt.tight_layout(); plt.show()
 
 Z_2d_teste = obter_embeddings(enc_tarde, X_test)
 print(f"Embedding 2D do teste: {Z_2d_teste.shape}")
@@ -855,28 +957,41 @@ print("\n→ Os clusters k-means recuperam os dígitos sem nunca ver os rótulos
 #
 # Para t-SNE e UMAP, projetar 16D → 2D é mais informativo que 2D → 2D.
 # O encoder 16D preserva mais estrutura interna das classes.
+#
+# Padrão "gera se ausente": carrega de assets/ se PRETRAINED=True e arquivo
+# existir; caso contrário, treina do zero e salva.
 
-if not PRETRAINED:
-    print("Treinando encoder 16D do zero (use PRETRAINED=True para pular)...")
+_enc_16d_path = ASSETS / "nb2_encoder_16d_late.pkl"
+if PRETRAINED and _enc_16d_path.exists():
+    enc_16d = carregar_pkl("nb2_encoder_16d_late.pkl")
+    print("Encoder 16D carregado dos assets.")
+else:
+    print("Treinando encoder 16D do zero (pode levar ~20-40s no CPU)...")
 
     def perda_discriminativa_16d(enc_params, X_batch, y_batch,
                                   delta_pull, delta_push, lambda_reg):
         x = forward_encoder(enc_params, X_batch)
         return perda_weinberger_10(x, y_batch, delta_pull, delta_push, lambda_reg)
 
-    grad_16d = jax.jit(jax.grad(perda_discriminativa_16d, argnums=0))
-    rng_16  = np.random.default_rng(1)
+    grad_16d  = jax.jit(jax.grad(perda_discriminativa_16d, argnums=0))
+    rng_16    = np.random.default_rng(1)
     CHAVE, ke16 = jax.random.split(CHAVE)
-    enc_16d = iniciar_encoder([784, 256, 64, DIM_16D], ke16)
-    m16, v16 = adam_init(enc_16d)
+    enc_16d   = iniciar_encoder([784, 256, 64, DIM_16D], ke16)
+    m16, v16  = adam_init(enc_16d)
+
     for epoca in range(1, EPOCAS_2D + 1):
         Xb, yb = batch_estratificado(rng_16, X_train, y_train, BATCH_SZ)
         g = grad_16d(enc_16d, Xb, yb, DP_PULL_ENC, DP_PUSH_ENC, LAMBDA_ENC)
         enc_16d, m16, v16 = adam_passo(enc_16d, g, m16, v16, epoca, lr=LR_ENCODER)
-    print("Treino 16D concluído!")
-else:
-    enc_16d = carregar_pkl("nb2_encoder_16d_late.pkl")
-    print("Encoder 16D carregado dos assets.")
+        if epoca % 50 == 0:
+            Xj = jnp.array(X_train, dtype=jnp.float32)
+            yj = jnp.array(y_train, dtype=jnp.int32)
+            lv = float(perda_discriminativa_16d(enc_16d, Xj, yj,
+                                                DP_PULL_ENC, DP_PUSH_ENC, LAMBDA_ENC))
+            print(f"  Época {epoca:3d}  perda={lv:.4f}")
+
+    salvar_pkl(enc_16d, "nb2_encoder_16d_late.pkl")
+    print("Treino 16D concluído! Checkpoint salvo em assets/.")
 
 Z_16d_teste = obter_embeddings(enc_16d, X_test)
 ari_16d     = adjusted_rand_score(y_test,
@@ -897,34 +1012,31 @@ idx_ts   = rng_tsne.choice(len(X_test), min(1000, len(X_test)), replace=False)
 Z_ts     = Z_16d_teste[idx_ts]
 y_ts     = y_test[idx_ts]
 
-try:
-    PERPLEXIDADES = [5, 30, 100]
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    fig.suptitle("t-SNE do Espaço 16D — a geometria muda com a perplexidade!",
-                 fontsize=13)
+PERPLEXIDADES = [5, 30, 100]
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+fig.suptitle("t-SNE do Espaço 16D — a geometria muda com a perplexidade!",
+             fontsize=13)
 
-    for ax, perp in zip(axes, PERPLEXIDADES):
-        tsne = TSNE(n_components=2, perplexity=perp,
-                    random_state=42, max_iter=500,
-                    learning_rate="auto", init="pca")
-        Z2 = tsne.fit_transform(Z_ts)
-        for c in range(N_CLASSES):
-            mask = y_ts == c
-            ax.scatter(Z2[mask, 0], Z2[mask, 1],
-                       s=8, color=CORES_10[c], alpha=0.7,
-                       edgecolors="none", label=str(c))
-        ax.set_title(f"Perplexidade = {perp}", fontsize=11)
-        ax.set_xlabel("t-SNE₁"); ax.set_ylabel("t-SNE₂")
-        ax.legend(fontsize=7, title="Dígito", markerscale=2)
-        ax.grid(True, alpha=0.15)
+for ax, perp in zip(axes, PERPLEXIDADES):
+    tsne = TSNE(n_components=2, perplexity=perp,
+                random_state=42, max_iter=500,
+                learning_rate="auto", init="pca")
+    Z2 = tsne.fit_transform(Z_ts)
+    for c in range(N_CLASSES):
+        mask = y_ts == c
+        ax.scatter(Z2[mask, 0], Z2[mask, 1],
+                   s=8, color=CORES_10[c], alpha=0.7,
+                   edgecolors="none", label=str(c))
+    ax.set_title(f"Perplexidade = {perp}", fontsize=11)
+    ax.set_xlabel("t-SNE₁"); ax.set_ylabel("t-SNE₂")
+    ax.legend(fontsize=7, title="Dígito", markerscale=2)
+    ax.grid(True, alpha=0.15)
 
-    plt.tight_layout(); plt.show()
-    print("\n⚠️  AVISO DAS CONSTELAÇÕES:")
-    print("   t-SNE preserva vizinhanças LOCAIS — distâncias entre grupos são artefatos.")
-    print("   Perplexidade baixa (5) = estrutura local; alta (100) = estrutura global.")
-    print("   Use sempre 3+ perplexidades antes de interpretar.")
-except Exception:
-    display(Image(str(ASSETS / "nb2_fig_tsne.png")))
+plt.tight_layout(); plt.show()
+print("\n⚠️  AVISO DAS CONSTELAÇÕES:")
+print("   t-SNE preserva vizinhanças LOCAIS — distâncias entre grupos são artefatos.")
+print("   Perplexidade baixa (5) = estrutura local; alta (100) = estrutura global.")
+print("   Use sempre 3+ perplexidades antes de interpretar.")
 
 # %%
 # ── ATO 3.4 — UMAP (requer umap-learn) ────────────────────────────────────────
@@ -956,8 +1068,11 @@ if UMAP_DISPONIVEL:
 else:
     print("umap-learn não instalado.")
     print("No Colab, execute: !pip install umap-learn==0.5.7")
-    print("Exibindo figura de referência pré-gerada:")
-    display(Image(str(ASSETS / "nb2_fig_umap.png")))
+    _umap_png = ASSETS / "nb2_fig_umap.png"
+    if _umap_png.exists():
+        display(Image(str(_umap_png)))
+    else:
+        print("(figura de referência não disponível neste ambiente)")
 
 # %% [markdown]
 # ## 🟢 Resumo: Embed-Then-Cluster

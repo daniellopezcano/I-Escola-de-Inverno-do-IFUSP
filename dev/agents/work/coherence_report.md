@@ -1,5 +1,10 @@
 # Coherence Report — I Escola de Inverno do IFUSP
-# Post-revision-pass QA | Generated: 2026-07-15
+# Post full-revision-pass QA | Generated: 2026-07-17
+
+This report replaces the earlier 2026-07-15 report, which was written against
+the old slide-schematic block format (L01_B01 etc.) and is now fully superseded.
+Scope: 8 block files (L1B1–L4B2 in new naming), 3 notebooks (NB0/NB1/NB2),
+README.md, dev/agents/work/course_manifest.md, git artifact hygiene.
 
 ---
 
@@ -9,301 +14,349 @@
 
 | Asset | Status |
 |-------|--------|
-| course-materials/L01_B01.md | PRESENT — slide-schematic mode, 13 slides roteiro |
-| course-materials/L01_B02.md | PRESENT — thin-supplement mode, notebook pointer table |
-| course-materials/L02_B01.md | PRESENT — slide-schematic mode, 13 slides roteiro |
-| course-materials/L02_B02.md | PRESENT — thin-supplement mode, notebook pointer table |
-| course-materials/L03_B01.md | PRESENT — slide-schematic mode, 16 slides roteiro |
-| course-materials/L03_B02.md | PRESENT — thin-supplement mode, notebook pointer table |
-| course-materials/L04_B01.md | PRESENT — deep-prose case study (original pass, untouched) |
-| course-materials/L04_B02.md | PRESENT — deep-prose case study (original pass, untouched) |
-| jax-examples/notebooks/00_caixa_de_ferramentas.ipynb | BUILD GREEN (13 s, 38 cells) |
-| jax-examples/notebooks/01_domain_shift_toy.ipynb | BUILD GREEN (12.6 s, 34 cells) |
-| jax-examples/notebooks/02_contrastive_embeddings.ipynb | BUILD GREEN (25 s, 35 cells) |
-| dev/agents/work/course_manifest.md | PRESENT |
-| course-materials/00_INDEX.md | REWRITTEN this pass |
+| course-materials/L1B1.md | PRESENT — gold-standard theory block, untouched |
+| course-materials/L1B2.md | PRESENT — gold-standard notebook block, untouched |
+| course-materials/L2B1.md | PRESENT — rewritten to L1B1 standard (THEORY) |
+| course-materials/L2B2.md | PRESENT — rewritten to L1B2 standard (minimal NOTEBOOK) |
+| course-materials/L3B1.md | PRESENT — rewritten to L1B1 standard (THEORY) |
+| course-materials/L3B2.md | PRESENT — rewritten to L1B2 standard (minimal NOTEBOOK) |
+| course-materials/L4B1.md | PRESENT — rewritten to L1B1 standard (THEORY case study) |
+| course-materials/L4B2.md | PRESENT — rewritten to L1B1 standard (THEORY case study) |
+| jax-examples/notebooks/00_caixa_de_ferramentas.ipynb | PRESENT, 38 cells |
+| jax-examples/notebooks/01_domain_shift_toy.ipynb | PRESENT, AUC bug fixed |
+| jax-examples/notebooks/02_contrastive_embeddings.ipynb | PRESENT, 35+ cells |
+| dev/agents/work/course_manifest.md | PRESENT, current |
+| README.md | PRESENT — single hub, 3 fixes applied this pass (see below) |
+| references/2602.13902v1.pdf | PRESENT |
+| references/2311.12110v3.pdf | PRESENT |
+| GoogleCollab_and_notebooks_setup.md | PRESENT (repo root) |
 
-**Missing vs. manifest:** None. All 8 blocks and 3 notebooks are present and green.
+**Missing vs. manifest:** None. All 8 blocks and 3 notebooks are present.
+The old standalone index file (course-materials/00_INDEX.md) was removed in a
+prior pass; README.md is the single navigational hub, as required by
+my_feedback_v2 §3.
 
-**Note on block formats:** L01_B01, L02_B01, L03_B01 are in slide-schematic mode (compact per-slide roteiros with Google Slides link replacing deep-prose). L01_B02, L02_B02, L03_B02 are in thin-supplement mode (notebook-pointer tables). L04_B01, L04_B02 remain in deep-prose mode from the original pass — deliberate, as they are case-study blocks, not slides or demos.
+### Artifact hygiene
+
+`git ls-files jax-examples/assets/` returns nothing (no tracked artifacts).
+`git status` shows 3 modified notebooks, 3 src_*.py files, and 1
+make_assets_*.py file — all code-only modifications from the notebook-builder
+pass; no new PNG/pkl/npz files tracked. CLEAN.
+
+### Fixes applied directly to README.md this pass
+
+Three stale values corrected (instructor attention not required):
+
+1. Line 52, Day 2 arc paragraph: "AUC ≈ 0,785" → "AUC ≈ 0,749" (post-bugfix
+   value from held-out test evaluation; consistent with L2B1.md line 102).
+2. Line 82, NB1 description: "AUC ≈ 0,785" → "AUC ≈ 0,749" (same reason).
+3. Line 82, NB1 description: "56 bandas fotométricas" → "55 bandas
+   fotométricas" (L4B2 consistently describes the J-espectro as 55 bands:
+   section 1 "vetor de fluxos em 55 bandas" and section 3.1 encoder
+   h_psi: R^55 → R^d).
 
 ---
 
 ## NARRATIVE CONTINUITY
 
-Checking each consecutive block pair for recap/teaser alignment.
+### L1B1 → L1B2
 
-### L01_B01 to L01_B02
+L1B1 section 4 ("Estrutura do curso e materiais") points to the GitHub repo
+and the notebooks. No dedicated "próximo bloco" sentence, but the framing
+is complete as a standalone theory block. L1B2 is minimal (badge + path),
+requiring no explicit pickup. CLEAN.
 
-L01_B01 Slide 13 bridge: "Depois do intervalo: as ferramentas concretas — Python, JAX e uma rede do zero." (pointer to [[L1B2]])
+### L1B2 (NB0) → L2B1
 
-L01_B02 instructor framing: "demo guiada pelo instrutor; você recebe o notebook depois."
+L2B1 section 1 (Apresentação) opens: "No caderno de ontem, um polinômio de
+grau alto decorou os pontos de treino e colapsou nos pontos de teste: essa foi
+a lição do overfitting — generalizar *dentro* da mesma distribuição já é
+difícil. O Dia 2 leva a pergunta um passo além…"
 
-L01_B02 Conexão section: "Este bloco é a contraparte prática de [[L1B1]]: o vocabulário introduzido lá (encoder, espaço latente, representação aprendida) ganha corpo em código executável."
+NB0 (00_caixa_de_ferramentas.ipynb) does NOT contain an explicit "amanhã
+veremos…" teaser cell in the current rebuilt version (cells 31–37 are
+exercises and vocabulary map). The conceptual bridge is carried by the
+overfitting demo (cells 31–33) and by README.md's description of NB0 as
+"plantando a primeira semente do Dia 2". The pickup in L2B1 section 1 is
+clear and specific.
 
-VERDICT: Clean bridge. No mismatch.
+VERDICT: Functionally clean. Minor gap: NB0 has no dedicated teaser sentence
+for Day 2. Low severity — the instructor can add it verbally; the written
+bridge from L2B1's side is explicit. See TODO 1.
 
-### L01_B02 to L02_B01
+### L2B1 → L2B2
 
-L01_B02 overfitting cell comment (NB0 cell 33, last markdown comment): "Na quarta-feira, veremos o que acontece quando a distribuição de TESTE é diferente da de TREINO."
+L2B1 section 5 ("Materiais") explicitly names NB1/L2B2 and describes its
+four acts. L2B2 is minimal (badge + path). CLEAN.
 
-L02_B01 Slide 2 recap: "Recap de 90 s: NB0 mostrou que generalizar dentro da mesma distribuição já era difícil. Hoje: 'E quando a distribuição de teste é diferente da de treino?'"
+### L2B2 (NB1) → L3B1
 
-VERDICT: Clean, well-matched seed/germination pair.
+L3B1 section 1 (Apresentação) opens: "Nos dois primeiros dias, o espaço
+latente foi o palco — o lugar para onde o encoder manda os dados antes da
+classificação ou da adaptação de domínio. No Dia 3, ele vira o protagonista."
 
-### L02_B01 to L02_B02
+NB1 cell 28 (Takeaway markdown) ends with "SSDA vence para K pequeno: se
+você tem poucos rótulos do alvo, o pré-treino na fonte é um ativo valioso.
+Congele a cabeça" — a correct conceptual close but no explicit Day 3 teaser.
 
-L02_B01 Slide 13 teaser: "No próximo bloco, quebramos um classificador de propósito e o consertamos com exatamente estas ideias."
+VERDICT: Clean pickup from L3B1's side. NB1 has no explicit Day 3 bridge.
+Same pattern as NB0→L2B1. See TODO 1.
 
-L02_B02 instructor framing: "laboratório de patologia: causar a doença, diagnosticar, tratar."
+### L3B1 → L3B2
 
-L02_B02 Conexão section: "Este bloco é a contraparte prática de [[L2B1]]: o diagrama encoder + cabeça e a analogia dos sotaques, introduzidos no bloco de teoria, ganham existência executável aqui."
+L3B1 section 5 ("Materiais") names NB2/L3B2 and describes its three acts,
+ARI = 0,743, and t-SNE perplexities. CLEAN.
 
-L02_B01 instructor notes state that the encoder+head diagram "must be the exact same visual used in NB1." Confirmed: NB1 ATO 2 header (cell 8) reproduces the identical two-row encoder/cabeça table with matching vocabulary.
+### L3B2 (NB2) → L4B1
 
-VERDICT: Clean bridge. No mismatch.
+NB2 cell 31 (Resumo markdown) has the table summarizing three acts and the
+embed-then-cluster paradigm. L4B1 section 1 (Apresentação) opens: "Três dias
+de ingredientes. Hoje, a cozinha de verdade." And section 3.2 explicitly
+names the Weinberger loss and says: "Vocês treinaram esta perda ontem, com
+bolinhas coloridas. Aqui, as bolinhas são partículas do universo."
 
-### L02_B02 to L03_B01
+VERDICT: Clean, well-constructed recognition moment. The bridge is designed
+and executed correctly. CLEAN.
 
-L02_B02 ATO 3.2 comment: "Gancho para amanhã: este scatter é o 'palco' que [[L3B1]] articula e [[L3B2]] esculpe ativamente."
+### L4B1 → L4B2
 
-L02_B02 optional t-SNE cell (NB1 cell 32): "gancho para amanhã: t-SNE é uma ferramenta de inspeção de embeddings — amanhã veremos por quê e quando ela mente."
+L4B1 section 5 ("Materiais") ends with the repo URL. There is no explicit
+"no próximo bloco" teaser pointing to L4B2. L4B2 section 1 opens with the
+J-PAS instrument description without a pickup sentence linking back to L4B1.
 
-L03_B01 Slide 1 recap (spoken, 1 line): "o espaço latente era o palco em L02; hoje ele é o protagonista."
-
-VERDICT: Clean bridge. "palco to protagonista" framing is consistent across both files.
-
-### L03_B01 to L03_B02
-
-L03_B01 Slide 16 teaser: "No próximo bloco, vamos VER um espaço se organizar em tempo real."
-
-L03_B02 instructor framing (min 0-3): "primeiro dinâmica molecular; depois deep learning; no fim vocês percebem que era a mesma coisa."
-
-VERDICT: Clean bridge. The "em tempo real" promise is delivered by the NB2 particle relaxation filmstrip (Act 1) and the MNIST embedding evolution filmstrip (Act 2.6).
-
-### L03_B02 to L04_B01
-
-L03_B02 Resumo cell (NB2 cell 31): "amanhã: esta máquina exata prevendo onde nascem os halos de matéria escura."
-
-L04_B01 "A regra do dia": "Três dias de ingredientes. Hoje, a cozinha de verdade." Recognition moment: "Vocês treinaram esta perda ontem, com bolinhas coloridas; aqui, as bolinhas são partículas do universo."
-
-L04_B01 cross-references NB2 cell 6 (fazer_weinberger_loss) as the code shown side-by-side with the paper equations. Confirmed: NB2 cell 6 is the loss factory function.
-
-VERDICT: Clean bridge. Recognition moment setup is technically correct.
-
-### L04_B01 to L04_B02
-
-L04_B01 bridge (last paragraph): "em [[L4B2]], voltamos ao problema de mudança de domínio do Dia 2 — mas com dados reais de levantamento astronômico. O mesmo par encoder + cabeça, os mesmos três regimes (zero-shot, só alvo, SSDA)..."
-
-L04_B02 opening: "Este é o momento em que o arco se completa. O experimento de três regimes que você executou na quarta-feira em 2D... agora aparece em escala real."
-
-VERDICT: Clean bridge.
+VERDICT: Minor gap. Since both are within Dia 4 and the session is continuous,
+the instructor bridges verbally. But an explicit sentence at the end of L4B1
+pointing to L4B2 would improve the written arc. See TODO 2.
 
 ---
 
 ## NOTEBOOK-BLOCK ALIGNMENT
 
-### NB0 / L01_B02
+The three notebook blocks (L1B2, L2B2, L3B2) are now MINIMAL per the L1B2
+gold standard — just Colab badge + notebook path. There is therefore no
+detailed act-by-act alignment to check in the block files themselves. The
+alignment check falls entirely on README.md's notebook descriptions and on
+the theory blocks' "Materiais" sections.
 
-L01_B02 block table "Figura-troféu" lists "4 painéis: épocas 0/200/500/1000." NB0 cell 30 uses EPOCAS_TROPHY = [0, 200, 500, 1000] and loads nb0_epoch0_params.pkl, nb0_epoch200_params.pkl, nb0_epoch500_params.pkl, nb0_fcnn_params.pkl. MATCH.
+### NB0 / L1B2 / README NB0 description
 
-NOTE — manifest vs. actual: The manifest NB0 brief (course_manifest.md) lists trophy checkpoints as "epoch 0, epoch 10, epoch 100, epoch 1000." The actual implementation uses 0, 200, 500, 1000. The block file L01_B02 correctly reflects the actual notebook. The manifest is the outlier on this point (harmless but stale).
+README (lines 68–73) describes NB0 accurately: raw SGD (no optimizer library),
+tanh + MSE, overfit demo with [1→128→128→128→1], vocabulary map. Matches
+NB0 cells 14, 28, 31–33, 34. MATCH.
 
-L01_B02 timing row (min 12-30): "explicit SGD loop (1000 epochs)." NB0 cell 28 uses explicit SGD without any optimizer library. MATCH.
+### NB1 / L2B2 / L2B1 section 5 / README NB1 description
 
-L01_B02 block table "🟡 Pergunta-relâmpago": matches NB0 cell 31 content verbatim. MATCH.
+L2B1 section 5 (line 112): "compara os três regimes — zero-shot, target-only
+e SSDA" — uses English "target-only". README NB1 description (line 82): "zero-
+shot / somente alvo / SSDA" — uses pt-BR. L4B2 table (line ~46): "Zero-shot",
+"Só alvo", "SSDA". TERMINOLOGY DRIFT — see Terminology section and TODO 3.
 
-L01_B02 block table "🟢 Mapa de vocabulário": matches NB0 cell 34. MATCH.
+AUC in L2B1 section 4.2 (line 102): "AUC é 0,749 no conjunto de teste". 
+README (now fixed): "AUC ≈ 0,749". NB1 cell 17 function docstring confirms
+held-out 20% test evaluation. MATCH (after this pass's fix).
 
-MINOR DIVERGENCE — NB0 cell 0 vs. block table: The manifest spec requires the first cell to be a 🟢 Mapa do Curso table. NB0 cell 0 contains both the Colab badge AND a full 4-day Mapa do Curso table (with "L01_B02 <- voce esta aqui" in bold) — so the spec IS met. However, the L01_B02 block pointer table does not list this combined cell; its first row starts at "🟢 O que e este ambiente?" (NB0 cell 1). The block table undercounts the cells by one. Low severity; does not affect student experience.
+NB1 four acts match L2B1 section 5's description. AUC bug fixed, confirmed
+via NB1 cell 17 docstring: "O AUC é calculado num subconjunto de TESTE (20%
+dos dados, nunca vistos durante o treino)." MATCH.
 
-### NB1 / L02_B02
+### NB2 / L3B2 / L3B1 section 5 / README NB2 description
 
-L02_B02 ATO 3.1: "AUC ≈ 0,785 (cálculo sobre conjunto combinado fonte+alvo — bug corrigido na revisão anterior)." NB1 cell 17 printed output: "AUC do classificador de domínio: 0.785 / AUC > 0,7: shift detectável." MATCH — bug fix confirmed working.
-
-L02_B02 instructor timing (min 10-17): "Encoder+head architecture (picks up the diagram from [[L2B1]])." NB1 ATO 2 header cell (cell 8) reproduces the identical encoder/cabeça table with matching role labels. MATCH.
-
-L02_B02 ATO 4.5: "K-sweep pre-computado (nb1_ksweep.npz), K in {10, 25, 50, 100, 200}; curvas se cruzam." Build log confirms nb1_ksweep.npz generated and nb1_fig_k_sweep.png present. MATCH.
-
-L02_B02 ATO 4.3 instructor note: "jax.grad(..., argnums=0) — gradiente apenas no encoder." NB1 cell 22 implements this pattern. MATCH.
-
-MINOR DIVERGENCE — "Mapa do Curso" table absent from NB1: NB1 cell 0 combines Colab badge + notebook title + subtitle "O ciclo de vida do domain shift em 4 atos" + short "Modo de uso" note, but does NOT include a Markdown table of the 4-day arc. The L02_B02 block table lists the first section as "🟢 | Mapa do Curso | Tabela dos 4 dias; L02_B02 em negrito." The subtitle is present; the full table is absent. NB0 has the full table. See TODO 5.
-
-### NB2 / L03_B02
-
-L03_B02 instructor timing: "🟡 Poll before collapse cell: 'O que acontece com delta_push = 0?'" NB2 cell 7 is the poll markdown, cell 8 runs the collapse. MATCH.
-
-L03_B02 block table "ATO 1.2 — A Perda Contrastiva em JAX": notes "a mesma funcao sera reutilizada no Ato 2." NB2 cell 5 markdown explicitly states this. MATCH.
-
-L03_B02 block table ATO 3.3: "t-SNE 3 perplexidades (5/30/100) — mapa muda visivelmente." L03_B01 Slide 13 specifies the same three perplexities. NB2 cell 29 runs t-SNE with exactly perplexities 5, 30, 100 and prints the constellation warning. Consistent across all three files.
-
-L03_B02 block table notes ARI result is visible in ATO 3.1. NB2 cell 27 output: "ARI (k-means no embedding 2D): 0.743." The INDEX.md (this pass) correctly states ARI = 0,743. MATCH.
-
-L03_B02 "🟣 mini-SimCLR": NB2 cell 32 is the optional SimCLR markdown section, cell 33 the implementation. MATCH.
-
-MINOR DIVERGENCE — "Mapa do Curso" table absent from NB2: Same issue as NB1. NB2 cell 0 combines badge + title + subtitle "Em tres atos — de particulas a digitos a halos" but no 4-day map table. L03_B02 block table first entry lists "Mapa do Curso | Tabela dos 4 dias; L03_B02 em negrito; subtitulo 'Em tres atos...'" The subtitle matches; the table is absent. See TODO 5.
+L3B1 section 5: "sandbox de partículas 2D… encoder MLP… k-means (ARI = 0,743)
+e inspecionado com t-SNE em três perplexidades." README NB2 description: "k-
+means (ARI = 0,743) e t-SNE em três perplexidades." NB2 cell 27 implements
+ARI on k-means clusters. NB2 cell 29 implements t-SNE (three perplexities).
+MATCH. The collapse demo (c_push = 0) is in NB2 cell 8. L3B1 section 3.2
+explains the trivial minimum. MATCH.
 
 ---
 
 ## TERMINOLOGY
 
-| Term | Variants found | Files | Status |
-|------|---------------|-------|--------|
-| encoder | encoder, $f_\theta$, $h_\psi$ | All blocks | Intentional: $f_\theta$ in L01/L03 (full model); $h_\psi$ in L02/L04 (decomposed model with $g_\varphi$ head). No harmful drift. |
-| espaço latente | espaço latente, espaço de embeddings, pseudo-espaço | All blocks | "pseudo-espaço" is L04_B01-only, reflecting the paper's term. Consistent within scope. |
-| cabeça / head | cabeça, head, cabeça (Head), $g_\varphi$ | L02_B01, L02_B02, L04_B02 | NB1 ATO 2 header uses "Cabeça (Head)" — acceptable parenthetical. Slightly inconsistent: some slides say only "head", others "cabeça". Recommend: "cabeça" in prose, "(head)" in parentheses on first use per block. |
-| perda contrastiva / discriminativa / de Weinberger | perda contrastiva (L03_B01), perda discriminativa (NB2 code "perda_discriminativa_2d"), perda de Weinberger (L04_B01) | L03_B01, L03_B02, L04_B01 | Three names for the same pull/push/reg loss. Planned reveal: "contrastiva" in theory -> "discriminativa" in code -> "Weinberger" in paper recognition. L03_B01 instructor notes explicitly prohibit naming the paper early. No harmful drift. |
-| sobreajuste / overfitting | sobreajuste (*overfitting*), overfitting | L01_B02 | Correctly uses parenthetical translation on first use. No drift. |
-| embed-then-cluster | embed-then-cluster, embed -> cluster, embed-then-cluster | L03_B01, L03_B02, L04_B01 | Hyphen form canonical in prose, arrow form in code snippets. Consistent. |
-| AUC / AUC-ROC | AUC, AUC-ROC | L02_B01, L02_B02 | No harmful drift. L02_B01 Slide 13 uses "AUC > 0,7" as detection threshold; L02_B02 reports AUC = 0,785. Both consistent with NB1 output. |
-| chiasmo / chiasmus / chiasma | chiasmo (L04_B01), chiasmus (L01_B01), chiasma (L04_B02) | L01_B01, L04_B01, L04_B02 | Three spellings; "chiasma" in L04_B02 student-facing prose is non-standard in pt-BR. See TODO 6. |
+| Term | Variants found | Files | Recommended canonical |
+|------|----------------|-------|-----------------------|
+| zero-shot / zero-shot | "zero-shot" | L2B1, L4B2, README | "zero-shot" — consistent, keep |
+| target-only / somente alvo / só alvo | "target-only" (L2B1 §5), "somente alvo" (README NB1), "só alvo" (L4B2 table) | L2B1, L4B2, README | "só alvo" in prose and tables; drop English "target-only" from L2B1 §5 |
+| encoder | encoder, $f_\theta$, $h_\psi$ | All blocks | Intentional: $f_\theta$ is full model (L1B1, L3B1); $h_\psi$ is encoder component of decomposed $f = g \circ h$ (L2B1, L4B2). No harmful drift. |
+| cabeça / head | "cabeça (_head_)", "$g_\varphi$" | L2B1, L4B2 | "cabeça" in prose, "(head)" on first use. Consistent across L2B1 and L4B2. |
+| perda contrastiva / discriminativa / de Weinberger | "contrastiva" (L3B1), "discriminativa" (NB2 function name perda_discriminativa_2d), "de Weinberger" (L4B1) | L3B1, NB2, L4B1 | Intentional three-step reveal: contrastiva in theory → discriminativa in code → Weinberger in paper. No harmful drift. |
+| pseudo-espaço | "pseudo-espaço" | L4B1 only | Reflects the paper's term. No drift; single-block usage is appropriate. |
+| embed-then-cluster | "embed-then-cluster" (L3B1, L4B1) | L3B1, L4B1 | Hyphen form. Consistent. |
+| SSDA | SSDA | L2B1, L4B2, README | Consistent acronym. |
+| sobreajuste / overfitting | "sobreajuste (*overfitting*)" | L2B1 §1, NB0 cells | Correct parenthetical on first use. Consistent. |
+
+Most significant drift: **"target-only" vs. "só alvo"**. L2B1 section 5 is the
+only place that uses the English form; everywhere else in the course (L4B2
+table, README) the pt-BR forms are used. One-line fix in L2B1. See TODO 3.
 
 ---
 
 ## LINKS
 
-### Broken Colab badge URLs — HIGH PRIORITY
+### README.md internal links (all verified)
 
-**Finding 1 — L04_B01.md, section "Demonstracao Pratica" (line ~253):**
-Badge reads: `.../jax-examples/02_contrastive_embeddings.ipynb`
-Missing `notebooks/` subdirectory. Correct path: `.../jax-examples/notebooks/02_contrastive_embeddings.ipynb`
+| Link | Target | Status |
+|------|--------|--------|
+| course-materials/L1B1.md | File exists | OK |
+| course-materials/L1B2.md | File exists | OK |
+| course-materials/L2B1.md | File exists | OK |
+| course-materials/L2B2.md | File exists | OK |
+| course-materials/L3B1.md | File exists | OK |
+| course-materials/L3B2.md | File exists | OK |
+| course-materials/L4B1.md | File exists | OK |
+| course-materials/L4B2.md | File exists | OK |
+| jax-examples/notebooks/00_caixa_de_ferramentas.ipynb | File exists | OK |
+| jax-examples/notebooks/01_domain_shift_toy.ipynb | File exists | OK |
+| jax-examples/notebooks/02_contrastive_embeddings.ipynb | File exists | OK |
+| references/2602.13902v1.pdf | File exists | OK |
+| references/2311.12110v3.pdf | File exists | OK |
+| GoogleCollab_and_notebooks_setup.md | File exists at repo root | OK |
 
-**Finding 2 — L04_B02.md, section "Demonstracao Pratica" (line ~314):**
-Badge reads: `.../jax-examples/01_domain_shift_toy.ipynb`
-Missing `notebooks/` subdirectory. Correct path: `.../jax-examples/notebooks/01_domain_shift_toy.ipynb`
+### Colab badge URL path segments (README and block files)
 
-**Finding 3 — Previous 00_INDEX.md (now fixed this pass):**
-All three notebook Colab badges and "Arquivo:" paths used `jax-examples/` without the `notebooks/` subdirectory. The rewritten 00_INDEX.md (this pass) corrects all three. The two L04 block files still need manual correction (see TODO 1).
+All three notebook badges in README.md and in L1B2.md, L2B2.md, L3B2.md use
+the path `jax-examples/notebooks/<name>.ipynb`. These path segments match the
+actual files. The external Colab domain cannot be verified locally, but the
+path segments are correct.
 
-### Wikilinks
+L4B1.md and L4B2.md are pure THEORY blocks with no Colab badges. No issue.
 
-All [[L0X_B0Y]] wikilinks in all 8 blocks are internally consistent. "Blocos adjacentes" footers at the bottom of each block file correctly reference neighbors. No broken wikilinks detected.
+### Wikilinks (Obsidian)
 
-### Asset references
+All [[L1B1]], [[L2B1]], [[L2B2]], [[L3B2]], [[L4B1]], [[L4B2]] wikilinks in
+the block files resolve to existing files under the standard Obsidian vault
+path. No broken wikilinks detected.
 
-All `jax-examples/assets/nb*.png`, `nb*.pkl`, and `nb*.npz` files referenced in block tables and notebook cells match the build log asset list. Confirmed for all three notebooks.
+### Block cross-references in "Materiais" sections
 
-### Obsidian image placeholders in L04 blocks
-
-L04_B01 and L04_B02 contain approximately 12 Obsidian image wikilinks (`![[assets/L04_B01_*.png]]`). These are instructor preparation references, not student-facing rendered content. They will appear as broken images in Obsidian until the paper figure PNGs are exported and committed. Not a course-delivery blocker for the July dates.
-
----
-
-## REG TERM NOTATION MISMATCH
-
-**Finding 4 — L03_B01 vs. L04_B01 regularization term formula:**
-
-L03_B01 Slide 7 (and "Notas de Referencia" section) defines the regularization term as:
-  L_reg = (1/C) * sum_c ||mu_c||^2   (squared norm)
-
-L04_B01 "Etapa 2 — Perda de instancias" writes:
-  L_reg = (1/C) * sum_c ||mu_c||     (non-squared norm)
-
-NB2 cell 6 implements: `L_reg = jnp.mean(jnp.sum(centros**2, axis=-1))` — this is the **squared** norm, consistent with L03_B01 and inconsistent with L04_B01.
-
-This is likely a transcription error in L04_B01 when the paper equations were written into the block file. The functional impact is low (both forms anchor centroids near the origin), but the inconsistency will confuse students who follow the instruction in L04_B01 to "compare line by line with fazer_weinberger_loss." Verify against A&A 685 A37 Section 2.3 LaTeX; then either add a note explaining the paper's convention or correct L04_B01 to show the squared form.
-
----
-
-## ADAM ATTRIBUTION ERROR
-
-**Finding 5 — L02_B02.md, section "Conexao com a teoria":**
-
-The text states: "O loop de treino reutiliza o mesmo padrao de pytrees e **Adam manual** construido em [[L1B2]]."
-
-L01_B02 and NB0 use raw SGD (no momentum, no second moment). NB0 cell 34 vocabulary map explicitly maps "params - lr x grad = descida do gradiente" — this is SGD. NB0 instructor note: "Do NOT introduce optax or flax — raw pytrees keep the autodiff magic visible." Adam appears for the first time in NB1 (the notebook this block describes).
-
-Correct text: "O loop de treino reutiliza o mesmo padrao de pytrees introduzido em [[L1B2]], estendendo o otimizador de SGD explícito para **Adam manual** (introduzido neste notebook)."
-
-This is a factual error in one sentence of L02_B02. The notebook itself (NB1) is correct; the error is only in the block file prose.
+L2B1 §5 → "NB1 (bloco L2B2)": correct.
+L3B1 §5 → "NB2 (bloco L3B2)": correct.
+L4B1 §5 → "notebook NB2 (bloco L3B2, 02_contrastive_embeddings.ipynb)": correct.
+L4B1 §5 → "daniellopezcano/instance_halos" GitHub repo: external, not verified.
+L4B2 §4 → "daniellopezcano/JPAS_Domain_Adaptation" GitHub repo: external, not verified.
 
 ---
 
 ## TIMING RISKS
 
-### L03_B01 — 16 slides in 36 content minutes
+### L2B1 — three-regime taxonomy at end of section 4.1
 
-The timing plan allocates four segments. The highest-risk segment is min 10-18 (8 min for 5 slides: contrastive principle + potentials diagram + pull/push/reg equations + trivial minimum poll + InfoNCE). This segment contains the conceptual climax of the entire course (the interaction potentials as physics analogy), two full equation displays, and one poll. At 8 min for 5 slides, average time per slide is 1.6 min — leaving almost no room for questions or poll processing time.
+Section 4.1 covers three strategy regimes (no-data, unlabeled, SSDA). The SSDA
+subsection is the most content-dense (encoder decomposition + "analogia dos
+sotaques" + honest limit) and could easily expand beyond its slot. The "analogy
+dos sotaques" is a high-value pedagogical moment; the instructor should protect
+it even if the unlabeled/adversarial subsection gets trimmed.
 
-Specific risk: if students ask questions after the pull/push formula slide (Slide 7), time for the InfoNCE slide (Slide 9, Decision D4) compresses. The block correctly marks InfoNCE as "one slide, enrichment not foundation" — but if it gets squeezed, the spoken sentence "o notebook tem uma celula 🟣 que vai mais fundo" must be the fallback.
+### L3B1 — equations section (§3.2)
 
-Recommended mitigation: move Poll 2 (trivial collapse question) to immediately after Slide 6 (potentials diagram) and before Slide 7 (equations), so the equations follow the poll reveal rather than being interrupted by it.
+The pull/push/reg triple with three LaTeX equations, the trivial-minimum result,
+and the InfoNCE aside are all in §3.2. This is the conceptual climax of the
+course. Instructors should plan a Q&A buffer here and treat the InfoNCE
+paragraph as sacrificial if time is short — L4B1's recognition moment does not
+depend on InfoNCE.
 
-Optional Slide 14 (Damrich et al. unification) is already marked as sacrificial. Confirm it is removed from the deck if the potentials segment overruns at all.
+### L4B2 — Encerramento (§5)
 
-### L04_B01 — results tour may overrun
-
-Instructor timing allocates min 17-26 (9 min) for a 5-figure results tour (Figs. 5, 7, 9 + watershed slide + speed comparison). At approximately 1.8 min per figure, the HMF discussion (Fig. 9) — which requires explaining log-log axes, the "emergent HMF" concept, and two orders of magnitude in mass — risks consuming 3 min alone. The block correctly hard-caps this segment and prohibits Fig. 8 (violin plot). Enforce the 9-min cap strictly.
-
-### L04_B02 — frontier + second relight in 7 min
-
-The segment min 26-33 contains 3 frontier slides plus a deliberate 4-min course-map relight (8 blocks x 30 s each). Total is 7 min for content that could easily expand to 12 min if frontier slides attract questions. The instructor note correctly identifies this risk and prescribes "shorten frontier to one slide if behind at min 26." The course-map relight is the emotional close of the four-day arc and must not be shortened or cut — frontier slides are the sacrificial content.
+The closing recap (§5) runs through all 8 blocks individually. At ~30 s per
+block, this is 4 min of scripted content. If the J-PAS results discussion in
+§3 overruns, this risks compression. The "Horizonte" directions (§4) are the
+sacrificial content; the 8-block synthesis sentence in §5 is the emotional
+close and must not be cut.
 
 ---
 
 ## PT-BR QUALITY
 
-**Passage 1 — L04_B02 homework exercise (student-facing, high severity):**
-File: L04_B02.md, section "Demonstracao Pratica," final paragraph.
-Current text: "Reproduced the K-sweep do artigo variando o tamanho do subconjunto..."
-Issue: "Reproduced" is English and grammatically incorrect in pt-BR context.
-Fix: "**Reproduza** o K-sweep do artigo, variando o tamanho do subconjunto de rotulos J-PAS de 100 a 15 000 objetos. Em qual faixa o SSDA tem vantagem sobre o baseline de so alvo? Em qual faixa os dois convergem? Como isso informa a estrategia de acompanhamento espectroscopico para futuros levantamentos?"
+### Finding 1 — L2B1 section 5: "target-only" (medium severity)
 
-**Passage 2 — L04_B02 "chiasma" (student-facing, medium severity):**
-File: L04_B02.md, section "A chiasmo se fecha."
-Current text: "o arco do curso foi descrito como uma *chiasma*"
-Issue: "chiasma" is Greek/English; pt-BR standard is "o quiasmo" (masculine noun).
-Fix: "o arco do curso foi descrito como um *quiasmo*"
-Also: L01_B01 Slide 10 uses "chiasmus" — standardize to "quiasmo" across both files.
+File: course-materials/L2B1.md, section 5 ("Materiais"), line 112.
+Current text: "…compara os três regimes — zero-shot, target-only e SSDA —"
+Issue: "target-only" is English; pt-BR is used everywhere else in the course
+for this concept ("somente alvo" in README, "só alvo" in L4B2 table).
+Fix: replace "target-only" with "só alvo" for consistency.
 
-**Passage 3 — L01_B01 Slide 5 (student-facing, low severity):**
-"Nao extrapola de forma confiavel alem do suporte dos dados de treino"
-"Suporte" in the statistical sense (support of a distribution) is correct but potentially opaque to undergrads without a probability theory background.
-Suggested simplification: "Nao extrapola de forma confiavel para alem da regiao coberta pelos dados de treino."
+### Finding 2 — L4B2 section 2.1: phrasing of mock count (low severity)
 
-**Passage 4 — L02_B01 slide descriptions (instructor-facing, cosmetic):**
-"Equacao(oes):" appears as a section label in multiple slide descriptions inside L02_B01 and L03_B01. The parenthetical plural is visually awkward. Not student-facing (inside instructor block file). Consider standardizing to "Equacoes:" throughout for cleaner formatting.
+File: course-materials/L4B2.md, section 2.1.
+Current text: "O domínio **fonte** contém ~1,5 × 10⁶ J-espectros *mock*"
+No grammatical issue. Exponent superscript notation "10⁶" renders correctly
+in Markdown environments that support Unicode superscripts (Obsidian, rendered
+HTML). In plain-text environments it may not. Low severity.
+
+### Finding 3 — NB0 cell 0: block reference uses old naming
+
+NB0 cell 0 markdown header: "I Escola de Inverno do IFUSP — Bloco L01_B02"
+(underscore+zero-padded naming). The canonical naming in all course-materials
+and README is "L1B2" (no underscores, no padding). This does not affect
+student experience but is inconsistent with the naming convention.
+Same pattern in NB2 cell 0: "Bloco L03_B02". See TODO 4.
 
 ---
 
 ## PRIORITIZED TODO
 
-Items ordered by impact on student experience and course fidelity. Each is phrased as a ready-to-paste rebuild or edit instruction.
+Items ordered by impact. Each is phrased as a ready-to-paste instruction.
 
-**TODO 1 — Fix broken Colab badge URLs in L04_B01 and L04_B02 (HIGH — will 404 when clicked)**
-In L04_B01.md, find the "Demonstracao Pratica" section badge (approximately line 253) and change:
-  `jax-examples/02_contrastive_embeddings.ipynb`
-to:
-  `jax-examples/notebooks/02_contrastive_embeddings.ipynb`
+**TODO 1 — Add Day-forward teaser to NB0 and NB1 (LOW — narrative polish)**
 
-In L04_B02.md, find the "Demonstracao Pratica" section badge (approximately line 314) and change:
-  `jax-examples/01_domain_shift_toy.ipynb`
-to:
-  `jax-examples/notebooks/01_domain_shift_toy.ipynb`
+In jax-examples/src_00_caixa_de_ferramentas.py, add a final markdown cell
+(after the "Para casa" cell, cell 37) with this text:
 
-These are two one-line edits; no block rebuild required.
+    ## 🔵 O que vem por aí — Dia 2
+    > Na quarta-feira, veremos o que acontece quando o problema não é
+    > *memorizar demais* — mas quando os **dados de teste vêm de uma
+    > distribuição completamente diferente da de treino**.
+    > Esse modo de falha tem nome: *mudança de domínio*.
 
-**TODO 2 — Fix Adam attribution error in L02_B02 (MEDIUM — factual error in block prose)**
-Rebuild L02_B02 with this feedback: In the "Conexao com a teoria" section, the sentence "O loop de treino reutiliza o mesmo padrao de pytrees e Adam manual construido em [[L1B2]]" is factually incorrect — L01_B02/NB0 uses raw SGD, not Adam. Replace with: "O loop de treino reutiliza o mesmo padrao de pytrees introduzido em [[L1B2]], estendendo o otimizador de SGD explícito para **Adam manual** (introduzido pela primeira vez neste notebook)." All other content in L02_B02 is correct.
+In jax-examples/src_01_domain_shift_toy.py, add after the Takeaway cell (cell
+28) a short teaser pointing to the L3B1 themes:
 
-**TODO 3 — Fix or clarify reg term formula in L04_B01 (MEDIUM — equation mismatch vs. NB2 code)**
-In L04_B01.md "Etapa 2 — Perda de instancias," the formula for L_reg shows ||mu_c|| (non-squared norm). L03_B01 and NB2 cell 6 both use the squared norm ||mu_c||^2. Verify against A&A 685 A37 Section 2.3 LaTeX source. If the paper uses the non-squared form, add an explicit note: "Nota: o artigo usa a norma simples ||mu_c||; o notebook [[L3B2]] usa a norma ao quadrado ||mu_c||^2 por conveniencia de implementacao — o comportamento qualitativo e o mesmo." If the paper uses squared, correct the L04_B01 formula to match.
+    ## 🔵 O que vem por aí — Dia 3
+    > Amanhã, em vez de *alinhar* dois espaços, vamos *construir* um espaço
+    > onde distância significa algo. Essa é a aprendizagem contrastiva.
 
-**TODO 4 — Fix English verb in L04_B02 homework (MEDIUM — pt-BR quality failure in student-facing text)**
-In L04_B02.md, section "Demonstracao Pratica," last paragraph: replace "Reproduced the K-sweep do artigo" with "Reproduza o K-sweep do artigo." One-word fix, no rebuild required.
+After editing each src file, re-execute the notebook (nbconvert) and confirm
+BUILD GREEN before committing.
 
-**TODO 5 — Add 4-day Mapa do Curso table to NB1 and NB2 cell 0 (LOW — manifest spec compliance)**
-NB0 cell 0 correctly includes a full Markdown table of all 4 days with the current block in bold. NB1 cell 0 and NB2 cell 0 have badge+title+subtitle but no table. To comply with the manifest spec ("continuous orientation for a 130-person heterogeneous room") and the L02_B02/L03_B02 block descriptions, add a table to each cell 0 matching NB0's format. Rebuild instruction for NB1: add the 8-row Mapa do Curso table to `jax-examples/src_01_domain_shift_toy.py` cell 0, with "L02_B02 <- voce esta aqui" in bold, then re-execute and confirm BUILD GREEN. Same for NB2 with L03_B02 in bold.
+**TODO 2 — Add L4B1→L4B2 bridge sentence (LOW — narrative polish)**
 
-**TODO 6 — Standardize "quiasmo" spelling in L01_B01 and L04_B02 (LOW — pt-BR quality)**
-Rebuild L01_B01 with this feedback: On Slide 10, change "chiasmus" to "quiasmo" in the student-facing description. Rebuild L04_B02 with this feedback: In section "A chiasmo se fecha," change "uma *chiasma*" to "um *quiasmo*." No content change; spelling only.
+In course-materials/L4B1.md, at the end of section 5 ("Materiais"), add
+one sentence before the repo URL line:
 
-**TODO 7 — Update course_manifest.md trophy-figure epoch list (INFORMATIONAL)**
-The manifest NB0 brief lists checkpoint epochs as "0, 10, 100, 1000." The actual implementation (build log confirmed) uses 0, 200, 500, 1000. The block file L01_B02 correctly reflects the actual notebook. Update the manifest NB0 brief to list "nb0_epoch0_params.pkl, nb0_epoch200_params.pkl, nb0_epoch500_params.pkl, nb0_fcnn_params.pkl" to avoid confusion in future rebuild passes. No code change required.
+    "No bloco seguinte (L4B2), o mesmo par encoder + cabeça e os mesmos três
+    regimes reaparece com dados reais do J-PAS — o experimento de brinquedo do
+    Dia 2 em escala astronômica."
 
-**TODO 8 — Export and commit L04 slide figure PNGs (INFORMATIONAL — not a July blocker)**
-L04_B01 and L04_B02 contain approximately 12 Obsidian image wikilinks referencing PNG files (e.g., `![[assets/L04_B01_fig1_problem.png]]`) that do not exist on disk. These are instructor-side references for slide preparation. Export from the paper PDFs (A&A 685 A37 for L04_B01; arXiv:2602.13902 for L04_B02) and commit to `jax-examples/assets/` before the course for clean Obsidian rendering.
+**TODO 3 — Fix "target-only" term drift in L2B1 (LOW — pt-BR consistency)**
+
+In course-materials/L2B1.md, section 5, line 112:
+Replace: "compara os três regimes — zero-shot, target-only e SSDA —"
+With:    "compara os três regimes — zero-shot, só alvo e SSDA —"
+This aligns with L4B2's table terminology and README.md.
+
+**TODO 4 — Fix old-style block names in NB0 and NB2 cell 0 (INFORMATIONAL)**
+
+In jax-examples/src_00_caixa_de_ferramentas.py, cell 0 header:
+Replace: "Bloco L01_B02"
+With:    "Bloco L1B2"
+
+In jax-examples/src_02_contrastive_embeddings.py, cell 0 header:
+Replace: "Bloco L03_B02"
+With:    "Bloco L3B2"
+
+Re-execute and confirm BUILD GREEN after each change.
+
+**TODO 5 — Verify "55 bandas" against arXiv:2602.13902 (INFORMATIONAL)**
+
+README.md now says "55 bandas fotométricas" (fixed this pass from "56"),
+consistent with L4B2 which states "54 filtros de banda estreita… vetor de
+fluxos em 55 bandas" and encoder h_psi: R^55 → R^d. Before the July
+course dates, confirm against Section 2 of arXiv:2602.13902 that the actual
+input dimension used in the paper is 55. If it is 56, revert README line 82
+to "56" and update L4B2 section 1 and section 3.1 encoder dimension to match.
 
 ---
 
-*Review scope: 8 block files (L01_B01 through L04_B02), 3 executed notebooks (38+34+35 cells), course manifest, build logs. 8 findings, 8 TODOs.*
+*Review scope: 8 block files (L1B1–L4B2), 3 notebooks (38+34+35 cells),
+README.md, course_manifest.md, git artifact status.*
+*Fixes applied directly this pass: 3 (all in README.md).*
+*Findings requiring instructor attention: 5 TODOs (all LOW or INFORMATIONAL).*

@@ -20,14 +20,10 @@ venv/
 Thumbs.db
 .venv/
 
-# ── Generated notebook artifacts (never version-controlled; see my_feedback_v3 §5) ──
-jax-examples/assets/
-!jax-examples/assets/.gitkeep
-*.png
-*.pkl
-
 # ── Generated notebook artifacts (never version-controlled; see my_feedback_v2 §5) ──
+# Figures, checkpoints, and produced data must never be committed.
 jax-examples/assets/
 !jax-examples/assets/.gitkeep
 *.png
 *.pkl
+*.npz

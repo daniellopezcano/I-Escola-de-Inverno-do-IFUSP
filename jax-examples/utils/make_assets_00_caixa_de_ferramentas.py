@@ -2,27 +2,26 @@
 """
 make_assets_00_caixa_de_ferramentas.py
 ---------------------------------------
-Generates all cached checkpoints and static PNG fallbacks for
-notebook 00_caixa_de_ferramentas.ipynb.
+Pre-warms the checkpoint cache for notebook 00_caixa_de_ferramentas.ipynb
+by training with Adam (fast, high-quality fits) and saving the results to
+the gitignored jax-examples/assets/ directory.
 
-Outputs (all in jax-examples/assets/):
-  nb0_epoch0_params.pkl          – initial random model
-  nb0_epoch200_params.pkl        – partial fit (Adam epoch 200)
-  nb0_epoch500_params.pkl        – improving fit (Adam epoch 500)
-  nb0_fcnn_params.pkl            – final model (Adam epoch 1000)
-  nb0_overfit_params.pkl         – over-wide network (Adam epoch 5000)
-  nb0_fig_trophy.png             – 4-panel trophy figure
-  nb0_fig_overfit.png            – side-by-side overfit comparison
+This script is OPTIONAL — the notebook self-generates everything at runtime
+(using the "generate if absent" pattern) if this script has not been run first.
+Running it beforehand simply gives Adam-quality checkpoints instead of the
+fallback SGD-quality ones the notebook generates on first run.
 
-Design notes:
-  - Adam is used here (manually, no optax) so the checkpoints are visually
-    beautiful.  The notebook's training cell uses vanilla SGD to expose the
-    concept; PRETRAINED=True (the default) loads these checkpoints instead.
-  - Trophy epochs chosen as {0, 200, 500, 1000} instead of {0, 10, 100, 1000}
-    because Adam's convergence profile produces clearly-distinguishable fits
-    at those milestones on this dataset.
+Outputs (all in jax-examples/assets/, gitignored):
+  nb0_epoch0_params.pkl          - initial random model (before any training)
+  nb0_epoch200_params.pkl        - partial fit (Adam epoch 200)
+  nb0_epoch500_params.pkl        - improving fit (Adam epoch 500)
+  nb0_fcnn_params.pkl            - final normal model (Adam epoch 1000)
+  nb0_overfit_params.pkl         - over-wide network (Adam epoch 5000)
 
-Run:
+Note: PNG figures are NOT generated here — the notebook always renders figures
+live from loaded/computed model weights (my_feedback_v2 §5).
+
+Run (optional, from repo root):
   /home/dlopez/miniconda3/envs/WinterSchool/bin/python \
     jax-examples/utils/make_assets_00_caixa_de_ferramentas.py
 """
@@ -33,7 +32,6 @@ import time
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import jax
 import jax.numpy as jnp
 
@@ -60,7 +58,7 @@ key = MASTER_KEY
 key, k_x, k_noise = jax.random.split(key, 3)
 
 x_raw = jax.random.uniform(k_x, (N_POINTS,), minval=0.0, maxval=X_MAX)
-x_np  = np.sort(np.array(x_raw))          # sorted for clean line-plots
+x_np  = np.sort(np.array(x_raw))
 noise = np.array(jax.random.normal(k_noise, (N_POINTS,))) * SIGMA
 
 
@@ -68,19 +66,14 @@ def target_fn(x):
     return A * np.sin(2.0 * np.pi * x / LAM) * np.exp(-x / TAU)
 
 
-y_true_np  = target_fn(x_np)
-y_noisy_np = y_true_np + noise
+y_noisy_np = target_fn(x_np) + noise
 
-# Dense evaluation grid (plotting only)
-x_grid      = np.linspace(0.0, X_MAX, 500)
-y_grid      = target_fn(x_grid)
 
-# ── Input normalisation: x in [0, X_MAX] → [-1, 1] ───────────────────────────
 def normalise_x(x):
     return 2.0 * x / X_MAX - 1.0
 
-x_norm    = normalise_x(x_np)
-xg_norm   = normalise_x(x_grid)
+
+x_norm = normalise_x(x_np)
 
 print(f"Dataset ready: {N_POINTS} pts, x in [0, 4π], "
       f"y_noisy in [{y_noisy_np.min():.3f}, {y_noisy_np.max():.3f}]")
@@ -103,8 +96,7 @@ def init_params(layer_sizes, key):
 
 
 def forward(params, x):
-    """Forward pass: tanh hidden layers, linear output.
-    x: (N, in_dim) → (N, out_dim)."""
+    """Forward pass: tanh hidden layers, linear output."""
     h = x
     for W, b in params[:-1]:
         h = jnp.tanh(h @ W + b)
@@ -113,70 +105,45 @@ def forward(params, x):
 
 
 def mse_loss(params, x_batch, y_batch):
-    """Mean squared error — the only loss used in this notebook."""
+    """Mean squared error."""
     y_pred = forward(params, x_batch).squeeze(-1)
     return jnp.mean((y_pred - y_batch) ** 2)
 
 
-def predict_np(params, x_norm_1d):
-    """Convenience wrapper: 1-D normalised numpy array → numpy output."""
-    x_in = jnp.array(x_norm_1d, dtype=jnp.float32).reshape(-1, 1)
-    return np.array(forward(params, x_in).squeeze(-1))
+# ── Adam helper ────────────────────────────────────────────────────────────────
+def adam_init(params):
+    m = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
+    v = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
+    return m, v
 
 
-# ── Adam helper (no optax; used only in this asset script) ────────────────────
-def adam_step(params, grads, m_state, v_state, t,
-              lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8):
-    """One Adam update. t is the 1-based iteration counter."""
-    new_m = [(beta1 * mW + (1 - beta1) * gW,
-              beta1 * mb + (1 - beta1) * gb)
-             for (mW, mb), (gW, gb) in zip(m_state, grads)]
-    new_v = [(beta2 * vW + (1 - beta2) * gW ** 2,
-              beta2 * vb + (1 - beta2) * gb ** 2)
-             for (vW, vb), (gW, gb) in zip(v_state, grads)]
-    mh = [(mW / (1 - beta1 ** t), mb / (1 - beta1 ** t))
-          for mW, mb in new_m]
-    vh = [(vW / (1 - beta2 ** t), vb / (1 - beta2 ** t))
-          for vW, vb in new_v]
-    new_p = [(W - lr * mWh / (jnp.sqrt(vWh) + eps),
-              b - lr * mbh / (jnp.sqrt(vbh) + eps))
+def adam_step(params, grads, m, v, t,
+              lr=0.01, b1=0.9, b2=0.999, eps=1e-8):
+    new_m = [(b1*mW + (1-b1)*gW, b1*mb + (1-b1)*gb)
+             for (mW, mb), (gW, gb) in zip(m, grads)]
+    new_v = [(b2*vW + (1-b2)*gW**2, b2*vb + (1-b2)*gb**2)
+             for (vW, vb), (gW, gb) in zip(v, grads)]
+    mh = [(mW/(1-b1**t), mb/(1-b1**t)) for mW, mb in new_m]
+    vh = [(vW/(1-b2**t), vb/(1-b2**t)) for vW, vb in new_v]
+    new_p = [(W - lr*mWh/(jnp.sqrt(vWh)+eps),
+              b - lr*mbh/(jnp.sqrt(vbh)+eps))
              for (W, b), (mWh, mbh), (vWh, vbh)
              in zip(params, mh, vh)]
     return new_p, new_m, new_v
 
 
-def train_adam(layer_sizes, n_epochs, lr, init_key, save_at,
-               print_every=200):
-    """Train with Adam; return (final_params, {epoch: params_snapshot})."""
-    params = init_params(layer_sizes, init_key)
-    xi = jnp.array(x_norm, dtype=jnp.float32).reshape(-1, 1)
-    yi = jnp.array(y_noisy_np, dtype=jnp.float32)
+def save_pkl(params, fname):
+    path = os.path.join(ASSETS_DIR, fname)
+    params_np = [(np.array(W), np.array(b)) for W, b in params]
+    with open(path, "wb") as f:
+        pickle.dump(params_np, f)
+    print(f"  Saved {fname}  ({os.path.getsize(path)/1024:.1f} KB)")
+    return path
 
-    m_state = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
-    v_state = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
 
-    grad_fn = jax.grad(mse_loss)
-    checkpoints = {}
-    if 0 in save_at:
-        checkpoints[0] = [(np.array(W), np.array(b)) for W, b in params]
-
-    for t in range(1, n_epochs + 1):
-        grads = grad_fn(params, xi, yi)
-        params, m_state, v_state = adam_step(
-            params, grads, m_state, v_state, t, lr=lr)
-
-        if t in save_at:
-            checkpoints[t] = [(np.array(W), np.array(b)) for W, b in params]
-
-        if print_every and t % print_every == 0:
-            l = float(mse_loss(params, xi, yi))
-            print(f"  epoch {t:5d}  loss={l:.6f}")
-
-    final_loss = float(mse_loss(params, xi, yi))
-    print(f"  epoch {n_epochs:5d} (final)  loss={final_loss:.6f}  "
-          f"[noise floor ≈ {SIGMA**2:.4f}]")
-    return params, checkpoints
-
+xi = jnp.array(x_norm, dtype=jnp.float32).reshape(-1, 1)
+yi = jnp.array(y_noisy_np, dtype=jnp.float32)
+grad_fn = jax.jit(jax.grad(mse_loss))
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 1.  Normal network  [1, 32, 32, 1] — 1000 Adam epochs
@@ -185,34 +152,28 @@ def train_adam(layer_sizes, n_epochs, lr, init_key, save_at,
 print("\n=== Training normal network [1,32,32,1], 1000 Adam epochs ===")
 key, init_key = jax.random.split(key)
 
-TROPHY_EPOCHS = {0, 200, 500, 1000}
+params_normal = init_params([1, 32, 32, 1], init_key)
+save_pkl(params_normal, "nb0_epoch0_params.pkl")   # epoch 0 (before training)
 
-params_normal, ckpts = train_adam(
-    layer_sizes=[1, 32, 32, 1],
-    n_epochs=1000,
-    lr=0.01,
-    init_key=init_key,
-    save_at=TROPHY_EPOCHS,
-    print_every=200,
-)
+m_state, v_state = adam_init(params_normal)
 
-# Save
-epoch_to_fname = {
-    0:    "nb0_epoch0_params.pkl",
-    200:  "nb0_epoch200_params.pkl",
-    500:  "nb0_epoch500_params.pkl",
-    1000: "nb0_fcnn_params.pkl",
-}
-for ep, fname in epoch_to_fname.items():
-    path = os.path.join(ASSETS_DIR, fname)
-    with open(path, "wb") as f:
-        pickle.dump(ckpts[ep], f)
-    print(f"  Saved {fname}  ({os.path.getsize(path)/1024:.1f} KB)")
+for t in range(1, 1001):
+    grads = grad_fn(params_normal, xi, yi)
+    params_normal, m_state, v_state = adam_step(
+        params_normal, grads, m_state, v_state, t, lr=0.01)
 
-# Sanity check
-y_pred_normal = predict_np(params_normal, xg_norm)
-print(f"  Final pred range: [{y_pred_normal.min():.3f}, {y_pred_normal.max():.3f}]"
-      f"  (true: [{y_grid.min():.3f}, {y_grid.max():.3f}])")
+    if t == 200:
+        save_pkl(params_normal, "nb0_epoch200_params.pkl")
+    if t == 500:
+        save_pkl(params_normal, "nb0_epoch500_params.pkl")
+    if t % 200 == 0:
+        l = float(mse_loss(params_normal, xi, yi))
+        print(f"  epoch {t:5d}  loss={l:.6f}")
+
+save_pkl(params_normal, "nb0_fcnn_params.pkl")     # epoch 1000 (final)
+final_loss = float(mse_loss(params_normal, xi, yi))
+print(f"  Normal net final loss: {final_loss:.6f}  "
+      f"[noise floor ≈ {SIGMA**2:.4f}]")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 2.  Overfit network  [1, 128, 128, 128, 1] — 5000 Adam epochs
@@ -220,133 +181,24 @@ print(f"  Final pred range: [{y_pred_normal.min():.3f}, {y_pred_normal.max():.3f
 print("\n=== Training overfit network [1,128,128,128,1], 5000 Adam epochs ===")
 key, init_key_of = jax.random.split(key)
 
-params_overfit, _ = train_adam(
-    layer_sizes=[1, 128, 128, 128, 1],
-    n_epochs=5000,
-    lr=0.005,
-    init_key=init_key_of,
-    save_at=set(),
-    print_every=1000,
-)
+params_overfit = init_params([1, 128, 128, 128, 1], init_key_of)
+m_of, v_of = adam_init(params_overfit)
 
-overfit_save = [(np.array(W), np.array(b)) for W, b in params_overfit]
-path_of = os.path.join(ASSETS_DIR, "nb0_overfit_params.pkl")
-with open(path_of, "wb") as f:
-    pickle.dump(overfit_save, f)
-print(f"  Saved nb0_overfit_params.pkl  ({os.path.getsize(path_of)/1024:.1f} KB)")
+for t in range(1, 5001):
+    grads = grad_fn(params_overfit, xi, yi)
+    params_overfit, m_of, v_of = adam_step(
+        params_overfit, grads, m_of, v_of, t, lr=0.005)
+    if t % 1000 == 0:
+        l = float(mse_loss(params_overfit, xi, yi))
+        print(f"  epoch {t:5d}  loss={l:.6f}")
 
-xi_chk = jnp.array(x_norm, dtype=jnp.float32).reshape(-1, 1)
-yi_chk = jnp.array(y_noisy_np, dtype=jnp.float32)
-overfit_loss = float(mse_loss(params_overfit, xi_chk, yi_chk))
-y_pred_overfit = predict_np(params_overfit, xg_norm)
-print(f"  Overfit train loss: {overfit_loss:.5f}  "
+save_pkl(params_overfit, "nb0_overfit_params.pkl")
+overfit_loss = float(mse_loss(params_overfit, xi, yi))
+print(f"  Overfit net final loss: {overfit_loss:.5f}  "
       f"(noise floor={SIGMA**2:.4f}, ratio={overfit_loss/SIGMA**2:.2f})")
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 3.  Trophy figure  — 4 panels, clearly distinct stages
-# ══════════════════════════════════════════════════════════════════════════════
-print("\n=== Rendering trophy figure ===")
-
-TROPHY_FNAMES = [
-    ("nb0_epoch0_params.pkl",   "Época 0"),
-    ("nb0_epoch200_params.pkl", "Época 200"),
-    ("nb0_epoch500_params.pkl", "Época 500"),
-    ("nb0_fcnn_params.pkl",     "Época 1000"),
-]
-
-C_DATA  = "#aaaaaa"
-C_MODEL = "#e74c3c"
-C_TRUE  = "#2980b9"
-
-fig, axes = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
-fig.suptitle("Progressão do treino — senoide amortecida", fontsize=14,
-             fontweight="bold")
-
-for ax, (fname, title) in zip(axes, TROPHY_FNAMES):
-    path = os.path.join(ASSETS_DIR, fname)
-    with open(path, "rb") as f:
-        p = pickle.load(f)
-    y_pred = predict_np(p, xg_norm)
-    loss_val = float(mse_loss(p, xi_chk, yi_chk))
-
-    ax.scatter(x_np, y_noisy_np, s=8, alpha=0.45, color=C_DATA,
-               label="dados ruidosos", zorder=2)
-    ax.plot(x_grid, y_grid, "--", lw=1.5, color=C_TRUE,
-            label="função verdadeira", zorder=3)
-    ax.plot(x_grid, y_pred, "-",  lw=2.0, color=C_MODEL,
-            label="modelo", zorder=4)
-
-    ax.set_title(f"{title}\n(perda = {loss_val:.3f})", fontsize=11)
-    ax.set_xlabel("x", fontsize=11)
-    if ax is axes[0]:
-        ax.set_ylabel("y", fontsize=11)
-    ax.set_xlim(0, X_MAX)
-    ax.set_ylim(-2.2, 2.2)
-    ax.grid(True, alpha=0.3)
-
-axes[-1].legend(loc="upper right", fontsize=9)
-plt.tight_layout()
-
-trophy_path = os.path.join(ASSETS_DIR, "nb0_fig_trophy.png")
-fig.savefig(trophy_path, dpi=120, bbox_inches="tight")
-plt.close(fig)
-print(f"  Saved nb0_fig_trophy.png  ({os.path.getsize(trophy_path)/1024:.1f} KB)")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 4.  Overfit comparison figure
-# ══════════════════════════════════════════════════════════════════════════════
-print("\n=== Rendering overfit comparison figure ===")
-
-# Load final normal model
-path_good = os.path.join(ASSETS_DIR, "nb0_fcnn_params.pkl")
-with open(path_good, "rb") as f:
-    p_good = pickle.load(f)
-y_pred_good = predict_np(p_good, xg_norm)
-good_loss = float(mse_loss(p_good, xi_chk, yi_chk))
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
-fig.suptitle("Generalização vs. Sobreajuste (overfitting)",
-             fontsize=14, fontweight="bold")
-
-# Left — good fit
-ax1.scatter(x_np, y_noisy_np, s=8, alpha=0.4, color=C_DATA,
-            label="dados ruidosos")
-ax1.plot(x_grid, y_grid, "--", lw=1.5, color=C_TRUE,
-         label="função verdadeira")
-ax1.plot(x_grid, y_pred_good, "-", lw=2, color=C_MODEL,
-         label="modelo [1,32,32,1]")
-ax1.set_title(f"Rede pequena — generaliza bem\n"
-              f"perda de treino = {good_loss:.4f}", fontsize=11)
-ax1.set_xlabel("x", fontsize=11)
-ax1.set_ylabel("y", fontsize=11)
-ax1.set_xlim(0, X_MAX)
-ax1.set_ylim(-2.2, 2.2)
-ax1.legend(fontsize=9)
-ax1.grid(True, alpha=0.3)
-
-# Right — overfit
-ax2.scatter(x_np, y_noisy_np, s=8, alpha=0.4, color=C_DATA,
-            label="dados ruidosos")
-ax2.plot(x_grid, y_grid, "--", lw=1.5, color=C_TRUE,
-         label="função verdadeira")
-ax2.plot(x_grid, y_pred_overfit, "-", lw=2, color="#e67e22",
-         label="modelo [1,128,128,128,1]")
-ax2.set_title(f"Rede grande — sobreajuste!\n"
-              f"perda de treino = {overfit_loss:.4f}  "
-              f"(< ruído σ²={SIGMA**2:.4f})", fontsize=11)
-ax2.set_xlabel("x", fontsize=11)
-ax2.set_xlim(0, X_MAX)
-ax2.legend(fontsize=9)
-ax2.grid(True, alpha=0.3)
-
-plt.tight_layout()
-ov_path = os.path.join(ASSETS_DIR, "nb0_fig_overfit.png")
-fig.savefig(ov_path, dpi=120, bbox_inches="tight")
-plt.close(fig)
-print(f"  Saved nb0_fig_overfit.png  ({os.path.getsize(ov_path)/1024:.1f} KB)")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 5.  Summary
+# 3.  Summary
 # ══════════════════════════════════════════════════════════════════════════════
 elapsed = time.time() - t0
 print(f"\n=== Asset summary  (total time: {elapsed:.1f}s) ===")
@@ -356,8 +208,6 @@ asset_files = [
     "nb0_epoch500_params.pkl",
     "nb0_fcnn_params.pkl",
     "nb0_overfit_params.pkl",
-    "nb0_fig_trophy.png",
-    "nb0_fig_overfit.png",
 ]
 total_kb = 0.0
 for fname in asset_files:
