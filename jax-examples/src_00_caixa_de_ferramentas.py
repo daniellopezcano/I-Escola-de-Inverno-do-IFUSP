@@ -831,3 +831,166 @@ print("de TESTE é diferente da distribuição de TREINO.")
 # 3. **(🟣 Desafio) SGD puro vs. momentum:**
 #    Remova o momentum ($\beta = 0$) do Bloco A e compare a convergência.
 #    Quanto mais lento é? Tente compensar aumentando a taxa de aprendizado.
+
+# %% [markdown]
+# ---
+# ## Desempenho em dados de teste
+#
+# Até aqui, avaliamos os modelos nos **mesmos dados** usados para treinar.
+# Mas o objetivo real é **generalizar** para dados novos.
+# Vamos gerar um conjunto de teste independente (mesma distribuição, ruído
+# novo) e comparar os dois modelos.
+
+# %%
+# ── Gerar dados de teste (mesma distribuição, semente diferente) ─────────────
+k_test_x, k_test_ruido = jax.random.split(jax.random.PRNGKey(123))
+
+x_teste = jnp.sort(jax.random.uniform(
+    k_test_x, (N_DADOS,), minval=0.0, maxval=float(X_MAX)))
+y_teste_ruidoso = senoide_amortecida(x_teste) + \
+    jax.random.normal(k_test_ruido, (N_DADOS,)) * SIGMA_EP
+
+x_teste_in = normalizar_x(x_teste).reshape(-1, 1)
+
+# ── Perda de teste para cada modelo ─────────────────────────────────────────
+perda_teste_small = float(perda_eqx(modelo_b, x_teste_in, y_teste_ruidoso))
+perda_teste_big   = float(perda_eqx(modelo_of, x_teste_in, y_teste_ruidoso))
+
+print(f"{'':18s} {'Treino':>10s}  {'Teste':>10s}")
+print(f"{'Small [1,32,32,1]':18s} {perda_final_b:10.4f}  {perda_teste_small:10.4f}")
+print(f"{'Big [1,128³,1]':18s} {perda_final_of:10.4f}  {perda_teste_big:10.4f}")
+print(f"{'Piso (σ²)':18s} {SIGMA_EP**2:10.4f}")
+
+# %%
+# ── Plotar: dados de teste + predições dos dois modelos ──────────────────────
+fig, ax = plt.subplots(figsize=(10, 4.5))
+
+ax.scatter(x_teste, y_teste_ruidoso, s=15, alpha=0.5, color="#aaaaaa",
+           label="dados de teste (novos)", zorder=2)
+ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
+        label="função verdadeira", zorder=3)
+ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1),
+        "-", lw=2.0, color="#27ae60",
+        label=f"small — teste MSE = {perda_teste_small:.4f}", zorder=4)
+ax.plot(x_grade, jax.vmap(modelo_of)(xg_in).squeeze(-1),
+        "-", lw=2.0, color="#e67e22",
+        label=f"big — teste MSE = {perda_teste_big:.4f}", zorder=4)
+
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_title("Desempenho em dados de teste — small vs big")
+ax.legend(fontsize=9)
+ax.set_xlim(0, float(X_MAX))
+ax.set_ylim(-2.2, 2.2)
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# A rede pequena mantém desempenho semelhante no treino e no teste —
+# ela **generalizou**. A rede grande tem perda de treino baixíssima
+# (abaixo do piso do ruído!), mas no teste piora: ela **decorou o ruído**
+# em vez de aprender a função subjacente. Isso é o **sobreajuste** em ação.
+
+# %% [markdown]
+# ---
+# ## Extrapolação fora do domínio de treino
+#
+# O modelo foi treinado com $x \in [0, 4\pi]$. Ele devolve predições para
+# qualquer $x$ — inclusive fora dessa faixa. Mas podemos confiar nelas?
+
+# %%
+# ── Faixa estendida: ir além do domínio de treino ───────────────────────────
+x_ext = jnp.linspace(-4.0, float(X_MAX) + 4.0, 800)
+y_ext_verdadeiro = senoide_amortecida(x_ext)
+x_ext_in = normalizar_x(x_ext).reshape(-1, 1)
+
+y_ext_pred = jax.vmap(modelo_b)(x_ext_in).squeeze(-1)
+
+fig, ax = plt.subplots(figsize=(10, 4.5))
+
+# Sombrear a região de treino
+ax.axvspan(0, float(X_MAX), alpha=0.10, color="#2980b9",
+           label="região de treino")
+
+ax.plot(x_ext, y_ext_verdadeiro, "--", lw=1.5, color="#2980b9",
+        label="função verdadeira")
+ax.plot(x_ext, y_ext_pred, "-", lw=2.0, color="#27ae60",
+        label="predição do modelo")
+
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_title("Extrapolação — modelo pequeno [1, 32, 32, 1]")
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# Dentro da região de treino (sombreada), o modelo acompanha a função real.
+# Fora dela, diverge — às vezes suavemente, às vezes de forma dramática.
+#
+# Isso é uma propriedade geral de redes neurais, não um defeito deste modelo
+# em particular: **o modelo não extrapola de forma confiável**. Ele sempre
+# devolve *algum* número, mas fora do suporte dos dados de treino esse número
+# é ditado pela arquitetura, não pela física — e o modelo falha **em silêncio**,
+# sem nenhum aviso de que saímos do território conhecido.
+
+# %% [markdown]
+# ---
+# ## Mudança de parâmetro: $\lambda$ ligeiramente diferente
+#
+# E se os dados novos vierem da **mesma família de funções**, mas com um
+# parâmetro diferente? O modelo foi treinado com $\lambda = 2.0$; vamos
+# testá-lo com $\lambda = 2.5$.
+
+# %%
+# ── Dados com lam diferente (mesmo intervalo de x) ──────────────────────────
+LAM_SHIFT = 2.5
+
+y_grade_shift = senoide_amortecida(x_grade, lam=LAM_SHIFT)
+
+k_shift_x, k_shift_ruido = jax.random.split(jax.random.PRNGKey(456))
+x_shift = jnp.sort(jax.random.uniform(
+    k_shift_x, (N_DADOS,), minval=0.0, maxval=float(X_MAX)))
+y_shift_ruidoso = senoide_amortecida(x_shift, lam=LAM_SHIFT) + \
+    jax.random.normal(k_shift_ruido, (N_DADOS,)) * SIGMA_EP
+
+x_shift_in = normalizar_x(x_shift).reshape(-1, 1)
+perda_shift = float(perda_eqx(modelo_b, x_shift_in, y_shift_ruidoso))
+
+# ── Plot ────────────────────────────────────────────────────────────────────
+fig, ax = plt.subplots(figsize=(10, 4.5))
+
+ax.scatter(x_shift, y_shift_ruidoso, s=15, alpha=0.5, color="#aaaaaa",
+           label=f"dados (λ = {LAM_SHIFT})", zorder=2)
+ax.plot(x_grade, y_grade_shift, "--", lw=1.5, color="#8e44ad",
+        label=f"verdadeira (λ = {LAM_SHIFT})", zorder=3)
+ax.plot(x_grade, y_grade, ":", lw=1.0, color="#2980b9",
+        label="verdadeira (λ = 2.0, treino)", zorder=2)
+ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1),
+        "-", lw=2.0, color="#27ae60",
+        label=f"modelo (treinado com λ = 2.0) — MSE = {perda_shift:.4f}",
+        zorder=4)
+
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_title(f"Mudança de parâmetro: λ = 2.0 → {LAM_SHIFT}")
+ax.legend(fontsize=9)
+ax.set_xlim(0, float(X_MAX))
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+print(f"Perda no treino original (λ = 2.0) : {perda_final_b:.4f}")
+print(f"Perda nos dados com λ = {LAM_SHIFT}      : {perda_shift:.4f}")
+
+# %% [markdown]
+# O modelo degradou quando aplicado a dados com $\lambda = 2.5$ — mesmo
+# que a forma funcional seja idêntica e o intervalo de $x$ seja o mesmo.
+# Uma mudança pequena no processo gerador já basta para perder qualidade.
+#
+# Na próxima aula, veremos que isso é um caso concreto de **domain shift**
+# (mudança de domínio): a distribuição dos dados muda entre treino e
+# aplicação, e o modelo degrada em silêncio. Aprenderemos técnicas de
+# **adaptação de domínio** para lidar com essa situação.
