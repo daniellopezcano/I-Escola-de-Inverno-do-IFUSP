@@ -13,92 +13,50 @@
 # ---
 
 # %% [markdown]
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas_v2.ipynb)
 #
-# # 🟢 Notebook 00 — A Caixa de Ferramentas
-# ### Python, Google Colab e JAX na prática
-# **I Escola de Inverno do IFUSP — Bloco L01_B02**
+# # Notebook 00 — A Caixa de Ferramentas
+# ### JAX, redes neurais do zero e com bibliotecas
+# **I Escola de Inverno do IFUSP — Bloco L1B2**
 #
 # > **Modo de uso:** demo guiada pelo instrutor; vocês recebem o notebook depois.
-# > Objetivo: dominar o ambiente (Colab, GitHub, JAX) e construir uma rede neural
-# > completamente do zero — camadas, perda, gradiente, treino — sem nenhuma biblioteca
-# > de ML de alto nível.
-#
-# ---
-#
-# ### 🗺️ Mapa do Curso
-#
-# | Dia | Bloco | Tema |
-# |-----|-------|------|
-# | Ter. 21/07 | L01_B01 | ML e Física: o mapa do território |
-# | **Ter. 21/07** | **L01_B02 ← você está aqui** | **A caixa de ferramentas** |
-# | Qua. 22/07 | L02_B01 | Domain shift: teoria |
-# | Qua. 22/07 | L02_B02 | Mão na massa I — quebrar e consertar um classificador |
-# | Qui. 23/07 | L03_B01 | Aprendizado contrastivo: teoria |
-# | Qui. 23/07 | L03_B02 | Mão na massa II — esculpindo embeddings |
-# | Sex. 24/07 | L04_B01 | Halos de matéria escura com segmentação de instâncias |
-# | Sex. 24/07 | L04_B02 | J-PAS: domain adaptation com quasares reais |
+# > Ao final, vocês terão construído e treinado uma rede neural para regressão
+# > — primeiro na mão (JAX puro), depois com Equinox + Optax.
 
 # %% [markdown]
-# ## 🟢 O que é este ambiente?
+# ## O que é este ambiente?
 #
-# **Google Colab** é um serviço gratuito do Google que permite executar código Python
-# num servidor remoto, direto do navegador — sem instalar nada. O que você vê é um
-# *notebook Jupyter*: um documento interativo formado por:
+# **Google Colab** roda Python num servidor remoto, direto do navegador.
+# O documento é um *notebook Jupyter*:
 #
-# - **Células de código** (fundo cinza): contêm código Python executável. Clique e
-#   pressione `Shift+Enter` para rodar.
-# - **Células de texto** (como esta): explicações em Markdown. Duplo-clique para editar.
+# - **Células de código** (fundo cinza): `Shift+Enter` para executar.
+# - **Células de texto** (como esta): explicações em Markdown.
 #
-# **O kernel** é o processo Python que roda em segundo plano.
-# Cada célula que você executa mantém o estado: variáveis definidas numa célula
-# ficam disponíveis nas seguintes.
-#
-# **GitHub** é o repositório de código onde este notebook vive. Pense nele como
-# um Google Drive para código — com histórico de versões e colaboração. O botão
-# "Open in Colab" no topo faz exatamente isso: abre o notebook direto do repositório.
-#
-# **CPU vs. GPU vs. TPU** (menu *Runtime → Change runtime type*):
-# - CPU = poucos processadores muito rápidos (médicos especialistas)
-# - GPU = milhares de processadores simples em paralelo (estagiários fazendo a mesma conta)
-# - Para álgebra linear de matrizes grandes, a GPU é 10–100× mais rápida.
-
-# %% [markdown]
-# ## 🔵 Setup — importações e configuração global
+# Cada célula executada mantém o estado: variáveis ficam disponíveis nas seguintes.
 
 # %%
-# Configurações globais — execute esta célula primeiro!
-import os
-import pickle
+# Instalação de pacotes (só no Colab — localmente já estão instalados)
+import subprocess, sys
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-q",
+         "jax", "jaxlib", "equinox", "optax", "matplotlib"])
+except ImportError:
+    pass
+
+# %%
 import time
-import pathlib
-import numpy as np
+
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from IPython.display import display
 
-# ── Chave de reprodutibilidade
-SEMENTE = 42
-CHAVE   = jax.random.PRNGKey(SEMENTE)
+# Semente de reprodutibilidade
+SEED = 42
+KEY = jax.random.PRNGKey(SEED)
 
-# ── Modo PRETRAINED:
-#   True  → carrega checkpoints do cache se existirem; gera com Adam na 1ª execução.
-#   False → treina do zero com SGD ao vivo (modo demonstração).
-PRETRAINED = True
-
-# ── Caminho dos assets (checkpoints pré-computados, gitignored)
-# Resolve independente de onde o notebook é executado (script vs. Jupyter/Colab).
-try:
-    ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
-except NameError:  # Jupyter/Colab: __file__ não existe; usa caminho relativo ao CWD
-    _cand = pathlib.Path("../assets").resolve()
-    ASSETS = _cand if _cand.parent.name == "jax-examples" \
-             else pathlib.Path("/tmp/nb00_assets")
-
-ASSETS.mkdir(exist_ok=True, parents=True)
-
-# ── Estilo global dos gráficos
+# Estilo dos gráficos
 plt.rcParams.update({
     "figure.dpi": 110,
     "axes.titlesize": 12,
@@ -106,338 +64,299 @@ plt.rcParams.update({
     "legend.fontsize": 9,
 })
 
-
-# ── Helpers de I/O de checkpoints ─────────────────────────────────────────────
-
-def carregar_pkl(fname):
-    """Carrega lista de (W, b) a partir de um arquivo pickle."""
-    with open(ASSETS / fname, "rb") as f:
-        return pickle.load(f)
-
-
-def salvar_pkl(params, fname):
-    """Salva lista de (W, b) como numpy arrays (portabilidade entre JAX/numpy)."""
-    params_np = [(np.array(W), np.array(b)) for W, b in params]
-    with open(ASSETS / fname, "wb") as f:
-        pickle.dump(params_np, f)
-
-
-def _checkpoints_ok(*fnames):
-    """Retorna True se PRETRAINED=True e todos os arquivos existem em assets/."""
-    return PRETRAINED and all((ASSETS / f).exists() for f in fnames)
-
-
-# ── Helpers de Adam (manual, sem optax) ───────────────────────────────────────
-# Usados apenas na geração automática de checkpoints (PRETRAINED=True, 1ª exec.).
-
-def adam_init(params):
-    """Inicializa estados de momento (m, v) zerados."""
-    m = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
-    v = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
-    return m, v
-
-
-def adam_passo(params, grads, m, v, t,
-               lr=0.01, b1=0.9, b2=0.999, eps=1e-8):
-    """Um passo de Adam com correção de bias."""
-    new_m = [(b1*mW + (1-b1)*gW, b1*mb + (1-b1)*gb)
-             for (mW, mb), (gW, gb) in zip(m, grads)]
-    new_v = [(b2*vW + (1-b2)*gW**2, b2*vb + (1-b2)*gb**2)
-             for (vW, vb), (gW, gb) in zip(v, grads)]
-    mhat  = [(mW/(1-b1**t), mb/(1-b1**t)) for mW, mb in new_m]
-    vhat  = [(vW/(1-b2**t), vb/(1-b2**t)) for vW, vb in new_v]
-    new_p = [(W - lr*mWh/(jnp.sqrt(vWh)+eps),
-              b - lr*mbh/(jnp.sqrt(vbh)+eps))
-             for (W, b), (mWh, mbh), (vWh, vbh)
-             in zip(params, mhat, vhat)]
-    return new_p, new_m, new_v
-
-
-print(f"JAX versão : {jax.__version__}")
-print(f"Dispositivo: {jax.devices()[0]}")
-print(f"PRETRAINED : {PRETRAINED}")
-print(f"Assets em  : {ASSETS.resolve()}")
+print(f"JAX versão  : {jax.__version__}")
+print(f"Dispositivo : {jax.devices()[0]}")
 
 # %% [markdown]
-# ## 🔵 CPU vs. GPU — vamos medir a diferença
+# ---
+# ## 1. Backbone matemático em JAX — arrays, shapes, broadcasting
+#
+# Toda rede neural, no fundo, é uma sequência de **multiplicações de matrizes**
+# seguidas de funções não-lineares. Por isso, o primeiro passo é dominar arrays
+# e suas operações. Fazemos tudo com `jax.numpy` (abreviado `jnp`).
+
+# %% [markdown]
+# ### Criando arrays
 
 # %%
-# Multiplicação de matrizes grandes: quanto tempo demora em cada hardware?
-TAMANHO = 2000  # matriz 2000 × 2000
+# Criando arrays com jax.numpy
+vetor = jnp.array([1.0, 2.0, 3.0])
+print("vetor       :", vetor)
+print("vetor.shape :", vetor.shape)    # (3,) — um vetor com 3 elementos
+print("vetor.dtype :", vetor.dtype)    # float32 — padrão do JAX
+print()
 
-# Cria matrizes aleatórias (usando JAX; bloqueia até concluir com .block_until_ready())
+# Funções utilitárias
+zeros = jnp.zeros(5)
+uns   = jnp.ones((2, 3))              # matriz 2x3 de uns
+grade = jnp.linspace(0, 10, 5)        # 5 pontos igualmente espaçados
+print("zeros       :", zeros)
+print("uns         :\n", uns)
+print("grade       :", grade)
+
+# %% [markdown]
+# ### Broadcasting — operações entre arrays de tamanhos diferentes
+#
+# Quando operamos um escalar com um vetor, o JAX "estica" automaticamente
+# o escalar para ter o mesmo tamanho. Essa regra se generaliza para
+# dimensões maiores — é o **broadcasting**.
+
+# %%
+# Regra 1: escalar + vetor — o escalar é "esticado"
+T_celsius = jnp.array([20.1, 21.5, 19.8, 22.3])
+T_kelvin  = T_celsius + 273.15   # 273.15 (shape ()) → esticado para shape (4,)
+
+print("T_celsius.shape :", T_celsius.shape)
+print("273.15 (escalar) é esticado para (4,)")
+print("T_kelvin        :", T_kelvin)
+
+# %%
+# Regra 2: duas dimensões compatíveis — ambas são esticadas
+coluna = jnp.array([[1.0],
+                     [2.0],
+                     [3.0]])          # shape (3, 1)
+linha  = jnp.array([[10, 20, 30, 40]])  # shape (1, 4)
+
+print("coluna.shape :", coluna.shape, " — 3 linhas, 1 coluna")
+print("linha.shape  :", linha.shape, " — 1 linha, 4 colunas")
+print()
+
+resultado = coluna + linha   # (3,1) + (1,4) → (3,4)
+print("coluna + linha → shape", resultado.shape)
+print(resultado)
+
+# %% [markdown]
+# ### Produtos de matrizes — a operação central do ML
+#
+# Uma camada de rede neural faz essencialmente: $\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})$.
+# Vamos ver as várias formas de multiplicar matrizes em JAX.
+
+# %%
+M = jnp.array([[1.0, 2.0],
+               [3.0, 4.0]])
+v = jnp.array([1.0, 0.5])
+
+# Produto matriz-vetor
+print("M @ v              :", M @ v)
+print("jnp.dot(M, v)      :", jnp.dot(M, v))
+print("einsum('ij,j->i')  :", jnp.einsum('ij,j->i', M, v))
+print()
+
+# Produto de matrizes
+N = jnp.array([[0.5, 0.0],
+               [0.0, 2.0]])
+print("M @ N (produto de matrizes):\n", M @ N)
+print()
+
+# CUIDADO: * é elemento a elemento, NÃO é produto de matrizes!
+print("M * N (elemento a elemento — diferente de M @ N!):\n", M * N)
+
+# %% [markdown]
+# ---
+# ## 2. CPU vs GPU — por que ML ficou viável
+#
+# A GPU (*Runtime > Change runtime type* no Colab) tem **milhares de
+# processadores simples em paralelo**, ideais para multiplicar matrizes grandes.
+# É isso que torna o treino de redes neurais possível.
+
+# %%
+TAMANHO = 2000  # matriz 2000 x 2000
+
 A_mat = jax.random.normal(jax.random.PRNGKey(0), (TAMANHO, TAMANHO))
 B_mat = jax.random.normal(jax.random.PRNGKey(1), (TAMANHO, TAMANHO))
 
-# Primeiro chamada compila o kernel (JIT) — descartamos esse tempo
+# Primeira chamada compila o kernel — descartamos
 _ = (A_mat @ B_mat).block_until_ready()
 
 # Agora medimos
-t_ini = time.perf_counter()
-C_mat = (A_mat @ B_mat).block_until_ready()
-t_fim = time.perf_counter()
+t0 = time.perf_counter()
+_ = (A_mat @ B_mat).block_until_ready()
+dt = time.perf_counter() - t0
 
 dispositivo = jax.devices()[0].device_kind
-print(f"Multiplicação de matrizes {TAMANHO}×{TAMANHO}")
+print(f"Multiplicação {TAMANHO}x{TAMANHO}")
 print(f"  Dispositivo : {dispositivo}")
-print(f"  Tempo       : {(t_fim - t_ini)*1e3:.1f} ms")
+print(f"  Tempo       : {dt*1e3:.1f} ms")
 print()
-print("💡 No Colab com GPU, este mesmo cálculo leva <5 ms — 50–100× mais rápido!")
+print("No Colab com GPU, este mesmo cálculo leva <5 ms — 50-100x mais rápido!")
 
 # %% [markdown]
-# ## 🟢 O stack Python científico
+# ---
+# ## 3. Matplotlib — nosso primeiro gráfico
 #
-# Antes de JAX, precisamos entender a base:
+# Vamos plotar uma **senoide amortecida** — a função que usaremos
+# como alvo ao longo de todo o notebook:
 #
-# - **NumPy** — a *lingua franca* da computação científica em Python.
-#   Todo array de dados que você manuseia em física computacional é um `numpy.ndarray`.
-#   Operações vetorizadas (sem laços Python) são a regra de ouro.
-#
-# - **Matplotlib** — a biblioteca padrão de visualização. Simples, controlável, bonita.
-#
-# - **JAX** — "NumPy que sabe derivar e roda em GPU."
-#   Três superpoderes: `jax.numpy` (API idêntica ao NumPy), `jax.grad` (derivadas exatas
-#   de qualquer código Python), e `jit/vmap` (compilação + vetorização automática).
-#
-# > *Regra prática: se você sabe NumPy, você já sabe 90% da sintaxe do JAX.*
-
-# %% [markdown]
-# ## 🔵 NumPy — arrays, shapes e broadcasting
+# $$y = A\,\sin\!\left(\frac{2\pi x}{\lambda}\right)\,e^{-x/\tau}$$
 
 # %%
-# Criação de arrays e operações elementares
-posicao = np.array([1.0, 2.0, 3.0])       # vetor de posição (m)
-velocidade = np.array([0.5, -1.0, 0.25])   # velocidade (m/s)
+def senoide_amortecida(x, A=1.5, lam=2.0, tau=6.0):
+    """Senoide amortecida — a função-alvo do nosso exercício."""
+    return A * jnp.sin(2.0 * jnp.pi * x / lam) * jnp.exp(-x / tau)
 
-print("posicao.shape    :", posicao.shape)
-print("posicao.dtype    :", posicao.dtype)
-print("posicao + velocidade:", posicao + velocidade)
 
-# Broadcasting: somamos um escalar (temperatura de referência) ao vetor
-T_ref  = 273.15
-T_data = np.array([20.1, 21.5, 19.8, 22.3])    # medidas em Celsius
-T_kelvin = T_data + T_ref                        # broadcasting: escalar + vetor
-print("\nTemperaturas (K):", T_kelvin)
-
-# Operações matriciais — matrizes como transformações lineares
-M = np.array([[2.0, 0.0],
-              [0.0, 0.5]])              # escala x por 2, y por 0.5
-vetor = np.array([1.0, 3.0])
-print("\nM @ vetor =", M @ vetor)      # produto matriz-vetor
-
-# %% [markdown]
-# ## 🔵 NumPy — fatiamento e indexação
-
-# %%
-# Simulando um "espectro" com 54 bandas fotométricas (gancho para o J-PAS)
-np.random.seed(42)
-espectro_jpas = np.random.rand(54)     # 54 bandas entre 0 e 1
-
-print("Espectro completo (54 bandas):", espectro_jpas.shape)
-print("Bandas pares (amostragem 2×) :", espectro_jpas[::2].shape)
-print("Bandas 10–20                 :", espectro_jpas[10:21].shape)
-
-# Indexação booleana: quais bandas estão acima de 0.8?
-bandas_brilhantes = espectro_jpas > 0.8
-print(f"\n{bandas_brilhantes.sum()} bandas com fluxo > 0.8")
-print("Índices:", np.where(bandas_brilhantes)[0])
-
-# Seleção de múltiplos objetos: 3 estrelas com espectros aleatórios
-catalogo = np.random.rand(1000, 54)    # 1000 objetos, 54 bandas
-amostra  = catalogo[[0, 42, 99], :]   # seleção por índice
-print(f"\nAmostra de 3 objetos: {amostra.shape}")
-
-# %% [markdown]
-# ## 🔵 Matplotlib — um gráfico científico em 1 célula
-
-# %%
-# Plotar uma senoide amortecida (spoiler: esta é a função que vamos ajustar!)
-x_plot = np.linspace(0, 4 * np.pi, 300)
-y_plot = 1.5 * np.sin(2 * np.pi * x_plot / 2.0) * np.exp(-x_plot / 6.0)
+x_plot = jnp.linspace(0, 4 * jnp.pi, 300)
+y_plot = senoide_amortecida(x_plot)
 
 fig, ax = plt.subplots(figsize=(8, 3.5))
-ax.plot(x_plot, y_plot, lw=2, color="#2980b9", label=r"$y = A\sin(2\pi x/\lambda)\,e^{-x/\tau}$")
+ax.plot(x_plot, y_plot, lw=2, color="#2980b9",
+        label=r"$y = A\sin(2\pi x/\lambda)\,e^{-x/\tau}$")
 ax.axhline(0, color="gray", lw=0.8, ls="--")
 ax.set_xlabel("x")
 ax.set_ylabel("y")
-ax.set_title("Senoide amortecida — a função que vamos aprender a ajustar", fontsize=12)
+ax.set_title("Senoide amortecida — a função que vamos aprender a ajustar")
 ax.legend()
 ax.grid(True, alpha=0.35)
 plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# ## 🟢 JAX — NumPy que sabe derivar
+# ---
+# ## 🟣 (Opcional) Diferenciação automática — `jax.grad`
 #
-# O JAX tem três superpoderes que tornam o treino de redes neurais possível:
+# > Esta seção é opcional. Execute se houver tempo.
 #
-# 1. **`jax.numpy`** — API idêntica ao NumPy.
-#    Você troca `import numpy as np` por `import jax.numpy as jnp` e pronto.
-#
-# 2. **`jax.grad`** — diferenciação automática exata.
-#    Dado qualquer função Python `f(x)`, `jax.grad(f)` retorna uma nova função
-#    que calcula a derivada ∂f/∂x em qualquer ponto.
-#    *Isto é o que torna o treino possível: derivadas exatas de código arbitrário.*
-#
-# 3. **`jax.jit` / `jax.vmap`** — velocidade e vetorização.
-#    `jit` compila a função para XLA (acelera 10–100×).
-#    `vmap` paraleliza automaticamente sobre um eixo de batch.
-
-# %% [markdown]
-# ## 🔵 `jax.numpy` — drop-in do NumPy
+# O JAX calcula **derivadas exatas** de qualquer função Python com `jax.grad`.
+# É isto que torna o treino de redes neurais possível.
 
 # %%
-# A API é idêntica: simplesmente troque 'np' por 'jnp'
-x_jax = jnp.linspace(0, 4 * jnp.pi, 300)
-y_jax = jnp.sin(x_jax)                     # mesma chamada que em NumPy
-
-print("Tipo JAX :", type(x_jax))            # Array do JAX (roda em GPU)
-print("Shape    :", x_jax.shape)
-print("Máx. sin :", float(jnp.max(y_jax))) # float() converte para Python scalar
-
-# Broadcasting idêntico ao NumPy
-A_mat_jax = jnp.ones((3, 3)) * 2.0
-b_vec_jax = jnp.array([1.0, 2.0, 3.0])
-print("\nA @ b =", A_mat_jax @ b_vec_jax)
-
-# %% [markdown]
-# ## 🔵 `jax.grad` — derivadas exatas de qualquer função Python
-
-# %%
-# Exemplo 1: derivada de f(x) = x²  →  f'(x) = 2x
+# Exemplo simples: f(x) = x²  →  f'(x) = 2x
 def f(x):
     return x ** 2
 
-df_dx = jax.grad(f)               # df_dx é uma função Python!
-print(f"f'(3.0) = {df_dx(3.0)}")  # esperamos 2×3 = 6.0
-print(f"f'(5.0) = {df_dx(5.0)}")  # esperamos 2×5 = 10.0
+df_dx = jax.grad(f)   # df_dx é uma FUNÇÃO Python!
 
-# ── Exemplo 2: potencial de Lennard-Jones simplificado ────────────────────────
-# V(r) = 4ε[(σ/r)^12 - (σ/r)^6]  — usamos σ=ε=1 para simplificar
-def potencial_lj(r):
-    """Potencial de Lennard-Jones em unidades reduzidas (σ=ε=1)."""
-    return 4.0 * ((1.0 / r) ** 12 - (1.0 / r) ** 6)
-
-# A força é -dV/dr (derivada negativa do potencial)
-forca_lj = jax.grad(potencial_lj)
-
-r_vals = jnp.linspace(0.9, 2.5, 6)
-print("\nPotencial LJ e força:")
-for r in r_vals:
-    V = float(potencial_lj(r))
-    F = float(forca_lj(r))
-    print(f"  r={float(r):.2f}  V={V:+.3f}  F=-dV/dr={-F:+.3f}")
-
-print("\n💡 'jax.grad' calculou derivadas EXATAS de código Python puro.")
-print("   É isto que torna o treino de redes neurais possível.")
-
-# %% [markdown]
-# ## 🟣 (Opcional) `jax.jit` e `jax.vmap` — aceleração e batch
-#
-# > Esta seção é opcional. Execute apenas se tiver tempo ou GPU disponível.
+print("f(x) = x²")
+print(f"f'(3.0) = {df_dx(3.0):.1f}   (esperado: 2 x 3 = 6.0)")
+print(f"f'(5.0) = {df_dx(5.0):.1f}   (esperado: 2 x 5 = 10.0)")
 
 # %%
-# ── jax.jit: compila a função para XLA (evite em laços de aprendizado pequenos) ──
-def somar_quadrados(x):
-    return jnp.sum(x ** 2)
+# Derivada da senoide amortecida em relação a x
+# jax.vmap aplica a função a cada elemento do array automaticamente
+df_senoide = jax.vmap(jax.grad(senoide_amortecida))
 
-somar_jit = jax.jit(somar_quadrados)    # versão compilada
+x_ad = jnp.linspace(0.05, 4.0 * jnp.pi, 200)
+y_ad = senoide_amortecida(x_ad)
+dy_ad = df_senoide(x_ad)
 
-v_grande = jnp.ones(10_000_000)
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(x_ad, y_ad, lw=2, color="#2980b9", label=r"$f(x)$")
+ax.plot(x_ad, dy_ad, lw=2, color="#e74c3c", label=r"$f'(x) = \mathrm{d}f/\mathrm{d}x$")
+ax.axhline(0, color="gray", lw=0.8, ls="--")
+ax.set_xlabel("x")
+ax.set_title("Função e derivada — calculadas automaticamente pelo JAX")
+ax.legend()
+ax.grid(True, alpha=0.35)
+plt.tight_layout()
+plt.show()
 
-# Primeiro call: compila (descartamos)
-_ = somar_jit(v_grande).block_until_ready()
-
-t0 = time.perf_counter()
-r1 = somar_quadrados(v_grande).block_until_ready()
-dt_sem_jit = time.perf_counter() - t0
-
-t0 = time.perf_counter()
-r2 = somar_jit(v_grande).block_until_ready()
-dt_com_jit = time.perf_counter() - t0
-
-print(f"Sem jit : {dt_sem_jit*1e3:.2f} ms")
-print(f"Com jit : {dt_com_jit*1e3:.2f} ms")
-print(f"Aceleração: {dt_sem_jit/dt_com_jit:.1f}×  (varia por hardware)")
-
-# ── jax.vmap: vetoriza sobre um eixo de batch automaticamente ─────────────────
-def distancia_euclidiana(x, y):
-    return jnp.sqrt(jnp.sum((x - y) ** 2))
-
-# Versão vetorizada: calcula distâncias para N pares em uma chamada
-dist_batch = jax.vmap(distancia_euclidiana, in_axes=(0, 0))
-
-pontos_a = jnp.array([[0.0, 0.0], [1.0, 1.0], [2.0, 3.0]])
-pontos_b = jnp.array([[1.0, 1.0], [4.0, 5.0], [2.0, 3.0]])
-print("\nDistâncias (vmap):", dist_batch(pontos_a, pontos_b))
+print("jax.grad calculou a derivada EXATA — sem fórmula analítica!")
+print("É isto que usaremos para treinar redes neurais:")
+print("  derivar a perda em relação aos PESOS do modelo.")
 
 # %% [markdown]
 # ---
-# ## 🟢 O Exercício Central: Regressão com FCNN do Zero
+# ## 🟣 (Opcional) `jax.jit` e `jax.vmap`
+#
+# > Seção opcional. Estes são dois "superpoderes" do JAX:
+# >
+# > - `jax.jit` — compila a função para XLA, acelerando 10-100x.
+# > - `jax.vmap` — vetoriza automaticamente sobre um eixo de batch.
+
+# %%
+# ── jax.jit: compilação para XLA ─────────────────────────────────────────────
+def somar_quadrados(x):
+    return jnp.sum(x ** 2)
+
+somar_jit = jax.jit(somar_quadrados)
+
+v_grande = jnp.ones(10_000_000)
+_ = somar_jit(v_grande).block_until_ready()   # primeiro call compila
+
+t0 = time.perf_counter()
+_ = somar_quadrados(v_grande).block_until_ready()
+dt_sem = time.perf_counter() - t0
+
+t0 = time.perf_counter()
+_ = somar_jit(v_grande).block_until_ready()
+dt_com = time.perf_counter() - t0
+
+print(f"Sem jit : {dt_sem*1e3:.2f} ms")
+print(f"Com jit : {dt_com*1e3:.2f} ms")
+print(f"Aceleração: {dt_sem/max(dt_com, 1e-9):.1f}x")
+
+# ── jax.vmap: vetorização automática ─────────────────────────────────────────
+print()
+
+def distancia(a, b):
+    return jnp.sqrt(jnp.sum((a - b) ** 2))
+
+dist_batch = jax.vmap(distancia, in_axes=(0, 0))
+
+pts_a = jnp.array([[0.0, 0.0], [1.0, 1.0], [2.0, 3.0]])
+pts_b = jnp.array([[1.0, 1.0], [4.0, 5.0], [2.0, 3.0]])
+print("Distâncias (vmap):", dist_batch(pts_a, pts_b))
+
+# %% [markdown]
+# ---
+# ## Exercício Central: Regressão com Rede Neural
 #
 # Vamos construir e treinar uma **rede neural completamente conexa (FCNN)**
-# sem nenhuma biblioteca de ML — só NumPy/JAX puro.
-#
-# **A tarefa:** ajustar uma *senoide amortecida* com ruído gaussiano:
+# para ajustar a senoide amortecida com ruído gaussiano:
 #
 # $$y = A \sin\!\left(\frac{2\pi x}{\lambda}\right) e^{-x/\tau} + \varepsilon,
 #    \quad \varepsilon \sim \mathcal{N}(0, \sigma^2)$$
 #
 # Parâmetros: $A = 1.5$, $\lambda = 2$, $\tau = 6$, $\sigma = 0.15$.
 #
-# **A arquitetura FCNN:**
+# **Faremos o exercício duas vezes:**
 #
-# - Parâmetros = lista de tuplas `(W, b)` — uma por camada
-# - `forward(params, x)`: passa o input por todas as camadas
-#   (`tanh` nas ocultas, linear na saída)
-# - Camadas: `[1 → 32 → 32 → 1]`
+# | | Bloco A — do zero | Bloco B — com bibliotecas |
+# |---|---|---|
+# | Modelo | matrizes explícitas | `eqx.nn.MLP` (Equinox) |
+# | Forward | `h = tanh(x @ W + b)` | `modelo(x)` |
+# | Otimizador | SGD+momentum na mão | `optax.adam` (Optax) |
 #
-# Vamos ver o modelo melhorar passo a passo, época a época.
+# Ao final, demonstramos **sobreajuste** com uma rede grande demais.
 
 # %% [markdown]
-# ## 🔵 Gerar os dados
+# ### Gerar os dados
 
 # %%
-# ── Parâmetros da função alvo ─────────────────────────────────────────────────
-N_DADOS  = 200      # número de pontos de treino
-A_ALVO   = 1.5      # amplitude
-LAM      = 2.0      # comprimento de onda λ
-TAU      = 6.0      # constante de decaimento τ
-SIGMA_EP = 0.15     # desvio padrão do ruído ε
-X_MAX    = 4.0 * np.pi   # domínio: [0, 4π]
+# ── Parâmetros ────────────────────────────────────────────────────────────────
+N_DADOS  = 200
+SIGMA_EP = 0.15
+X_MAX    = 4.0 * jnp.pi
 
-# ── Gerar dados com semente fixa ─────────────────────────────────────────────
-chave_dados = CHAVE   # mesma chave da célula de setup
-chave_dados, k_x, k_ruido = jax.random.split(chave_dados, 3)
+# ── Gerar dados ──────────────────────────────────────────────────────────────
+key_dados, k_x, k_ruido = jax.random.split(KEY, 3)
 
-x_dados = np.sort(np.array(
-    jax.random.uniform(k_x, (N_DADOS,), minval=0.0, maxval=X_MAX)
-))
-
-# Função alvo
-def funcao_alvo(x):
-    return A_ALVO * np.sin(2.0 * np.pi * x / LAM) * np.exp(-x / TAU)
-
-y_verdadeiro = funcao_alvo(x_dados)
-ruido        = np.array(jax.random.normal(k_ruido, (N_DADOS,))) * SIGMA_EP
+x_dados      = jnp.sort(jax.random.uniform(k_x, (N_DADOS,),
+                                            minval=0.0, maxval=float(X_MAX)))
+y_verdadeiro = senoide_amortecida(x_dados)
+ruido        = jax.random.normal(k_ruido, (N_DADOS,)) * SIGMA_EP
 y_ruidoso    = y_verdadeiro + ruido
 
-# ── Normalização do input: x ∈ [0, 4π] → x_norm ∈ [−1, 1] ──────────────────
-# Essencial para evitar saturação das ativações tanh na primeira camada.
+# ── Normalizar x para [-1, 1] (essencial para ativações tanh) ────────────────
 def normalizar_x(x):
+    """Mapeia [0, X_MAX] para [-1, 1]."""
     return 2.0 * x / X_MAX - 1.0
 
 x_norm = normalizar_x(x_dados)
 
-# ── Grid denso para plotar a curva verdadeira ─────────────────────────────────
-x_grade      = np.linspace(0.0, X_MAX, 500)
-y_grade      = funcao_alvo(x_grade)
-x_grade_norm = normalizar_x(x_grade)
+# ── Preparar inputs para a rede: shape (N, 1) ────────────────────────────────
+x_in = x_norm.reshape(-1, 1)
+y_in = y_ruidoso
 
-# Pré-computa o input do grid em JAX (usado em vários plots abaixo)
-xg_in = jnp.array(x_grade_norm, dtype=jnp.float32).reshape(-1, 1)
+# ── Grid denso para plotar ───────────────────────────────────────────────────
+x_grade = jnp.linspace(0.0, float(X_MAX), 500)
+xg_in   = normalizar_x(x_grade).reshape(-1, 1)
+y_grade = senoide_amortecida(x_grade)
 
-# ── Visualizar ────────────────────────────────────────────────────────────────
+print(f"Dados: {N_DADOS} pontos, x em [0, 4pi]")
+print(f"Input normalizado: x_in.shape = {x_in.shape}")
+
+# %%
 fig, ax = plt.subplots(figsize=(8, 3.5))
 ax.scatter(x_dados, y_ruidoso, s=12, alpha=0.5, color="#aaaaaa",
            label=f"dados ruidosos (N={N_DADOS})", zorder=2)
@@ -445,417 +364,470 @@ ax.plot(x_grade, y_grade, "-", lw=2, color="#2980b9",
         label="função verdadeira", zorder=3)
 ax.set_xlabel("x")
 ax.set_ylabel("y")
-ax.set_title("Dados de treino: senoide amortecida com ruído gaussiano")
+ax.set_title("Dados de treino: senoide amortecida + ruído gaussiano")
 ax.legend()
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 
-print(f"y_ruidoso: [{y_ruidoso.min():.3f}, {y_ruidoso.max():.3f}]")
-print(f"Piso do ruído (σ²) = {SIGMA_EP**2:.4f}")
+print(f"Piso do ruído (sigma² = {SIGMA_EP**2:.4f})"
+      " — nenhum modelo deveria ter perda menor.")
 
 # %% [markdown]
-# ## 🔵 MLP do zero — `init_params` e `forward`
+# ---
+# ## Bloco A — FCNN do zero
+#
+# Vamos construir tudo explicitamente: pesos, forward pass, perda, gradiente,
+# e o loop de treino.
+
+# %% [markdown]
+# ### Inicialização dos pesos
+#
+# Os parâmetros são uma lista de tuplas $(W, b)$, uma por camada.
+# Usamos inicialização de **Glorot**: escala proporcional ao tamanho das camadas.
 
 # %%
-# ── Inicialização dos parâmetros ──────────────────────────────────────────────
-def init_params(tamanhos_camadas, chave):
-    """
-    Inicialização de Glorot (Xavier) para uma rede com camadas tamanhos_camadas.
-    Retorna uma lista de tuplas (W, b), uma por par de camadas consecutivas.
-    """
+def init_params(camadas, chave):
+    """Cria pesos (W, b) para cada camada com inicialização de Glorot."""
     params = []
-    for i in range(len(tamanhos_camadas) - 1):
-        chave, k_w = jax.random.split(chave)
-        entrada  = tamanhos_camadas[i]
-        saida    = tamanhos_camadas[i + 1]
-        # Inicialização de Glorot: escala proporcional ao tamanho das camadas
-        escala = np.sqrt(6.0 / (entrada + saida))
-        W = jax.random.uniform(k_w, (entrada, saida),
-                               minval=-escala, maxval=escala)
-        b = jnp.zeros(saida)
+    for i in range(len(camadas) - 1):
+        chave, k = jax.random.split(chave)
+        n_in, n_out = camadas[i], camadas[i + 1]
+        escala = jnp.sqrt(6.0 / (n_in + n_out))
+        W = jax.random.uniform(k, (n_in, n_out), minval=-escala, maxval=escala)
+        b = jnp.zeros(n_out)
         params.append((W, b))
     return params
 
 
-# ── Passagem para frente (forward pass) ───────────────────────────────────────
+# Rede [1 -> 32 -> 32 -> 1]
+CAMADAS = [1, 32, 32, 1]
+params_a = init_params(CAMADAS, jax.random.PRNGKey(0))
+
+print("Rede", CAMADAS)
+for i, (W, b) in enumerate(params_a):
+    print(f"  Camada {i}: W {W.shape}, b {b.shape}")
+total = sum(W.size + b.size for W, b in params_a)
+print(f"  Total: {total} parâmetros")
+
+# %% [markdown]
+# ### Forward pass
+#
+# Cada camada oculta aplica: $\mathbf{h} = \tanh(\mathbf{h}\,\mathbf{W} + \mathbf{b})$.
+# A camada de saída é linear (sem ativação).
+
+# %%
 def forward(params, x):
-    """
-    Propagação forward: ativação tanh nas camadas ocultas, linear na saída.
-    x: shape (N, d_entrada) → saída: shape (N, d_saida)
-    """
+    """Forward pass: tanh nas ocultas, linear na saída."""
     h = x
-    for W, b in params[:-1]:          # camadas ocultas com tanh
+    for W, b in params[:-1]:
         h = jnp.tanh(h @ W + b)
-    W, b = params[-1]                 # camada de saída — sem ativação
-    return h @ W + b
+    W_out, b_out = params[-1]
+    return h @ W_out + b_out
 
 
-# ── Testar com a arquitetura [1, 32, 32, 1] ────────────────────────────────────
-CAMADAS_NORMAL = [1, 32, 32, 1]
-chave_modelo = jax.random.PRNGKey(0)
-params_teste  = init_params(CAMADAS_NORMAL, chave_modelo)
-
-# Verificar shapes
-print("Parâmetros da rede [1, 32, 32, 1]:")
-for i, (W, b) in enumerate(params_teste):
-    print(f"  Camada {i}: W={W.shape}, b={b.shape}")
-
-# Teste de forward pass
-x_teste = jnp.array(x_norm[:5], dtype=jnp.float32).reshape(-1, 1)
-y_teste  = forward(params_teste, x_teste)
-print(f"\nForward de 5 amostras → shape {y_teste.shape}")
+# Teste rápido
+y_teste = forward(params_a, x_in[:5])
+print(f"Input  : shape {x_in[:5].shape}")
+print(f"Output : shape {y_teste.shape}")
 print(f"Predições iniciais (devem ser pequenas): {y_teste.squeeze()}")
 
 # %% [markdown]
-# ## 🔵 Função de perda — MSE
+# ### Função de perda — MSE
+#
+# $$\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N}(\hat{y}_i - y_i)^2$$
+#
+# É esta função que `jax.grad` vai diferenciar.
 
 # %%
 def perda_mse(params, x_batch, y_batch):
-    """
-    Erro quadrático médio: MSE = média de (ŷᵢ − yᵢ)²
-    É esta função que o jax.grad vai diferenciar.
-    """
-    y_pred = forward(params, x_batch).squeeze(-1)   # shape (N,)
+    """Erro quadrático médio."""
+    y_pred = forward(params, x_batch).squeeze(-1)
     return jnp.mean((y_pred - y_batch) ** 2)
 
 
-# ── Verificar que a perda inicial é ≈ variância de y ──────────────────────────
-x_in_jax = jnp.array(x_norm, dtype=jnp.float32).reshape(-1, 1)
-y_in_jax = jnp.array(y_ruidoso, dtype=jnp.float32)
-
-perda_inicial = float(perda_mse(params_teste, x_in_jax, y_in_jax))
-print(f"Perda inicial (modelo aleatório) : {perda_inicial:.4f}")
-print(f"Variância de y_ruidoso          : {float(jnp.var(y_in_jax)):.4f}")
-print("(Esperado: perda ≈ variância quando o modelo prevê a média)")
+perda_ini = float(perda_mse(params_a, x_in, y_in))
+var_y     = float(jnp.var(y_in))
+print(f"Perda inicial (modelo aleatório) : {perda_ini:.4f}")
+print(f"Variância de y_ruidoso           : {var_y:.4f}")
+print("(Esperado: perda próxima da variância quando o modelo prevê ~0)")
 
 # %% [markdown]
-# ## 🔵 Loop de treino — descida do gradiente explícita
+# ### Treino — SGD com momentum e mini-batches
+#
+# A cada passo, calculamos o gradiente num mini-batch e atualizamos os pesos.
+# Usamos **momentum** — uma "memória" dos gradientes anteriores que suaviza
+# o caminho e acelera a convergência:
+#
+# $$\mathbf{v} \leftarrow \beta\,\mathbf{v} + \nabla\mathcal{L}$$
+# $$\mathbf{W} \leftarrow \mathbf{W} - \eta\,\mathbf{v}$$
+#
+# Sem momentum ($\beta = 0$), o SGD puro converge muito lentamente para
+# redes com muitas camadas.
 
 # %%
-# ── Nomes dos checkpoints da rede normal ──────────────────────────────────────
-CKPT_NORMAL = [
-    "nb0_epoch0_params.pkl",
-    "nb0_epoch200_params.pkl",
-    "nb0_epoch500_params.pkl",
-    "nb0_fcnn_params.pkl",
-]
+N_EPOCAS_A = 2000
+LR_A       = 0.05      # taxa de aprendizado
+MOMENTUM   = 0.9       # coeficiente de momentum
+BATCH_SIZE = 50
 
-N_EPOCAS          = 1000   # épocas de treino
-TAXA_APRENDIZADO  = 0.01   # lr — taxa de aprendizado para SGD
+EPOCAS_FOTO = [0, 300, 800, 2000]  # snapshots para a "figura-troféu"
 
-if _checkpoints_ok(*CKPT_NORMAL):
-    # ── Carga rápida (modo aula ou segunda execução) ──────────────────────────
-    params = carregar_pkl("nb0_fcnn_params.pkl")
-    perda_final = float(perda_mse(params, x_in_jax, y_in_jax))
-    print(f"Pesos carregados de  : nb0_fcnn_params.pkl")
-    print(f"Perda do modelo      : {perda_final:.6f}")
-    print(f"Piso do ruído (σ²)   : {SIGMA_EP**2:.4f}")
+# Função de gradiente compilada (jit acelera o cálculo)
+grad_fn = jax.jit(jax.grad(perda_mse))
 
-elif PRETRAINED:
-    # ── Primeira execução: gera os checkpoints com Adam e os salva ───────────
-    # (Adam converge rapidamente; os checkpoints ficam disponíveis para reuso.)
-    print("Checkpoints ausentes — gerando com Adam (primeira execução)...")
-    chave_adam = jax.random.PRNGKey(0)
-    params = init_params(CAMADAS_NORMAL, chave_adam)
-    salvar_pkl(params, "nb0_epoch0_params.pkl")   # época 0 (antes do treino)
+# Inicializar velocidade (mesma estrutura dos params, tudo zero)
+vel_a = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params_a]
 
-    m_state, v_state = adam_init(params)
-    grad_fn = jax.jit(jax.grad(perda_mse))
+# Guardar snapshots e histórico de perda
+fotos_a     = {0: list(params_a)}   # snapshot antes do treino
+historico_a = []
 
-    for t in range(1, 1001):
-        g = grad_fn(params, x_in_jax, y_in_jax)
-        params, m_state, v_state = adam_passo(params, g, m_state, v_state, t)
-        if t == 200:
-            salvar_pkl(params, "nb0_epoch200_params.pkl")
-        if t == 500:
-            salvar_pkl(params, "nb0_epoch500_params.pkl")
-        if t % 200 == 0:
-            l = float(perda_mse(params, x_in_jax, y_in_jax))
-            print(f"  época {t:4d}  perda={l:.6f}")
+chave_treino = jax.random.PRNGKey(1)
 
-    salvar_pkl(params, "nb0_fcnn_params.pkl")     # época 1000 (final)
-    perda_final = float(perda_mse(params, x_in_jax, y_in_jax))
-    print(f"Geração concluída — checkpoints salvos em assets/")
-    print(f"Perda final: {perda_final:.6f}  (piso do ruído σ²={SIGMA_EP**2:.4f})")
+print(f"Treinando {N_EPOCAS_A} épocas — SGD+momentum"
+      f" (lr={LR_A}, mom={MOMENTUM}, batch={BATCH_SIZE})")
+print(f"{'Época':>8}  {'Perda':>10}")
+print("-" * 22)
 
-else:
-    # ── PRETRAINED=False: treino ao vivo com SGD (demonstração pedagógica) ───
-    chave_treino = jax.random.PRNGKey(0)
-    params = init_params(CAMADAS_NORMAL, chave_treino)
-    salvar_pkl(params, "nb0_epoch0_params.pkl")   # salva época 0
+t0 = time.perf_counter()
+for epoca in range(1, N_EPOCAS_A + 1):
+    # Embaralhar
+    chave_treino, chave_perm = jax.random.split(chave_treino)
+    perm  = jax.random.permutation(chave_perm, N_DADOS)
+    x_emb = x_in[perm]
+    y_emb = y_in[perm]
 
-    grad_perda = jax.jit(jax.grad(perda_mse))    # gradiente compilado
+    # Mini-batches
+    for i in range(0, N_DADOS, BATCH_SIZE):
+        x_b = x_emb[i:i + BATCH_SIZE]
+        y_b = y_emb[i:i + BATCH_SIZE]
+        grads = grad_fn(params_a, x_b, y_b)
 
-    print(f"Treinando {N_EPOCAS} épocas com SGD explícito "
-          f"(lr={TAXA_APRENDIZADO})...")
-    print(f"{'Época':>8}  {'Perda':>10}")
-    print("-" * 22)
+        # Atualização com momentum — escrita explicitamente
+        vel_a = [(MOMENTUM * vW + dW, MOMENTUM * vb + db)
+                 for (vW, vb), (dW, db) in zip(vel_a, grads)]
+        params_a = [(W - LR_A * vW, b - LR_A * vb)
+                    for (W, b), (vW, vb) in zip(params_a, vel_a)]
 
-    t_inicio = time.perf_counter()
-    for epoca in range(1, N_EPOCAS + 1):
-        # Calcula gradientes e atualiza com SGD puro
-        grads = grad_perda(params, x_in_jax, y_in_jax)
-        params = [
-            (W - TAXA_APRENDIZADO * dW, b - TAXA_APRENDIZADO * db)
-            for (W, b), (dW, db) in zip(params, grads)
-        ]
-        # Salva checkpoints intermediários para a figura-troféu
-        if epoca == 200:
-            salvar_pkl(params, "nb0_epoch200_params.pkl")
-        if epoca == 500:
-            salvar_pkl(params, "nb0_epoch500_params.pkl")
-        if epoca % 100 == 0:
-            perda_atual = float(perda_mse(params, x_in_jax, y_in_jax))
-            print(f"{epoca:>8}  {perda_atual:>10.6f}")
+    # Snapshot
+    if epoca in EPOCAS_FOTO:
+        fotos_a[epoca] = list(params_a)
 
-    t_fim = time.perf_counter()
-    salvar_pkl(params, "nb0_fcnn_params.pkl")     # salva época 1000 (final)
-    print(f"\nTreino concluído em {t_fim - t_inicio:.1f}s")
-    print(f"Perda final: {float(perda_mse(params, x_in_jax, y_in_jax)):.6f}")
-    print(f"(Piso do ruído = {SIGMA_EP**2:.4f})")
+    # Monitorar
+    if epoca % 100 == 0 or epoca == 1:
+        perda = float(perda_mse(params_a, x_in, y_in))
+        historico_a.append((epoca, perda))
+        if epoca <= 1 or epoca % 500 == 0:
+            print(f"{epoca:>8}  {perda:>10.6f}")
 
-# %% [markdown]
-# ## 🔵 Figura-troféu — o modelo aprendendo época a época
+dt_a = time.perf_counter() - t0
+perda_final_a = float(perda_mse(params_a, x_in, y_in))
+print(f"\nConcluído em {dt_a:.1f}s")
+print(f"Perda final   : {perda_final_a:.6f}")
+print(f"Piso (sigma²) : {SIGMA_EP**2:.4f}")
 
 # %%
-# Carrega os 4 checkpoints e plota a progressão do ajuste
-EPOCAS_TROPHY  = [0, 200, 500, 1000]
-ARQUIVOS_TROPHY = [
-    "nb0_epoch0_params.pkl",
-    "nb0_epoch200_params.pkl",
-    "nb0_epoch500_params.pkl",
-    "nb0_fcnn_params.pkl",
-]
+# Curva de aprendizado
+epocas_h, perdas_h = zip(*historico_a)
 
-fig, axes = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
-fig.suptitle(
-    "Progressão do treino — senoide amortecida",
-    fontsize=13, fontweight="bold"
-)
-
-for ax, epoca, nome_arq in zip(axes, EPOCAS_TROPHY, ARQUIVOS_TROPHY):
-    p_ckpt = carregar_pkl(nome_arq)
-
-    y_pred = np.array(forward(p_ckpt, xg_in).squeeze(-1))
-    perda  = float(perda_mse(p_ckpt, x_in_jax, y_in_jax))
-
-    ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.45, color="#aaaaaa",
-               label="dados ruidosos", zorder=2)
-    ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-            label="função verdadeira", zorder=3)
-    ax.plot(x_grade, y_pred, "-",  lw=2.0, color="#e74c3c",
-            label="modelo", zorder=4)
-
-    ax.set_title(f"Época {epoca}\n(perda = {perda:.3f})", fontsize=11)
-    ax.set_xlabel("x")
-    if ax is axes[0]:
-        ax.set_ylabel("y")
-    ax.set_xlim(0, X_MAX)
-    ax.set_ylim(-2.2, 2.2)
-    ax.grid(True, alpha=0.3)
-
-axes[-1].legend(loc="upper right", fontsize=9)
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(epocas_h, perdas_h, "-o", ms=3, color="#2980b9")
+ax.axhline(SIGMA_EP**2, color="red", ls="--", lw=1,
+           label=f"piso do ruído sigma² = {SIGMA_EP**2:.4f}")
+ax.set_xlabel("Época")
+ax.set_ylabel("Perda (MSE)")
+ax.set_title("Bloco A — Curva de aprendizado (SGD + momentum)")
+ax.legend()
+ax.set_yscale("log")
+ax.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 
 # %% [markdown]
+# ### Figura-troféu — o modelo aprendendo época a época
+
+# %%
+fig, axes_trophy = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
+fig.suptitle("Bloco A — Progressão do treino (SGD + momentum, do zero)",
+             fontsize=13, fontweight="bold")
+
+for ax, ep in zip(axes_trophy, EPOCAS_FOTO):
+    p_snap   = fotos_a[ep]
+    y_pred_s = forward(p_snap, xg_in).squeeze(-1)
+    perda_s  = float(perda_mse(p_snap, x_in, y_in))
+
+    ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa")
+    ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="verdadeira")
+    ax.plot(x_grade, y_pred_s, "-",  lw=2.0, color="#e74c3c", label="modelo")
+    ax.set_title(f"Época {ep}\n(perda = {perda_s:.4f})", fontsize=10)
+    ax.set_xlabel("x")
+    ax.set_xlim(0, float(X_MAX))
+    ax.set_ylim(-2.2, 2.2)
+    ax.grid(True, alpha=0.3)
+
+axes_trophy[0].set_ylabel("y")
+axes_trophy[-1].legend(loc="upper right", fontsize=8)
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ---
+# ## Bloco B — Mesmo exercício com Equinox + Optax
+#
+# Agora reproduzimos o Bloco A usando duas bibliotecas do ecossistema JAX:
+#
+# - **Equinox** — define modelos como módulos (encapsula `init_params` + `forward`)
+# - **Optax** — fornece otimizadores prontos (Adam, SGD com momentum, etc.)
+#
+# | Bloco A (do zero) | Bloco B (bibliotecas) |
+# |---|---|
+# | `init_params(camadas, chave)` | `eqx.nn.MLP(...)` |
+# | `forward(params, x)` | `jax.vmap(modelo)(x)` |
+# | `jax.grad` + SGD+momentum manual | `eqx.filter_value_and_grad` + `optax.adam` |
+
+# %% [markdown]
+# ### Definir o modelo
+
+# %%
+import equinox as eqx
+import optax
+
+# Uma linha substitui init_params + forward!
+modelo_b = eqx.nn.MLP(
+    in_size=1, out_size=1,
+    width_size=32, depth=2,        # [1, 32, 32, 1] — mesma arquitetura
+    activation=jnp.tanh,
+    key=jax.random.PRNGKey(10),
+)
+
+# Teste — jax.vmap aplica o modelo a cada amostra do batch
+y_teste_b = jax.vmap(modelo_b)(x_in[:5])
+print(f"Input  : shape {x_in[:5].shape}")
+print(f"Output : shape {y_teste_b.shape}")
+print(f"Predições iniciais: {y_teste_b.squeeze()}")
+
+# %% [markdown]
+# ### Perda, otimizador e passo de treino
+
+# %%
+def perda_eqx(modelo, x_batch, y_batch):
+    """MSE — versão para modelo Equinox."""
+    y_pred = jax.vmap(modelo)(x_batch).squeeze(-1)
+    return jnp.mean((y_pred - y_batch) ** 2)
+
+
+# Otimizador Adam — substitui o SGD+momentum manual
+otimizador_b = optax.adam(learning_rate=5e-3)
+opt_state_b  = otimizador_b.init(eqx.filter(modelo_b, eqx.is_array))
+
+
+@eqx.filter_jit
+def passo_b(modelo, estado, x, y):
+    """Um passo de treino: gradiente + atualização Adam."""
+    perda, grads = eqx.filter_value_and_grad(perda_eqx)(modelo, x, y)
+    atualizacoes, estado = otimizador_b.update(grads, estado, modelo)
+    modelo = eqx.apply_updates(modelo, atualizacoes)
+    return modelo, estado, perda
+
+# %% [markdown]
+# ### Loop de treino
+
+# %%
+N_EPOCAS_B  = 800
+historico_b = []
+chave_b     = jax.random.PRNGKey(2)
+
+print(f"Treinando {N_EPOCAS_B} épocas — Adam (lr=0.005, batch={BATCH_SIZE})")
+
+t0 = time.perf_counter()
+for epoca in range(1, N_EPOCAS_B + 1):
+    chave_b, chave_perm = jax.random.split(chave_b)
+    perm  = jax.random.permutation(chave_perm, N_DADOS)
+    x_emb = x_in[perm]
+    y_emb = y_in[perm]
+
+    for i in range(0, N_DADOS, BATCH_SIZE):
+        x_b = x_emb[i:i + BATCH_SIZE]
+        y_b = y_emb[i:i + BATCH_SIZE]
+        modelo_b, opt_state_b, _ = passo_b(modelo_b, opt_state_b, x_b, y_b)
+
+    if epoca % 100 == 0 or epoca == 1:
+        perda = float(perda_eqx(modelo_b, x_in, y_in))
+        historico_b.append((epoca, perda))
+        if epoca <= 1 or epoca % 200 == 0:
+            print(f"  Época {epoca:4d}  perda = {perda:.6f}")
+
+dt_b = time.perf_counter() - t0
+perda_final_b = float(perda_eqx(modelo_b, x_in, y_in))
+print(f"\nConcluído em {dt_b:.1f}s")
+print(f"Perda final : {perda_final_b:.6f}")
+
+# %% [markdown]
+# ### Comparação: Bloco A vs Bloco B
+
+# %%
+y_pred_a_plot = forward(params_a, xg_in).squeeze(-1)
+y_pred_b_plot = jax.vmap(modelo_b)(xg_in).squeeze(-1)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4), sharey=True)
+fig.suptitle("Do zero vs. Equinox + Optax", fontsize=13, fontweight="bold")
+
+for ax, y_pred, titulo, cor in [
+    (ax1, y_pred_a_plot,
+     f"Bloco A — SGD+momentum\nperda = {perda_final_a:.4f}", "#e74c3c"),
+    (ax2, y_pred_b_plot,
+     f"Bloco B — Adam + Equinox\nperda = {perda_final_b:.4f}", "#27ae60"),
+]:
+    ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa")
+    ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="verdadeira")
+    ax.plot(x_grade, y_pred, "-", lw=2, color=cor, label="modelo")
+    ax.set_title(titulo, fontsize=10)
+    ax.set_xlabel("x")
+    ax.set_xlim(0, float(X_MAX))
+    ax.set_ylim(-2.2, 2.2)
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+ax1.set_ylabel("y")
+plt.tight_layout()
+plt.show()
+
+print("Ambos aprendem a mesma função — as bibliotecas simplificam o código,")
+print("não mudam a matemática subjacente!")
+
+# %% [markdown]
+# ---
 # ## 🟡 Pergunta-relâmpago — o que acontece com uma rede maior?
 #
-# > **Antes de rodar a próxima célula:**
-# >
 # > Imagine que trocamos a rede `[1, 32, 32, 1]` por uma rede muito maior,
-# > `[1, 128, 128, 128, 1]`, e treinamos por **5 000 épocas**.
+# > `[1, 128, 128, 128, 1]`, e treinamos por 3 000 épocas.
 # >
 # > **O que acontece com o ajuste?**
 # >
-# > ✋ *Levante a mão com sua hipótese antes de prosseguir.*
-# >
 # > Opções:
-# > - (A) O ajuste fica muito melhor — mais parâmetros = melhor modelo
-# > - (B) O ajuste piora — a rede "trava" com gradientes pequenos
-# > - (C) A rede memoriza os dados ruidosos — ajusta o ruído, não a função
+# > - (A) Fica muito melhor — mais parâmetros = melhor modelo
+# > - (B) Piora — gradientes muito pequenos
+# > - (C) Memoriza o ruído — sobreajuste
 
 # %% [markdown]
-# ## 🔵 Célula de sobreajuste (*overfitting*)
+# ### Sobreajuste (*overfitting*)
 
 # %%
-# ── A rede grande: [1, 128, 128, 128, 1] ─────────────────────────────────────
-CAMADAS_GRANDE = [1, 128, 128, 128, 1]
+# Rede grande com Equinox
+modelo_of = eqx.nn.MLP(
+    in_size=1, out_size=1,
+    width_size=128, depth=3,       # [1, 128, 128, 128, 1]
+    activation=jnp.tanh,
+    key=jax.random.PRNGKey(99),
+)
 
-if _checkpoints_ok("nb0_overfit_params.pkl"):
-    # ── Carga rápida ─────────────────────────────────────────────────────────
-    params_overfit = carregar_pkl("nb0_overfit_params.pkl")
-    perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
-    print(f"Modelo pré-treinado carregado.")
-    print(f"Perda de treino da rede grande : {perda_of:.6f}")
-    print(f"Perda de treino da rede normal : {float(perda_mse(params, x_in_jax, y_in_jax)):.6f}")
-    print(f"Piso do ruído (σ²)             : {SIGMA_EP**2:.4f}")
-    print()
-    print("A rede grande atingiu perda MENOR que o piso do ruído — ela")
-    print("está ajustando o ruído, não a função! Isso é sobreajuste.")
+otimizador_of = optax.adam(learning_rate=3e-3)
+opt_state_of  = otimizador_of.init(eqx.filter(modelo_of, eqx.is_array))
 
-elif PRETRAINED:
-    # ── Primeira execução: gera com Adam (5000 épocas, lr reduzida) ──────────
-    print("Gerando rede de sobreajuste com Adam (primeira execução)...")
-    chave_of = jax.random.PRNGKey(1)
-    params_overfit = init_params(CAMADAS_GRANDE, chave_of)
-    m_of, v_of = adam_init(params_overfit)
-    grad_of = jax.jit(jax.grad(perda_mse))
 
-    for t in range(1, 5001):
-        g = grad_of(params_overfit, x_in_jax, y_in_jax)
-        params_overfit, m_of, v_of = adam_passo(
-            params_overfit, g, m_of, v_of, t, lr=0.005)
-        if t % 1000 == 0:
-            l = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
-            print(f"  época {t:5d}  perda={l:.6f}")
+@eqx.filter_jit
+def passo_of(modelo, estado, x, y):
+    perda, grads = eqx.filter_value_and_grad(perda_eqx)(modelo, x, y)
+    atualizacoes, estado = otimizador_of.update(grads, estado, modelo)
+    modelo = eqx.apply_updates(modelo, atualizacoes)
+    return modelo, estado, perda
 
-    salvar_pkl(params_overfit, "nb0_overfit_params.pkl")
-    perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
-    print(f"Geração concluída — checkpoint salvo.")
-    print(f"Perda da rede grande : {perda_of:.6f}  (σ²={SIGMA_EP**2:.4f})")
-    if perda_of < SIGMA_EP**2:
-        print("Sobreajuste confirmado: perda < piso do ruído.")
 
-else:
-    # ── PRETRAINED=False: treino ao vivo com SGD ──────────────────────────────
-    chave_of = jax.random.PRNGKey(1)
-    params_overfit = init_params(CAMADAS_GRANDE, chave_of)
-    grad_of = jax.jit(jax.grad(perda_mse))
+N_EPOCAS_OF = 3000
+print(f"Treinando rede grande [1, 128, 128, 128, 1] por {N_EPOCAS_OF} épocas...")
 
-    print(f"Treinando rede grande {CAMADAS_GRANDE} por 5000 épocas...")
-    for ep in range(1, 5001):
-        g = grad_of(params_overfit, x_in_jax, y_in_jax)
-        params_overfit = [
-            (W - TAXA_APRENDIZADO * dW, b - TAXA_APRENDIZADO * db)
-            for (W, b), (dW, db) in zip(params_overfit, g)
-        ]
-        if ep % 1000 == 0:
-            l = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
-            print(f"  época {ep:5d}: perda = {l:.6f}")
+t0 = time.perf_counter()
+for epoca in range(1, N_EPOCAS_OF + 1):
+    modelo_of, opt_state_of, perda_of = passo_of(
+        modelo_of, opt_state_of, x_in, y_in)
+    if epoca % 500 == 0:
+        print(f"  Época {epoca:5d}  perda = {float(perda_of):.6f}")
 
-    salvar_pkl(params_overfit, "nb0_overfit_params.pkl")
-    perda_of = float(perda_mse(params_overfit, x_in_jax, y_in_jax))
+dt_of = time.perf_counter() - t0
+perda_final_of = float(perda_eqx(modelo_of, x_in, y_in))
+print(f"\nConcluído em {dt_of:.1f}s")
+print(f"Perda final            : {perda_final_of:.6f}")
+print(f"Piso do ruído (sigma²) : {SIGMA_EP**2:.4f}")
+if perda_final_of < SIGMA_EP**2:
+    print("Sobreajuste confirmado: perda < piso do ruído!")
 
-# ── Comparação visual ─────────────────────────────────────────────────────────
-y_pred_normal = np.array(forward(params, xg_in).squeeze(-1))
-y_pred_of     = np.array(forward(params_overfit, xg_in).squeeze(-1))
+# %%
+y_pred_bom = jax.vmap(modelo_b)(xg_in).squeeze(-1)
+y_pred_of  = jax.vmap(modelo_of)(xg_in).squeeze(-1)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4.5), sharey=True)
 fig.suptitle("Generalização vs. Sobreajuste (overfitting)",
              fontsize=13, fontweight="bold")
 
-# ─ Rede normal ─
+# Rede adequada
 ax1.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
             label="dados ruidosos")
 ax1.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
          label="função verdadeira")
-ax1.plot(x_grade, y_pred_normal, "-", lw=2, color="#e74c3c",
-         label="modelo [1,32,32,1]")
-ax1.set_title("Rede pequena — generaliza bem\n"
-              f"perda de treino = "
-              f"{float(perda_mse(params, x_in_jax, y_in_jax)):.4f}",
-              fontsize=11)
-ax1.set_xlabel("x"); ax1.set_ylabel("y")
-ax1.set_xlim(0, X_MAX); ax1.set_ylim(-2.2, 2.2)
-ax1.legend(fontsize=9); ax1.grid(alpha=0.3)
+ax1.plot(x_grade, y_pred_bom, "-", lw=2, color="#27ae60",
+         label="[1, 32, 32, 1]")
+ax1.set_title(f"Rede adequada — generaliza\n"
+              f"perda = {perda_final_b:.4f}", fontsize=10)
+ax1.set_xlabel("x")
+ax1.set_ylabel("y")
+ax1.set_xlim(0, float(X_MAX))
+ax1.set_ylim(-2.2, 2.2)
+ax1.legend(fontsize=8)
+ax1.grid(alpha=0.3)
 
-# ─ Rede grande (sobreajuste) ─
+# Rede grande (sobreajuste)
 ax2.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
             label="dados ruidosos")
 ax2.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
          label="função verdadeira")
 ax2.plot(x_grade, y_pred_of, "-", lw=2, color="#e67e22",
-         label="modelo [1,128,128,128,1]")
-ax2.set_title("Rede grande — sobreajuste!\n"
-              f"perda de treino = "
-              f"{float(perda_mse(params_overfit, x_in_jax, y_in_jax)):.4f}"
-              f"  < σ²={SIGMA_EP**2:.4f}",
-              fontsize=11)
+         label="[1, 128, 128, 128, 1]")
+ax2.set_title(f"Rede grande — sobreajuste!\n"
+              f"perda = {perda_final_of:.4f} < sigma²={SIGMA_EP**2:.4f}",
+              fontsize=10)
 ax2.set_xlabel("x")
-ax2.set_xlim(0, X_MAX)
-ax2.legend(fontsize=9); ax2.grid(alpha=0.3)
+ax2.set_xlim(0, float(X_MAX))
+ax2.legend(fontsize=8)
+ax2.grid(alpha=0.3)
 
 plt.tight_layout()
 plt.show()
 
-print("\n💡 A rede grande memorizou o ruído — não generalizou.")
-print("   Na quarta-feira, veremos o que acontece quando a distribuição")
-print("   de TESTE é diferente da distribuição de TREINO.")
+print("A rede grande memorizou o ruído — não generalizou.")
+print("Na quarta-feira, veremos o que acontece quando a distribuição")
+print("de TESTE é diferente da distribuição de TREINO.")
 
 # %% [markdown]
-# ## 🟢 Mapa de vocabulário
+# ---
+# ## Mapa de vocabulário
 #
-# | O que fizemos | Jargão padrão | Significado |
-# |---------------|---------------|-------------|
+# | O que fizemos | Jargão | Significado |
+# |---|---|---|
 # | Função alvo ruidosa | **tarefa** (task) | O que queremos que a rede aprenda |
-# | Ruído ε | **distribuição dos dados** | Variabilidade inerente das observações |
-# | `init_params` + `forward` | **modelo** | A função parametrizada que queremos ajustar |
-# | `forward(params, x)` | **inferência** | Aplicar o modelo a novos dados |
-# | `perda_mse(params, x, y)` | **função de perda** | Mede o quão errado o modelo está |
-# | `jax.grad(perda_mse)` | **gradiente** | Direção de subida mais íngreme da perda |
-# | `params - lr × grad` | **descida do gradiente** | Passo em direção ao mínimo da perda |
-# | Repetição desse passo | **época** | Uma iteração completa pelo conjunto de dados |
-# | Modelo que acerta nos dados de treino | **generalização** | O objetivo real do treino |
-# | Modelo que acerta o ruído de treino | **sobreajuste** (overfitting) | O que queremos evitar |
-# | `PRETRAINED = True` | **checkpoint** | Pesos salvos de um treino anterior |
+# | `init_params` / `eqx.nn.MLP` | **modelo** | A função parametrizada |
+# | `forward(params, x)` / `model(x)` | **inferência** | Aplicar o modelo a dados |
+# | `perda_mse` | **função de perda** | Mede o erro do modelo |
+# | `jax.grad(perda_mse)` | **gradiente** | Direção de subida mais íngreme |
+# | `W -= lr * vel` / `optax.adam` | **otimizador** | Regra de atualização dos pesos |
+# | Mini-batch | **SGD** | Gradiente estocástico (subconjunto dos dados) |
+# | Modelo que generaliza | **generalização** | O objetivo real |
+# | Modelo que memoriza ruído | **sobreajuste** (overfitting) | O que queremos evitar |
+# | Equinox | **framework de modelos** | Define redes como módulos |
+# | Optax | **biblioteca de otimizadores** | Fornece Adam, SGD, etc. |
 #
 # > **Takeaway:** *Treinar uma rede = descer o gradiente de uma função de perda.*
-# > Todo o resto — arquiteturas, regularização, otimizadores — é engenharia em volta disso.
-
-# %% [markdown]
-# ## 🟣 (Opcional) Exploração: ativação, largura e taxa de aprendizado
-#
-# > Esta seção é opcional. Execute em casa ou se houver tempo.
-# > Mude `PRETRAINED = False` na célula de setup para ver o treino ao vivo.
-
-# %%
-# ── (a) Trocar tanh por ReLU ─────────────────────────────────────────────────
-def forward_relu(params, x):
-    """Igual ao forward, mas com ReLU nas camadas ocultas."""
-    h = x
-    for W, b in params[:-1]:
-        h = jax.nn.relu(h @ W + b)   # ReLU em vez de tanh
-    W, b = params[-1]
-    return h @ W + b
-
-
-# ── (b) Variar a largura da rede ─────────────────────────────────────────────
-# Experimento: treine redes [1, N, N, 1] para N ∈ {4, 16, 64} e compare perdas
-if not PRETRAINED:
-    larguras = [4, 16, 64]
-    print("Largura | Perda final (200 épocas, SGD lr=0.01)")
-    print("-" * 45)
-    for N in larguras:
-        p_exp = init_params([1, N, N, 1], jax.random.PRNGKey(0))
-        g_fn  = jax.jit(jax.grad(perda_mse))
-        for _ in range(200):
-            g  = g_fn(p_exp, x_in_jax, y_in_jax)
-            p_exp = [(W - 0.01 * dW, b - 0.01 * db)
-                     for (W, b), (dW, db) in zip(p_exp, g)]
-        l = float(perda_mse(p_exp, x_in_jax, y_in_jax))
-        print(f"  N={N:3d}  | {l:.5f}")
-else:
-    print("(Defina PRETRAINED = False para executar este experimento)")
+# > As bibliotecas (Equinox, Optax) encapsulam a matemática, mas o fundamento é o mesmo.
 
 # %% [markdown]
 # ## 🟡 Para casa
 #
-# Experimentos para fazer no seu próprio tempo:
+# 1. **Outra função:** substitua a senoide por $|\sin(x)|$ ou $x^3 e^{-x}$.
+#    Precisou mudar a arquitetura ou o learning rate?
 #
-# 1. **Ajustar outra função:** substitua a senoide amortecida por uma função de sua
-#    escolha (ex.: $|sin(x)|$, $x^3 e^{-x}$, uma curva de luz de exoplaneta).
-#    Precisou mudar a arquitetura ou a taxa de aprendizado?
+# 2. **Curva de validação:** divida os 200 pontos em 160 treino + 40 validação.
+#    Plote ambas as perdas ao longo das épocas. Onde começa o sobreajuste?
 #
-# 2. **Diagnóstico de sobreajuste:** divida os 200 pontos em 160 de treino e 40 de
-#    validação. Plote a perda de treino **e** de validação ao longo das épocas.
-#    Identifique o ponto de overfitting (onde a validação começa a subir enquanto
-#    o treino continua a cair).
-#
-# 3. **(🟣 Desafio)** Implemente **SGD com momentum**:
-#    ```
-#    velocidade = 0.9 × velocidade + gradiente
-#    params     = params − lr × velocidade
-#    ```
-#    Compare a curva de perda com o SGD puro. Convergiu mais rápido?
+# 3. **(🟣 Desafio) SGD puro vs. momentum:**
+#    Remova o momentum ($\beta = 0$) do Bloco A e compare a convergência.
+#    Quanto mais lento é? Tente compensar aumentando a taxa de aprendizado.
