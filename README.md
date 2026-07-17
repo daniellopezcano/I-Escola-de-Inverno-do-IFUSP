@@ -20,16 +20,16 @@ Minicurso de 4 aulas · Instrutor: Dr. Daniel López Cano
 
 ## Blocos
 
-| Bloco    | Tipo     | Markdown                                             | Slides / Colab                                                                                                                                                                                                                       |
-| -------- | -------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [[L1B1]] | teoria   | [course-materials/L1B1.md](course-materials/L1B1.md) | [Slides](https://docs.google.com/presentation/d/1urJoVZ1Oeko21DEa6jq737MJcpetG1whUMFMDD05oq0/edit?usp=drive_link)                                                                                                                    |
-| [[L1B2]] | notebook | [course-materials/L1B2.md](course-materials/L1B2.md) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)   |
-| [[L2B1]] | teoria   | [course-materials/L2B1.md](course-materials/L2B1.md) | [Slides](https://docs.google.com/presentation/d/1pIMOeHfmTVYm2h_TUT8vcqtHDXz3jW1oxVN8rdWgm9s/edit?usp=drive_link)                                                                                                                    |
-| [[L2B2]] | notebook | [course-materials/L2B2.md](course-materials/L2B2.md) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)       |
-| [[L3B1]] | teoria   | [course-materials/L3B1.md](course-materials/L3B1.md) | [Slides](https://docs.google.com/presentation/d/17ssxMhezRtTREFM1FZc32VMsYP1cQ5eFazUUM1QdQQs/edit?usp=drive_link)                                                                                                                    |
-| [[L3B2]] | notebook | [course-materials/L3B2.md](course-materials/L3B2.md) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb) |
-| [[L4B1]] | teoria   | [course-materials/L4B1.md](course-materials/L4B1.md) | [Slides](https://docs.google.com/presentation/d/1ZVmImbVYYQAWHdR6NNlSLlCw8jtiLWMYDwlg4315dhk/edit?usp=drive_link)                                                                                                                    |
-| [[L4B2]] | teoria   | [course-materials/L4B2.md](course-materials/L4B2.md) | [Slides](https://docs.google.com/presentation/d/1E4n9hgIszUmmZiGFGFF2BJMCBhqDiU1iSYfgl3rX6HE/edit?usp=drive_link)                                                                                                                    |
+| Bloco    | Tipo     | Slides / Colab                                                                                                                                                                                                                       |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [[L1B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1urJoVZ1Oeko21DEa6jq737MJcpetG1whUMFMDD05oq0/edit?usp=drive_link)                                                                                                                    |
+| [[L1B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)   |
+| [[L2B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1pIMOeHfmTVYm2h_TUT8vcqtHDXz3jW1oxVN8rdWgm9s/edit?usp=drive_link)                                                                                                                    |
+| [[L2B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)       |
+| [[L3B1]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
+| [[L3B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb) |
+| [[L4B1]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
+| [[L4B2]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
 
 ---
 
@@ -37,9 +37,9 @@ Minicurso de 4 aulas · Instrutor: Dr. Daniel López Cano
 
 Cada dia tem dois blocos de 40 min. O material se organiza em três camadas:
 
-1. **Markdown teórico** (`course-materials/LxBy.md`, blocos L1B1, L2B1, L3B1, L4B1, L4B2) — narrativa compacta em pt-BR que explica os conceitos do bloco. É o **artefato primário**: o instrutor constrói os slides Google *a partir* deste texto. Para revisão, leia o markdown e siga as referências inline; use o link de slides para a versão visual.
-2. **Markdown de notebook** (`course-materials/LxBy.md`, blocos L1B2, L2B2, L3B2) — mínimo: link do Colab e uma linha de contexto.
-3. **Notebook JAX** (`jax-examples/notebooks/`) — código executável no Colab. Os notebooks geram todos os dados e cálculos no próprio runtime, sem depender de artefatos comprometidos no repositório. Acesse pelo botão na tabela acima.
+1. **Markdown teórico** (`course-materials/LxBy.md`, blocos L1B1, L2B1, L3B1, L4B1, L4B2) — narrativa compacta que explica os conceitos do bloco. É o **artefato primário**: o instrutor constrói os slides Google *a partir* deste texto. Para revisão, leia o markdown e siga as referências inline; use o link de slides para a versão visual.
+2. **Markdown de notebook** (`course-materials/LxBy.md`, blocos L1B2, L2B2, L3B2): link do Colab e uma linha de contexto.
+3. **Notebook JAX** (`jax-examples/notebooks/`) — código executável no Colab. Os notebooks geram todos os dados e cálculos no próprio runtime. Acesse pelo botão na tabela acima.
 
 No Obsidian, use os wikilinks `[[L1B1]]`, `[[L2B1]]` etc. para navegar entre blocos (`Ctrl+Click` abre numa nova aba). Os recursos de auto-estudo vivem em [[L1B1]].
 
