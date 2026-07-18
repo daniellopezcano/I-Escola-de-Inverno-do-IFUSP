@@ -1,15 +1,15 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
+#       jupytext_version: 1.19.4
 #   kernelspec:
 #     display_name: WinterSchool
 #     language: python
-#     name: WinterSchool
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -199,8 +199,7 @@ x_plot = jnp.linspace(0, 4 * jnp.pi, 300)
 y_plot = senoide_amortecida(x_plot)
 
 fig, ax = plt.subplots(figsize=(8, 3.5))
-ax.plot(x_plot, y_plot, lw=2, color="#2980b9",
-        label=r"$y = A\sin(2\pi x/\lambda)\,e^{-x/\tau}$")
+ax.plot(x_plot, y_plot, lw=2, color="#2980b9", label=r"$y = A\sin(2\pi x/\lambda)\,e^{-x/\tau}$")
 ax.axhline(0, color="gray", lw=0.8, ls="--")
 ax.set_xlabel("x")
 ax.set_ylabel("y")
@@ -331,8 +330,7 @@ X_MAX    = 4.0 * jnp.pi
 # ── Gerar dados ──────────────────────────────────────────────────────────────
 key_dados, k_x, k_ruido = jax.random.split(KEY, 3)
 
-x_dados      = jnp.sort(jax.random.uniform(k_x, (N_DADOS,),
-                                            minval=0.0, maxval=float(X_MAX)))
+x_dados      = jnp.sort(jax.random.uniform(k_x, (N_DADOS,), minval=0.0, maxval=float(X_MAX)))
 y_verdadeiro = senoide_amortecida(x_dados)
 ruido        = jax.random.normal(k_ruido, (N_DADOS,)) * SIGMA_EP
 y_ruidoso    = y_verdadeiro + ruido
@@ -400,8 +398,8 @@ def init_params(camadas, chave):
     return params
 
 
-# Rede [1 -> 32 -> 32 -> 1]
-CAMADAS = [1, 32, 32, 1]
+# Rede
+CAMADAS = [1, 16, 16, 16, 1]
 params_a = init_params(CAMADAS, jax.random.PRNGKey(0))
 
 print("Rede", CAMADAS)
@@ -409,6 +407,8 @@ for i, (W, b) in enumerate(params_a):
     print(f"  Camada {i}: W {W.shape}, b {b.shape}")
 total = sum(W.size + b.size for W, b in params_a)
 print(f"  Total: {total} parâmetros")
+
+
 
 # %% [markdown]
 # ### Forward pass
@@ -424,7 +424,6 @@ def forward(params, x):
         h = jnp.tanh(h @ W + b)
     W_out, b_out = params[-1]
     return h @ W_out + b_out
-
 
 # Teste rápido
 y_teste = forward(params_a, x_in[:5])
@@ -466,12 +465,12 @@ print("(Esperado: perda próxima da variância quando o modelo prevê ~0)")
 # redes com muitas camadas.
 
 # %%
-N_EPOCAS_A = 2000
+N_EPOCAS_A = 4000
 LR_A       = 0.05      # taxa de aprendizado
 MOMENTUM   = 0.9       # coeficiente de momentum
 BATCH_SIZE = 50
 
-EPOCAS_FOTO = [0, 300, 800, 2000]  # snapshots para a "figura-troféu"
+EPOCAS_FOTO = list(jnp.linspace(0, N_EPOCAS_A, 4, dtype=jnp.int32))  # snapshots para a "figura-troféu"
 
 # Função de gradiente compilada (jit acelera o cálculo)
 grad_fn = jax.jit(jax.grad(perda_mse))
@@ -485,8 +484,7 @@ historico_a = []
 
 chave_treino = jax.random.PRNGKey(1)
 
-print(f"Treinando {N_EPOCAS_A} épocas — SGD+momentum"
-      f" (lr={LR_A}, mom={MOMENTUM}, batch={BATCH_SIZE})")
+print(f"Treinando {N_EPOCAS_A} épocas — SGD+momentum (lr={LR_A}, mom={MOMENTUM}, batch={BATCH_SIZE})")
 print(f"{'Época':>8}  {'Perda':>10}")
 print("-" * 22)
 
@@ -505,10 +503,8 @@ for epoca in range(1, N_EPOCAS_A + 1):
         grads = grad_fn(params_a, x_b, y_b)
 
         # Atualização com momentum — escrita explicitamente
-        vel_a = [(MOMENTUM * vW + dW, MOMENTUM * vb + db)
-                 for (vW, vb), (dW, db) in zip(vel_a, grads)]
-        params_a = [(W - LR_A * vW, b - LR_A * vb)
-                    for (W, b), (vW, vb) in zip(params_a, vel_a)]
+        vel_a = [(MOMENTUM * vW + dW, MOMENTUM * vb + db) for (vW, vb), (dW, db) in zip(vel_a, grads)]
+        params_a = [(W - LR_A * vW, b - LR_A * vb) for (W, b), (vW, vb) in zip(params_a, vel_a)]
 
     # Snapshot
     if epoca in EPOCAS_FOTO:
@@ -533,8 +529,7 @@ epocas_h, perdas_h = zip(*historico_a)
 
 fig, ax = plt.subplots(figsize=(8, 3.5))
 ax.plot(epocas_h, perdas_h, "-o", ms=3, color="#2980b9")
-ax.axhline(SIGMA_EP**2, color="red", ls="--", lw=1,
-           label=f"piso do ruído sigma² = {SIGMA_EP**2:.4f}")
+ax.axhline(SIGMA_EP**2, color="red", ls="--", lw=1, label=f"piso do ruído sigma² = {SIGMA_EP**2:.4f}")
 ax.set_xlabel("Época")
 ax.set_ylabel("Perda (MSE)")
 ax.set_title("Bloco A — Curva de aprendizado (SGD + momentum)")
@@ -548,12 +543,13 @@ plt.show()
 # ### Figura-troféu — o modelo aprendendo época a época
 
 # %%
+
+
 fig, axes_trophy = plt.subplots(1, 4, figsize=(16, 4), sharey=True)
-fig.suptitle("Bloco A — Progressão do treino (SGD + momentum, do zero)",
-             fontsize=13, fontweight="bold")
+fig.suptitle("Bloco A — Progressão do treino (SGD + momentum, do zero)", fontsize=13, fontweight="bold")
 
 for ax, ep in zip(axes_trophy, EPOCAS_FOTO):
-    p_snap   = fotos_a[ep]
+    p_snap   = fotos_a[int(ep)]
     y_pred_s = forward(p_snap, xg_in).squeeze(-1)
     perda_s  = float(perda_mse(p_snap, x_in, y_in))
 
@@ -593,19 +589,43 @@ plt.show()
 import equinox as eqx
 import optax
 
-# Uma linha substitui init_params + forward!
-modelo_b = eqx.nn.MLP(
-    in_size=1, out_size=1,
-    width_size=32, depth=2,        # [1, 32, 32, 1] — mesma arquitetura
-    activation=jnp.tanh,
-    key=jax.random.PRNGKey(10),
-)
+class MLP_Custom(eqx.Module):
+    """MLP com camadas de tamanhos variáveis."""
+    layers: list
+    
+    def __init__(self, camadas, key):
+        self.layers = []
+        for i in range(len(camadas) - 1):
+            key, subkey = jax.random.split(key)
+            n_in, n_out = camadas[i], camadas[i + 1]
+            # Linear layer + activation (except last layer)
+            self.layers.append(eqx.nn.Linear(n_in, n_out, key=subkey))
+            if i < len(camadas) - 2:  # Don't add activation after last layer
+                self.layers.append(jnp.tanh)
+    
+    def __call__(self, x):
+        for layer in self.layers:
+            if isinstance(layer, eqx.nn.Linear):
+                x = layer(x)
+            else:  # activation function
+                x = layer(x)
+        return x
 
-# Teste — jax.vmap aplica o modelo a cada amostra do batch
-y_teste_b = jax.vmap(modelo_b)(x_in[:5])
+# Criar o modelo com a mesma arquitetura
+CAMADAS = [1, 16, 16, 16, 1]
+modelo_b = MLP_Custom(CAMADAS, key=jax.random.PRNGKey(0))
+
+# Teste
+y_teste = jax.vmap(modelo_b)(x_in[:5])
 print(f"Input  : shape {x_in[:5].shape}")
-print(f"Output : shape {y_teste_b.shape}")
-print(f"Predições iniciais: {y_teste_b.squeeze()}")
+print(f"Output : shape {y_teste.shape}")
+print(f"Predições iniciais: {y_teste.squeeze()}")
+
+# Contar parâmetros (deve bater com o seu init_params)
+total = sum(jnp.size(p) for p in jax.tree_util.tree_leaves(modelo_b))
+print(f"Total: {total} parâmetros")
+
+
 
 # %% [markdown]
 # ### Perda, otimizador e passo de treino
@@ -616,11 +636,9 @@ def perda_eqx(modelo, x_batch, y_batch):
     y_pred = jax.vmap(modelo)(x_batch).squeeze(-1)
     return jnp.mean((y_pred - y_batch) ** 2)
 
-
 # Otimizador Adam — substitui o SGD+momentum manual
 otimizador_b = optax.adam(learning_rate=5e-3)
 opt_state_b  = otimizador_b.init(eqx.filter(modelo_b, eqx.is_array))
-
 
 @eqx.filter_jit
 def passo_b(modelo, estado, x, y):
@@ -634,7 +652,7 @@ def passo_b(modelo, estado, x, y):
 # ### Loop de treino
 
 # %%
-N_EPOCAS_B  = 800
+N_EPOCAS_B  = 4000
 historico_b = []
 chave_b     = jax.random.PRNGKey(2)
 
@@ -655,7 +673,7 @@ for epoca in range(1, N_EPOCAS_B + 1):
     if epoca % 100 == 0 or epoca == 1:
         perda = float(perda_eqx(modelo_b, x_in, y_in))
         historico_b.append((epoca, perda))
-        if epoca <= 1 or epoca % 200 == 0:
+        if epoca <= 1 or epoca % 500 == 0:
             print(f"  Época {epoca:4d}  perda = {perda:.6f}")
 
 dt_b = time.perf_counter() - t0
@@ -674,14 +692,12 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4), sharey=True)
 fig.suptitle("Do zero vs. Equinox + Optax", fontsize=13, fontweight="bold")
 
 for ax, y_pred, titulo, cor in [
-    (ax1, y_pred_a_plot,
-     f"Bloco A — SGD+momentum\nperda = {perda_final_a:.4f}", "#e74c3c"),
-    (ax2, y_pred_b_plot,
-     f"Bloco B — Adam + Equinox\nperda = {perda_final_b:.4f}", "#27ae60"),
+    (ax1, y_pred_a_plot, f"Bloco A — SGD+momentum\nperda = {perda_final_a:.4f}", "#e74c3c"),
+    (ax2, y_pred_b_plot, f"Bloco B — Adam + Equinox\nperda = {perda_final_b:.4f}", "#27ae60"),
 ]:
-    ax.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa")
     ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="verdadeira")
     ax.plot(x_grade, y_pred, "-", lw=2, color=cor, label="modelo")
+    ax.scatter(x_dados, y_ruidoso, s=6, alpha=0.9, color="#aaaaaa")
     ax.set_title(titulo, fontsize=10)
     ax.set_xlabel("x")
     ax.set_xlim(0, float(X_MAX))
@@ -715,16 +731,11 @@ print("não mudam a matemática subjacente!")
 
 # %%
 # Rede grande com Equinox
-modelo_of = eqx.nn.MLP(
-    in_size=1, out_size=1,
-    width_size=128, depth=3,       # [1, 128, 128, 128, 1]
-    activation=jnp.tanh,
-    key=jax.random.PRNGKey(99),
-)
+CAMADAS = [1, 256, 256, 256, 1]
+modelo_of = MLP_Custom(CAMADAS, key=jax.random.PRNGKey(0))
 
-otimizador_of = optax.adam(learning_rate=3e-3)
+otimizador_of = optax.adam(learning_rate=1e-3)
 opt_state_of  = otimizador_of.init(eqx.filter(modelo_of, eqx.is_array))
-
 
 @eqx.filter_jit
 def passo_of(modelo, estado, x, y):
@@ -733,15 +744,13 @@ def passo_of(modelo, estado, x, y):
     modelo = eqx.apply_updates(modelo, atualizacoes)
     return modelo, estado, perda
 
-
-N_EPOCAS_OF = 3000
-print(f"Treinando rede grande [1, 128, 128, 128, 1] por {N_EPOCAS_OF} épocas...")
+N_EPOCAS_OF = 100000
+print(f"Treinando rede grande por {N_EPOCAS_OF} épocas...")
 
 t0 = time.perf_counter()
 for epoca in range(1, N_EPOCAS_OF + 1):
-    modelo_of, opt_state_of, perda_of = passo_of(
-        modelo_of, opt_state_of, x_in, y_in)
-    if epoca % 500 == 0:
+    modelo_of, opt_state_of, perda_of = passo_of(modelo_of, opt_state_of, x_in, y_in)
+    if epoca % 5000 == 0:
         print(f"  Época {epoca:5d}  perda = {float(perda_of):.6f}")
 
 dt_of = time.perf_counter() - t0
@@ -749,26 +758,19 @@ perda_final_of = float(perda_eqx(modelo_of, x_in, y_in))
 print(f"\nConcluído em {dt_of:.1f}s")
 print(f"Perda final            : {perda_final_of:.6f}")
 print(f"Piso do ruído (sigma²) : {SIGMA_EP**2:.4f}")
-if perda_final_of < SIGMA_EP**2:
-    print("Sobreajuste confirmado: perda < piso do ruído!")
 
 # %%
 y_pred_bom = jax.vmap(modelo_b)(xg_in).squeeze(-1)
 y_pred_of  = jax.vmap(modelo_of)(xg_in).squeeze(-1)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4.5), sharey=True)
-fig.suptitle("Generalização vs. Sobreajuste (overfitting)",
-             fontsize=13, fontweight="bold")
+fig.suptitle("Generalização vs. Sobreajuste (overfitting)", fontsize=13, fontweight="bold")
 
 # Rede adequada
-ax1.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
-            label="dados ruidosos")
-ax1.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-         label="função verdadeira")
-ax1.plot(x_grade, y_pred_bom, "-", lw=2, color="#27ae60",
-         label="[1, 32, 32, 1]")
-ax1.set_title(f"Rede adequada — generaliza\n"
-              f"perda = {perda_final_b:.4f}", fontsize=10)
+ax1.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="função verdadeira")
+ax1.plot(x_grade, y_pred_bom, "-", lw=1, color="#27ae60", label="small")
+ax1.scatter(x_dados, y_ruidoso, s=6, alpha=0.9, color="#aaaaaa", label="dados ruidosos")
+ax1.set_title(f"Rede adequada — generaliza\n perda = {perda_final_b:.4f}", fontsize=10)
 ax1.set_xlabel("x")
 ax1.set_ylabel("y")
 ax1.set_xlim(0, float(X_MAX))
@@ -777,15 +779,10 @@ ax1.legend(fontsize=8)
 ax1.grid(alpha=0.3)
 
 # Rede grande (sobreajuste)
-ax2.scatter(x_dados, y_ruidoso, s=8, alpha=0.4, color="#aaaaaa",
-            label="dados ruidosos")
-ax2.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-         label="função verdadeira")
-ax2.plot(x_grade, y_pred_of, "-", lw=2, color="#e67e22",
-         label="[1, 128, 128, 128, 1]")
-ax2.set_title(f"Rede grande — sobreajuste!\n"
-              f"perda = {perda_final_of:.4f} < sigma²={SIGMA_EP**2:.4f}",
-              fontsize=10)
+ax2.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="função verdadeira")
+ax2.plot(x_grade, y_pred_of, "-", lw=1, color="#e67e22", label="big")
+ax2.scatter(x_dados, y_ruidoso, s=6, alpha=0.9, color="#aaaaaa", label="dados ruidosos")
+ax2.set_title(f"Rede grande — sobreajuste!\n perda = {perda_final_of:.4f} < sigma²={SIGMA_EP**2:.4f}", fontsize=10)
 ax2.set_xlabel("x")
 ax2.set_xlim(0, float(X_MAX))
 ax2.legend(fontsize=8)
@@ -797,6 +794,7 @@ plt.show()
 print("A rede grande memorizou o ruído — não generalizou.")
 print("Na quarta-feira, veremos o que acontece quando a distribuição")
 print("de TESTE é diferente da distribuição de TREINO.")
+
 
 # %% [markdown]
 # ---
@@ -865,16 +863,11 @@ print(f"{'Piso (σ²)':18s} {SIGMA_EP**2:10.4f}")
 # ── Plotar: dados de teste + predições dos dois modelos ──────────────────────
 fig, ax = plt.subplots(figsize=(10, 4.5))
 
-ax.scatter(x_teste, y_teste_ruidoso, s=15, alpha=0.5, color="#aaaaaa",
-           label="dados de teste (novos)", zorder=2)
-ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9",
-        label="função verdadeira", zorder=3)
-ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1),
-        "-", lw=2.0, color="#27ae60",
-        label=f"small — teste MSE = {perda_teste_small:.4f}", zorder=4)
-ax.plot(x_grade, jax.vmap(modelo_of)(xg_in).squeeze(-1),
-        "-", lw=2.0, color="#e67e22",
-        label=f"big — teste MSE = {perda_teste_big:.4f}", zorder=4)
+ax.plot(x_grade, y_grade, "--", lw=1.5, color="#2980b9", label="função verdadeira", zorder=3)
+ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1), "-", lw=2.0, color="#27ae60", label=f"small — teste MSE = {perda_teste_small:.4f}", zorder=4)
+ax.plot(x_grade, jax.vmap(modelo_of)(xg_in).squeeze(-1), "-", lw=2.0, color="#e67e22", label=f"big — teste MSE = {perda_teste_big:.4f}", zorder=4)
+ax.scatter(x_dados, y_ruidoso, s=15, alpha=0.9, color="orange", label="dados de train", marker='o', zorder=2)
+ax.scatter(x_teste, y_teste_ruidoso, s=15, alpha=0.9, color="red", label="dados de teste (novos)", marker='x', zorder=2)
 
 ax.set_xlabel("x")
 ax.set_ylabel("y")
@@ -906,21 +899,19 @@ y_ext_verdadeiro = senoide_amortecida(x_ext)
 x_ext_in = normalizar_x(x_ext).reshape(-1, 1)
 
 y_ext_pred = jax.vmap(modelo_b)(x_ext_in).squeeze(-1)
+y_ext_pred_of = jax.vmap(modelo_of)(x_ext_in).squeeze(-1)
 
 fig, ax = plt.subplots(figsize=(10, 4.5))
 
 # Sombrear a região de treino
-ax.axvspan(0, float(X_MAX), alpha=0.10, color="#2980b9",
-           label="região de treino")
-
-ax.plot(x_ext, y_ext_verdadeiro, "--", lw=1.5, color="#2980b9",
-        label="função verdadeira")
-ax.plot(x_ext, y_ext_pred, "-", lw=2.0, color="#27ae60",
-        label="predição do modelo")
+ax.axvspan(0, float(X_MAX), alpha=0.10, color="#2980b9", label="região de treino")
+ax.plot(x_ext, y_ext_verdadeiro, "--", lw=1.5, color="#2980b9", label="função verdadeira")
+ax.plot(x_ext, y_ext_pred, "-", lw=2.0, color="#27ae60", label="predição do modelo")
+ax.plot(x_ext, y_ext_pred_of, "-", lw=2.0, color="#e67e22", label="predição do modelo of")
 
 ax.set_xlabel("x")
 ax.set_ylabel("y")
-ax.set_title("Extrapolação — modelo pequeno [1, 32, 32, 1]")
+ax.set_title("Extrapolação")
 ax.legend(fontsize=9)
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
@@ -946,15 +937,14 @@ plt.show()
 
 # %%
 # ── Dados com lam diferente (mesmo intervalo de x) ──────────────────────────
-LAM_SHIFT = 2.5
+LAM_SHIFT = 2.1
+SIGMA_SHIFT = 0.05
 
 y_grade_shift = senoide_amortecida(x_grade, lam=LAM_SHIFT)
 
 k_shift_x, k_shift_ruido = jax.random.split(jax.random.PRNGKey(456))
-x_shift = jnp.sort(jax.random.uniform(
-    k_shift_x, (N_DADOS,), minval=0.0, maxval=float(X_MAX)))
-y_shift_ruidoso = senoide_amortecida(x_shift, lam=LAM_SHIFT) + \
-    jax.random.normal(k_shift_ruido, (N_DADOS,)) * SIGMA_EP
+x_shift = jnp.sort(jax.random.uniform(k_shift_x, (N_DADOS,), minval=0.0, maxval=float(X_MAX)))
+y_shift_ruidoso = senoide_amortecida(x_shift, lam=LAM_SHIFT) + jax.random.normal(k_shift_ruido, (N_DADOS,)) * SIGMA_SHIFT
 
 x_shift_in = normalizar_x(x_shift).reshape(-1, 1)
 perda_shift = float(perda_eqx(modelo_b, x_shift_in, y_shift_ruidoso))
@@ -962,16 +952,13 @@ perda_shift = float(perda_eqx(modelo_b, x_shift_in, y_shift_ruidoso))
 # ── Plot ────────────────────────────────────────────────────────────────────
 fig, ax = plt.subplots(figsize=(10, 4.5))
 
-ax.scatter(x_shift, y_shift_ruidoso, s=15, alpha=0.5, color="#aaaaaa",
-           label=f"dados (λ = {LAM_SHIFT})", zorder=2)
-ax.plot(x_grade, y_grade_shift, "--", lw=1.5, color="#8e44ad",
-        label=f"verdadeira (λ = {LAM_SHIFT})", zorder=3)
-ax.plot(x_grade, y_grade, ":", lw=1.0, color="#2980b9",
-        label="verdadeira (λ = 2.0, treino)", zorder=2)
-ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1),
-        "-", lw=2.0, color="#27ae60",
-        label=f"modelo (treinado com λ = 2.0) — MSE = {perda_shift:.4f}",
-        zorder=4)
+ax.scatter(x_shift, y_shift_ruidoso, s=10, alpha=0.9, color="#8e44ad", label=f"dados (λ = {LAM_SHIFT})", zorder=2)
+ax.plot(x_grade, y_grade_shift, ":", lw=2.0, color="#8e44ad", label=f"verdadeira (λ = {LAM_SHIFT})", zorder=3)
+
+ax.scatter(x_dados, y_ruidoso, s=10, alpha=0.9, color="#27ae60", label=f"dados (λ = 2.0)", zorder=2)
+ax.plot(x_grade, y_grade, ":", lw=2.0, color="#27ae60", label="verdadeira (λ = 2.0, treino)", zorder=2)
+
+ax.plot(x_grade, jax.vmap(modelo_b)(xg_in).squeeze(-1), "-", lw=2.0, color="#27ae60", label=f"modelo (treinado com λ = 2.0) — MSE = {perda_shift:.4f}", zorder=4)
 
 ax.set_xlabel("x")
 ax.set_ylabel("y")
