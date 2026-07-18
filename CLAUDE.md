@@ -71,3 +71,19 @@ Read my_feedback_v2.md, then work in this order, one subagent at a time:
 
 ## Sequential constraint
 NEVER launch more than one subagent at a time. Each confirms before the next.
+
+## NOTEBOOK SOURCE-OF-TRUTH POLICY (added after L1B2 hand-polish)
+The instructor edits .ipynb files DIRECTLY. Therefore:
+- The .ipynb in jax-examples/notebooks/ is ALWAYS the authoritative version.
+- jax-examples/src_<name>.py is a MIRROR, and may be stale at any time.
+- Before any agent edits or regenerates a notebook it MUST first resync the mirror:
+    $ENV/jupytext --to py:percent jax-examples/notebooks/<name>.ipynb -o jax-examples/src_<name>.py
+  and work from that freshly-synced source. NEVER regenerate an .ipynb from a
+  src_*.py that has not just been resynced — doing so destroys hand edits.
+- After a build, both files must be left consistent.
+
+## MATERIAL STATUS (as of this pass)
+Done: L1B1 (slides+md), L1B2 (notebook polished by hand), L2B1 (slides+md).
+Current target: L2B2 notebook (01_domain_shift_toy) — see
+dev/agents/work/enhance/L2B2_brief.md.
+Pending: L3B1, L3B2, L4B1, L4B2. A final polish pass over everything is planned.

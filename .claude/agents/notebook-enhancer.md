@@ -36,6 +36,15 @@ Write the improved source to:  jax-examples/src_<name>_v2.py
 Generate the notebook to:      jax-examples/notebooks/<name>_v2.ipynb
 Leave the originals untouched. (The instructor will diff and promote v2 when satisfied.)
 
+
+## SOURCE-OF-TRUTH RESYNC (MANDATORY FIRST STEP — added after L1B2 hand-polish)
+The instructor edits .ipynb files directly, so src_<name>.py may be STALE.
+Before reading or writing anything else you MUST run:
+  $ENV/jupytext --to py:percent jax-examples/notebooks/<name>.ipynb -o jax-examples/src_<name>.py
+and then work from that freshly-synced source. NEVER build an .ipynb from a src_*.py
+you have not just regenerated from the notebook — that silently destroys hand edits.
+Leave .py and .ipynb consistent at the end.
+
 ## Procedure
 1. THINK: draft the full cell list (markdown + code) realizing the brief's narrative
    order. Check each transition for flow and load. Only then write src_<name>_v2.py.
