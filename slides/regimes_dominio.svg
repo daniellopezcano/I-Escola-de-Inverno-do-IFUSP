@@ -1,0 +1,6647 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1860"
+   height="1200"
+   viewBox="0 0 1860 1200"
+   version="1.1"
+   id="svg1466"
+   sodipodi:docname="regimes_dominio.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1468"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="0.78666667"
+     inkscape:cx="1027.7542"
+     inkscape:cy="496.39831"
+     inkscape:window-width="1920"
+     inkscape:window-height="1014"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1466" />
+  <defs
+     id="defs52">
+    <filter
+       id="blur1"
+       x="-0.31863838"
+       y="-0.34180804"
+       width="1.6372768"
+       height="1.6836262">
+      <feGaussianBlur
+         stdDeviation="1.15"
+         id="feGaussianBlur2" />
+    </filter>
+    <radialGradient
+       id="haloPurple"
+       cx="50%"
+       cy="50%"
+       r="50%">
+      <stop
+         offset="0"
+         stop-color="#E1D6F5"
+         id="stop5" />
+      <stop
+         offset="0.6"
+         stop-color="#EDE7FB"
+         stop-opacity="0.72"
+         id="stop7" />
+      <stop
+         offset="1"
+         stop-color="#EDE7FB"
+         stop-opacity="0"
+         id="stop9" />
+    </radialGradient>
+    <radialGradient
+       id="haloBlue"
+       cx="50%"
+       cy="50%"
+       r="50%">
+      <stop
+         offset="0"
+         stop-color="#D8E4FB"
+         id="stop12" />
+      <stop
+         offset="0.6"
+         stop-color="#E4EBFC"
+         stop-opacity="0.72"
+         id="stop14" />
+      <stop
+         offset="1"
+         stop-color="#E4EBFC"
+         stop-opacity="0"
+         id="stop16" />
+    </radialGradient>
+    <radialGradient
+       id="haloGreen"
+       cx="50%"
+       cy="50%"
+       r="50%">
+      <stop
+         offset="0"
+         stop-color="#D5EEDF"
+         id="stop19" />
+      <stop
+         offset="0.6"
+         stop-color="#E3F3E9"
+         stop-opacity="0.72"
+         id="stop21" />
+      <stop
+         offset="1"
+         stop-color="#E3F3E9"
+         stop-opacity="0"
+         id="stop23" />
+    </radialGradient>
+    <radialGradient
+       id="haloGray"
+       cx="835.28703"
+       cy="485.58158"
+       r="46.13025"
+       gradientTransform="matrix(1.1900956,0,0,0.80756486,-95.615005,-983.43207)"
+       fx="835.28703"
+       fy="485.58158"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#E4E7EC"
+         id="stop26" />
+      <stop
+         offset="0.6"
+         stop-color="#EDEFF2"
+         stop-opacity="0.75"
+         id="stop28" />
+      <stop
+         offset="1"
+         stop-color="#EDEFF2"
+         stop-opacity="0"
+         id="stop30" />
+    </radialGradient>
+    <radialGradient
+       id="haloOrange"
+       cx="50%"
+       cy="50%"
+       r="50%">
+      <stop
+         offset="0"
+         stop-color="#FBDFCD"
+         id="stop33" />
+      <stop
+         offset="0.6"
+         stop-color="#FDEBE0"
+         stop-opacity="0.72"
+         id="stop35" />
+      <stop
+         offset="1"
+         stop-color="#FDEBE0"
+         stop-opacity="0"
+         id="stop37" />
+    </radialGradient>
+    <marker
+       id="ah"
+       viewBox="0 0 10 10"
+       refX="8.5"
+       refY="5"
+       markerWidth="6.5"
+       markerHeight="6.5"
+       orient="auto-start-reverse">
+      <path
+         d="M 0,1 9,5 0,9 Z"
+         fill="#4b5563"
+         id="path40" />
+    </marker>
+    <marker
+       id="ahg"
+       viewBox="0 0 10 10"
+       refX="8.5"
+       refY="5"
+       markerWidth="6"
+       markerHeight="6"
+       orient="auto-start-reverse">
+      <path
+         d="M 0,1 9,5 0,9 Z"
+         fill="#16a34a"
+         id="path43" />
+    </marker>
+    <marker
+       id="ahr"
+       viewBox="0 0 10 10"
+       refX="8.5"
+       refY="5"
+       markerWidth="6"
+       markerHeight="6"
+       orient="auto-start-reverse">
+      <path
+         d="M0,1 L9,5 L0,9 z"
+         fill="#DC2626"
+         id="path46" />
+    </marker>
+    <marker
+       id="ahk"
+       viewBox="0 0 10 10"
+       refX="8.5"
+       refY="5"
+       markerWidth="6"
+       markerHeight="6"
+       orient="auto-start-reverse">
+      <path
+         d="M0,1 L9,5 L0,9 z"
+         fill="#1F2430"
+         id="path49" />
+    </marker>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloPurple"
+       id="radialGradient1628"
+       cx="93.010937"
+       cy="481.66378"
+       r="48.166378"
+       gradientTransform="matrix(1.1804936,0,0,0.8141335,124.70921,-106.67741)"
+       fx="93.010937"
+       fy="481.66378"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloPurple"
+       id="radialGradient1630"
+       cx="230.65125"
+       cy="485.58158"
+       r="46.13025"
+       gradientTransform="matrix(1.1900956,0,0,0.80756486,180.94519,-416.39973)"
+       fx="230.65125"
+       fy="485.58158"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloBlue"
+       id="radialGradient1632"
+       cx="397.78785"
+       cy="481.66378"
+       r="48.166378"
+       gradientTransform="matrix(1.1804936,0,0,0.8141335,107.09998,-217.85777)"
+       fx="397.78785"
+       fy="481.66378"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloBlue"
+       id="radialGradient1634"
+       cx="532.96914"
+       cy="485.58158"
+       r="46.13025"
+       gradientTransform="matrix(1.1900956,0,0,0.80756486,42.665066,-699.9159)"
+       fx="532.96914"
+       fy="485.58158"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloGreen"
+       id="radialGradient1636"
+       cx="702.56476"
+       cy="481.66378"
+       r="48.166378"
+       gradientTransform="matrix(1.1804936,0,0,0.8141335,89.490734,-329.03812)"
+       fx="702.56476"
+       fy="481.66378"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloOrange"
+       id="radialGradient1638"
+       cx="1004.8884"
+       cy="440.15634"
+       r="35.496479"
+       gradientTransform="scale(1.183216,0.84515425)"
+       fx="1004.8884"
+       fy="440.15634"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloOrange"
+       id="radialGradient1640"
+       cx="1096.1651"
+       cy="440.15634"
+       r="35.496479"
+       gradientTransform="scale(1.183216,0.84515425)"
+       fx="1096.1651"
+       fy="440.15634"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloOrange"
+       id="radialGradient1642"
+       cx="1187.4417"
+       cy="440.15634"
+       r="35.496479"
+       gradientTransform="scale(1.183216,0.84515425)"
+       fx="1187.4417"
+       fy="440.15634"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloGreen"
+       id="radialGradient1644"
+       cx="519.8858"
+       cy="1559.881"
+       r="53.665631"
+       gradientTransform="matrix(1.7536972,0,0,0.54803038,168.94086,-276.21978)"
+       fx="519.8858"
+       fy="1559.881"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#haloOrange"
+       id="radialGradient1646"
+       cx="825.16309"
+       cy="1301.4591"
+       r="53.441557"
+       gradientTransform="matrix(1.540919,0,0,0.62370531,180.8453,-450.51222)"
+       fx="825.16309"
+       fy="1301.4591"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <ellipse
+     cx="1290.7711"
+     cy="396.57434"
+     rx="58.463211"
+     ry="26.154594"
+     fill="#f5f6f8"
+     stroke="#9aa3af"
+     stroke-width="1.25548"
+     stroke-dasharray="6, 5"
+     id="ellipse716" />
+  <line
+     x1="397.0607"
+     y1="9.5797806"
+     x2="397.0607"
+     y2="851.31494"
+     stroke="#e7eaef"
+     stroke-width="0.953345"
+     id="line56" />
+  <line
+     x1="756.8479"
+     y1="9.5797806"
+     x2="756.8479"
+     y2="851.31494"
+     stroke="#e7eaef"
+     stroke-width="0.953345"
+     id="line58" />
+  <line
+     x1="1116.635"
+     y1="9.5797806"
+     x2="1116.635"
+     y2="851.31494"
+     stroke="#e7eaef"
+     stroke-width="0.953345"
+     id="line60" />
+  <line
+     x1="1476.4222"
+     y1="9.5797806"
+     x2="1476.4222"
+     y2="851.31494"
+     stroke="#e7eaef"
+     stroke-width="0.953345"
+     id="line62" />
+  <line
+     x1="40.704727"
+     y1="192.04463"
+     x2="1832.7782"
+     y2="192.04463"
+     stroke="#e7eaef"
+     stroke-width="0.980347"
+     id="line64" />
+  <line
+     x1="40.704727"
+     y1="502.45837"
+     x2="1832.7782"
+     y2="502.45837"
+     stroke="#e7eaef"
+     stroke-width="1"
+     id="line66" />
+  <line
+     x1="40.704727"
+     y1="849.50104"
+     x2="1832.7782"
+     y2="849.50104"
+     stroke="#e7eaef"
+     stroke-width="0.980347"
+     id="line68" />
+  <circle
+     cx="66.193741"
+     cy="29.307096"
+     r="14.215025"
+     fill="#6d28d9"
+     id="circle70"
+     style="stroke-width:0.980347" />
+  <text
+     x="66.193741"
+     y="34.208828"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="14.7052px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text72"
+     style="stroke-width:0.980347">1</text>
+  <text
+     x="89.722054"
+     y="35.189175"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="22.548px"
+     fill="#6d28d9"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="-0.3"
+     id="text74"
+     style="stroke-width:0.980347">Supervised Transfer</text>
+  <text
+     x="89.722054"
+     y="58.717491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text76"
+     style="stroke-width:0.980347">(alvo rotulado)</text>
+  <rect
+     x="54.429581"
+     y="74.403038"
+     width="325.47507"
+     height="101.95604"
+     rx="8.8231192"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.07838"
+     id="rect78" />
+  <line
+     x1="138.7394"
+     y1="80.285118"
+     x2="138.7394"
+     y2="170.47701"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line80" />
+  <text
+     x="66.193741"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text82"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="144.62148"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text84"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="164.22841"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text86"
+     style="stroke-width:0.980347">rótulos</text>
+  <line
+     x1="60.311661"
+     y1="111.6562"
+     x2="374.02255"
+     y2="111.6562"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line88" />
+  <text
+     x="66.193741"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text90"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="144.62148"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text92"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="164.22841"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text94"
+     style="stroke-width:0.980347">dados</text>
+  <text
+     x="144.62148"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text96"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="164.22841"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text98"
+     style="stroke-width:0.980347">rótulos (muitos)</text>
+  <circle
+     cx="425.98093"
+     cy="29.307096"
+     r="14.215025"
+     fill="#1d4ed8"
+     id="circle100"
+     style="stroke-width:0.980347" />
+  <text
+     x="425.98093"
+     y="34.208828"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="14.7052px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text102"
+     style="stroke-width:0.980347">2</text>
+  <text
+     x="449.50925"
+     y="35.189175"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="22.548px"
+     fill="#1d4ed8"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="-0.3"
+     id="text104"
+     style="stroke-width:0.980347">SSDA</text>
+  <text
+     x="449.50925"
+     y="58.717491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text106"
+     style="stroke-width:0.980347">(poucos rótulos do alvo)</text>
+  <rect
+     x="414.21677"
+     y="74.403038"
+     width="325.47507"
+     height="101.95604"
+     rx="8.8231192"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.07838"
+     id="rect108" />
+  <line
+     x1="498.52655"
+     y1="80.285118"
+     x2="498.52655"
+     y2="170.47701"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line110" />
+  <text
+     x="425.98093"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text112"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="504.40866"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text114"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="524.01562"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text116"
+     style="stroke-width:0.980347">rótulos</text>
+  <line
+     x1="420.09885"
+     y1="111.6562"
+     x2="733.80975"
+     y2="111.6562"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line118" />
+  <text
+     x="425.98093"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text120"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="504.40866"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text122"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="524.01562"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text124"
+     style="stroke-width:0.980347">dados</text>
+  <text
+     x="504.40866"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text126"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="524.01562"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text128"
+     style="stroke-width:0.980347">rótulos (poucos, K)</text>
+  <circle
+     cx="785.76813"
+     cy="29.307096"
+     r="14.215025"
+     fill="#15803d"
+     id="circle130"
+     style="stroke-width:0.980347" />
+  <text
+     x="785.76813"
+     y="34.208828"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="14.7052px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text132"
+     style="stroke-width:0.980347">3</text>
+  <text
+     x="809.29645"
+     y="35.189175"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="22.548px"
+     fill="#15803d"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="-0.3"
+     id="text134"
+     style="stroke-width:0.980347">UDA</text>
+  <text
+     x="809.29645"
+     y="58.717491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text136"
+     style="stroke-width:0.980347">(alvo sem rótulos)</text>
+  <rect
+     x="774.00397"
+     y="74.403038"
+     width="325.47507"
+     height="101.95604"
+     rx="8.8231192"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.07838"
+     id="rect138" />
+  <line
+     x1="858.31378"
+     y1="80.285118"
+     x2="858.31378"
+     y2="170.47701"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line140" />
+  <text
+     x="785.76813"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text142"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="864.19586"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text144"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="883.8028"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text146"
+     style="stroke-width:0.980347">rótulos</text>
+  <line
+     x1="779.88605"
+     y1="111.6562"
+     x2="1093.5969"
+     y2="111.6562"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line148" />
+  <text
+     x="785.76813"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text150"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="864.19586"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text152"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="883.8028"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text154"
+     style="stroke-width:0.980347">dados</text>
+  <text
+     x="864.19586"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text156"
+     style="stroke-width:0.980347">✗</text>
+  <text
+     x="883.8028"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text158"
+     style="stroke-width:0.980347">rótulos</text>
+  <circle
+     cx="1145.5553"
+     cy="29.307096"
+     r="14.215025"
+     fill="#ea580c"
+     id="circle160"
+     style="stroke-width:0.980347" />
+  <text
+     x="1145.5553"
+     y="34.208828"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="14.7052px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text162"
+     style="stroke-width:0.980347">4</text>
+  <text
+     x="1169.0836"
+     y="35.189175"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="22.548px"
+     fill="#ea580c"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="-0.3"
+     id="text164"
+     style="stroke-width:0.980347">DG</text>
+  <text
+     x="1169.0836"
+     y="58.717491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text166"
+     style="stroke-width:0.980347">(sem dados do alvo)</text>
+  <rect
+     x="1133.7911"
+     y="74.403038"
+     width="325.47507"
+     height="101.95604"
+     rx="8.8231192"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.07838"
+     id="rect168" />
+  <rect
+     x="430.39713"
+     y="861.27942"
+     width="995.83154"
+     height="66.872398"
+     rx="26.995434"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.52764"
+     id="rect168-1" />
+  <line
+     x1="1218.101"
+     y1="80.285118"
+     x2="1218.101"
+     y2="170.47701"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line170" />
+  <text
+     x="1145.5553"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text172"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="1223.983"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text174"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="1243.59"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text176"
+     style="stroke-width:0.980347">rótulos</text>
+  <line
+     x1="1139.6732"
+     y1="111.6562"
+     x2="1453.384"
+     y2="111.6562"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line178" />
+  <text
+     x="1145.5553"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text180"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="1223.983"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text182"
+     style="stroke-width:0.980347">✗</text>
+  <text
+     x="1243.59"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text184"
+     style="stroke-width:0.980347">dados</text>
+  <text
+     x="1223.983"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text186"
+     style="stroke-width:0.980347">✗</text>
+  <text
+     x="1243.59"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text188"
+     style="stroke-width:0.980347">rótulos</text>
+  <circle
+     cx="1505.3424"
+     cy="29.307096"
+     r="14.215025"
+     fill="#be123c"
+     id="circle190"
+     style="stroke-width:0.980347" />
+  <text
+     x="1505.3424"
+     y="34.208828"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="14.7052px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text192"
+     style="stroke-width:0.980347">5</text>
+  <text
+     x="1528.8707"
+     y="35.189175"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="22.548px"
+     fill="#be123c"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="-0.3"
+     id="text194"
+     style="stroke-width:0.980347">CL</text>
+  <text
+     x="1528.8707"
+     y="58.717491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text196"
+     style="stroke-width:0.980347">(sem rótulos, fonte ou alvo)</text>
+  <rect
+     x="1493.5782"
+     y="74.403038"
+     width="325.47507"
+     height="101.95604"
+     rx="8.8231192"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.07838"
+     id="rect198" />
+  <line
+     x1="1577.8881"
+     y1="80.285118"
+     x2="1577.8881"
+     y2="170.47701"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line200" />
+  <text
+     x="1505.3424"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text202"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="1583.7701"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text204"
+     style="stroke-width:0.980347">✗</text>
+  <text
+     x="1603.3771"
+     y="99.892052"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text206"
+     style="stroke-width:0.980347">rótulos</text>
+  <line
+     x1="1499.4603"
+     y1="111.6562"
+     x2="1813.1713"
+     y2="111.6562"
+     stroke="#dce0e6"
+     stroke-width="0.980347"
+     id="line208" />
+  <text
+     x="1505.3424"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text210"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="1583.7701"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#16a34a"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text212"
+     style="stroke-width:0.980347">✓</text>
+  <text
+     x="1603.3771"
+     y="133.22383"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text214"
+     style="stroke-width:0.980347">dados (talvez)</text>
+  <text
+     x="1583.7701"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text216"
+     style="stroke-width:0.980347">✗</text>
+  <text
+     x="1603.3771"
+     y="154.79146"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#dc2626"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text218"
+     style="stroke-width:0.980347">rótulos</text>
+  <text
+     x="-339.9819"
+     y="23.282269"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="16.0748px"
+     fill="#c6cbd3"
+     text-anchor="middle"
+     letter-spacing="1.6"
+     transform="rotate(-90)"
+     id="text220"
+     style="fill:#000000;stroke-width:1.53093">O PROBLEMA · DISTRIBUIÇÕES</text>
+  <text
+     x="-671.09082"
+     y="23.282269"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="16.0748px"
+     fill="#c6cbd3"
+     text-anchor="middle"
+     letter-spacing="1.6"
+     transform="rotate(-90)"
+     id="text222"
+     style="fill:#000000;stroke-width:1.53093">A SOLUÇÃO · MECANISMO</text>
+  <text
+     x="217.16711"
+     y="211.65157"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text224"
+     style="stroke-width:0.980347">Desvio real, mas o alvo é totalmente rotulado</text>
+  <text
+     x="134.81801"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text226"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="134.81801"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#6d28d9"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text228"
+     style="stroke-width:0.980347">rotulada</text>
+  <text
+     x="299.5162"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text230"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="299.5162"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#6d28d9"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text232"
+     style="stroke-width:0.980347">rotulado</text>
+  <ellipse
+     cx="234.50806"
+     cy="285.46133"
+     rx="56.8601"
+     ry="39.213863"
+     fill="url(#haloPurple)"
+     transform="rotate(18)"
+     id="ellipse234"
+     style="fill:url(#radialGradient1628);stroke-width:0.980347" />
+  <ellipse
+     cx="455.44223"
+     cy="-24.26111"
+     rx="54.899406"
+     ry="37.25317"
+     fill="url(#haloPurple)"
+     transform="rotate(52)"
+     id="ellipse236"
+     style="fill:url(#radialGradient1630);stroke-width:0.980347" />
+  <circle
+     cx="108.44668"
+     cy="342.78027"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle238" />
+  <circle
+     cx="112.95627"
+     cy="339.05499"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle240" />
+  <circle
+     cx="113.44645"
+     cy="317.78146"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle242" />
+  <circle
+     cx="101.58426"
+     cy="332.58469"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle244" />
+  <circle
+     cx="101.68229"
+     cy="347.48596"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle246" />
+  <circle
+     cx="108.54471"
+     cy="307.6839"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle248" />
+  <circle
+     cx="113.93661"
+     cy="327.78101"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle250" />
+  <circle
+     cx="135.79836"
+     cy="305.13498"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle252" />
+  <circle
+     cx="113.3484"
+     cy="310.42886"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle254" />
+  <circle
+     cx="115.40714"
+     cy="299.64505"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle256" />
+  <circle
+     cx="117.07372"
+     cy="333.36899"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle258" />
+  <polygon
+     points="133.9,392.6 123,392.6 128.5,382.4 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon260"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="138.4,433.4 127.6,433.4 133,423.2 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon262"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="148.8,397.5 137.9,397.5 143.4,387.3 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon264"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="140.4,411 129.5,411 135,400.9 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon266"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="110.4,420.5 99.5,420.5 104.9,410.4 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon268"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="140.1,399.4 129.3,399.4 134.7,389.2 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon270"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="142.3,410 131.5,410 136.9,399.8 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon272"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="142.7,414.8 131.8,414.8 137.2,404.6 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon274"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="125.8,408.3 114.9,408.3 120.3,398.1 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon276"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="144.7,387.4 133.9,387.4 139.3,377.2 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon278"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="131.4,410.4 120.6,410.4 126,400.3 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon280"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <text
+     x="301.4769"
+     y="265.52899"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.80347px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text282"
+     style="stroke-width:0.980347">fronteira da fonte</text>
+  <text
+     x="301.4769"
+     y="277.29315"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.80347px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text284"
+     style="stroke-width:0.980347">(já não serve)</text>
+  <circle
+     cx="277.94858"
+     cy="335.03555"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle286" />
+  <circle
+     cx="318.73102"
+     cy="318.85983"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle288" />
+  <circle
+     cx="295.10464"
+     cy="292.29245"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle290" />
+  <circle
+     cx="273.73309"
+     cy="356.50513"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle292" />
+  <circle
+     cx="270.49796"
+     cy="335.23163"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle294" />
+  <circle
+     cx="248.24409"
+     cy="342.2901"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle296" />
+  <circle
+     cx="262.06699"
+     cy="331.50629"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle298" />
+  <circle
+     cx="291.96753"
+     cy="304.25269"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle300" />
+  <circle
+     cx="264.81195"
+     cy="337.29037"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle302" />
+  <circle
+     cx="281.18372"
+     cy="338.95694"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle304" />
+  <circle
+     cx="285.39923"
+     cy="332.19257"
+     r="4.9017329"
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     id="circle306" />
+  <polygon
+     points="280.4,428.1 269.5,428.1 275,417.9 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon308"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="293.2,429.6 282.3,429.6 287.7,419.4 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon310"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="302,420.6 291.1,420.6 296.6,410.4 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon312"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="301,435.9 290.1,435.9 295.5,425.8 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon314"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="311.3,417.1 300.4,417.1 305.8,407 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon316"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="307.9,440.1 297.1,440.1 302.5,430 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon318"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="304.2,410.1 293.3,410.1 298.7,400 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon320"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="301.1,429.9 290.2,429.9 295.7,419.8 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon322"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="289.7,439.2 278.9,439.2 284.3,429.1 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon324"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="299.7,412.4 288.8,412.4 294.3,402.2 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon326"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="280.3,423.1 269.5,423.1 274.9,413 "
+     fill="#b79ce8"
+     stroke="#6d28d9"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon328"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <path
+     d="m 314.02535,299.15487 q -7.05849,47.25271 -29.01826,89.60368"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="4.6"
+     stroke-linecap="round"
+     opacity="0.85"
+     id="path330" />
+  <path
+     d="m 314.02535,299.15487 q -7.05849,47.25271 -29.01826,89.60368"
+     fill="none"
+     stroke="#9aa3af"
+     stroke-width="1.8"
+     stroke-linecap="round"
+     opacity="1"
+     stroke-dasharray="5, 4"
+     id="path332" />
+  <path
+     d="m 150.60158,295.42955 q -7.3526,51.27213 -31.56716,97.05431"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.9"
+     stroke-linecap="round"
+     opacity="1"
+     id="path334" />
+  <path
+     d="m 339.71043,312.58562 q -34.8023,38.33155 -80.38842,62.74218"
+     fill="none"
+     stroke="#6d28d9"
+     stroke-width="2.2"
+     stroke-linecap="round"
+     opacity="1"
+     id="path336" />
+  <text
+     x="301.4769"
+     y="414.54166"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#6d28d9"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text338"
+     style="stroke-width:0.980347">fronteira re-treinada</text>
+  <line
+     x1="203.44226"
+     y1="343.95673"
+     x2="228.93127"
+     y2="343.95673"
+     stroke="#4b5563"
+     stroke-width="2"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line340" />
+  <text
+     x="217.16711"
+     y="332.19257"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text342"
+     style="stroke-width:0.980347">desvio</text>
+  <text
+     x="217.16711"
+     y="447.55896"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text344"
+     style="stroke-width:0.980347">Ambos os domínios têm rótulos: a fronteira do alvo</text>
+  <text
+     x="217.16711"
+     y="464.22485"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text346"
+     style="stroke-width:0.980347">pode ser reestimada diretamente. Não é, a rigor,</text>
+  <text
+     x="217.16711"
+     y="480.89075"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text348"
+     style="stroke-width:0.980347">um problema de shift — é só re-treino.</text>
+  <text
+     x="576.95435"
+     y="211.65157"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text350"
+     style="stroke-width:0.980347">Alvo quase todo sem rótulo — só K âncoras</text>
+  <text
+     x="494.60516"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text352"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="494.60516"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text354"
+     style="stroke-width:0.980347">rotulada</text>
+  <text
+     x="659.30341"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text356"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="659.30341"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text358"
+     style="stroke-width:0.980347">K rótulos</text>
+  <ellipse
+     cx="576.68579"
+     cy="174.28081"
+     rx="56.8601"
+     ry="39.213863"
+     fill="url(#haloBlue)"
+     transform="rotate(18)"
+     id="ellipse360"
+     style="fill:url(#radialGradient1632);stroke-width:0.980347" />
+  <ellipse
+     cx="676.9491"
+     cy="-307.77728"
+     rx="54.899406"
+     ry="37.25317"
+     fill="url(#haloBlue)"
+     transform="rotate(52)"
+     id="ellipse362"
+     style="fill:url(#radialGradient1634);stroke-width:0.980347" />
+  <circle
+     cx="468.23386"
+     cy="342.78027"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle364" />
+  <circle
+     cx="472.74347"
+     cy="339.05499"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle366" />
+  <circle
+     cx="473.23364"
+     cy="317.78146"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle368" />
+  <circle
+     cx="461.37143"
+     cy="332.58469"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle370" />
+  <circle
+     cx="461.46948"
+     cy="347.48596"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle372" />
+  <circle
+     cx="468.33191"
+     cy="307.6839"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle374" />
+  <circle
+     cx="473.72382"
+     cy="327.78101"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle376" />
+  <circle
+     cx="495.58551"
+     cy="305.13498"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle378" />
+  <circle
+     cx="473.13559"
+     cy="310.42886"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle380" />
+  <circle
+     cx="475.19434"
+     cy="299.64505"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle382" />
+  <circle
+     cx="476.8609"
+     cy="333.36899"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     id="circle384" />
+  <polygon
+     points="500.9,392.6 490,392.6 495.5,382.4 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon386"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="505.4,433.4 494.6,433.4 500,423.2 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon388"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="515.8,397.5 504.9,397.5 510.4,387.3 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon390"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="507.4,411 496.5,411 502,400.9 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon392"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="477.4,420.5 466.5,420.5 471.9,410.4 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon394"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="507.1,399.4 496.3,399.4 501.7,389.2 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon396"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="509.3,410 498.5,410 503.9,399.8 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon398"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="509.7,414.8 498.8,414.8 504.2,404.6 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon400"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="492.8,408.3 481.9,408.3 487.3,398.1 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon402"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="511.7,387.4 500.9,387.4 506.3,377.2 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon404"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="498.4,410.4 487.6,410.4 493,400.3 "
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon406"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <path
+     d="m 510.38877,295.42955 q -7.3526,51.27213 -31.56716,97.05431"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.9"
+     stroke-linecap="round"
+     opacity="1"
+     id="path408" />
+  <circle
+     cx="678.51819"
+     cy="318.85983"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle410" />
+  <circle
+     cx="654.89185"
+     cy="292.29245"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle412" />
+  <circle
+     cx="633.52032"
+     cy="356.50513"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle414" />
+  <circle
+     cx="630.28522"
+     cy="335.23163"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle416" />
+  <circle
+     cx="608.03131"
+     cy="342.2901"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle418" />
+  <circle
+     cx="621.85419"
+     cy="331.50629"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle420" />
+  <circle
+     cx="651.75476"
+     cy="304.25269"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle422" />
+  <circle
+     cx="640.97095"
+     cy="338.95694"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle424" />
+  <circle
+     cx="645.1864"
+     cy="332.19257"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle426" />
+  <circle
+     cx="654.40167"
+     cy="367.28894"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle428" />
+  <circle
+     cx="674.49878"
+     cy="375.03372"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle430" />
+  <circle
+     cx="684.59637"
+     cy="356.60318"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle432" />
+  <circle
+     cx="681.36121"
+     cy="379.15115"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle434" />
+  <circle
+     cx="677.63593"
+     cy="349.74075"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle436" />
+  <circle
+     cx="674.69489"
+     cy="369.15164"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle438" />
+  <circle
+     cx="663.51892"
+     cy="378.26883"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle440" />
+  <circle
+     cx="673.32239"
+     cy="351.89752"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle442" />
+  <circle
+     cx="654.30371"
+     cy="362.48526"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle444" />
+  <circle
+     cx="637.73578"
+     cy="335.03555"
+     r="10.293639"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="circle446"
+     style="stroke-width:0.980347" />
+  <circle
+     cx="637.73578"
+     cy="335.03555"
+     r="5.0978017"
+     fill="#8fb0f0"
+     stroke="#1d4ed8"
+     stroke-width="2.1"
+     id="circle448" />
+  <circle
+     cx="624.59912"
+     cy="337.29037"
+     r="10.293639"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="circle450"
+     style="stroke-width:0.980347" />
+  <circle
+     cx="624.59912"
+     cy="337.29037"
+     r="5.0978017"
+     fill="#8fb0f0"
+     stroke="#1d4ed8"
+     stroke-width="2.1"
+     id="circle452" />
+  <circle
+     cx="666.85211"
+     cy="368.75946"
+     r="10.293639"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="circle454"
+     style="stroke-width:0.980347" />
+  <polygon
+     points="660.4,429.8 649,429.8 654.7,419.1 "
+     fill="#8fb0f0"
+     stroke="#1d4ed8"
+     stroke-width="2.1"
+     stroke-linejoin="round"
+     id="polygon456"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <circle
+     cx="675.57715"
+     cy="359.93634"
+     r="10.293639"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="circle458"
+     style="stroke-width:0.980347" />
+  <polygon
+     points="669.3,420.8 657.9,420.8 663.6,410.1 "
+     fill="#8fb0f0"
+     stroke="#1d4ed8"
+     stroke-width="2.1"
+     stroke-linejoin="round"
+     id="polygon460"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <path
+     d="m 673.81254,299.15487 q -7.0585,47.25271 -29.01826,89.60368"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="4.6"
+     stroke-linecap="round"
+     opacity="0.85"
+     id="path462" />
+  <path
+     d="m 673.81254,299.15487 q -7.0585,47.25271 -29.01826,89.60368"
+     fill="none"
+     stroke="#9aa3af"
+     stroke-width="1.8"
+     stroke-linecap="round"
+     opacity="1"
+     stroke-dasharray="5, 4"
+     id="path464" />
+  <path
+     d="m 697.92906,313.76204 q -33.23374,37.15513 -77.2513,60.38934"
+     fill="none"
+     stroke="#1d4ed8"
+     stroke-width="2.2"
+     stroke-linecap="round"
+     opacity="1"
+     id="path466" />
+  <text
+     x="661.2641"
+     y="414.54166"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text468"
+     style="stroke-width:0.980347">fronteira recalibrada</text>
+  <text
+     x="661.2641"
+     y="275.33246"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text470"
+     style="stroke-width:0.980347">K âncoras rotuladas</text>
+  <line
+     x1="563.22949"
+     y1="343.95673"
+     x2="588.71851"
+     y2="343.95673"
+     stroke="#4b5563"
+     stroke-width="2"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line472" />
+  <text
+     x="576.95435"
+     y="332.19257"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text474"
+     style="stroke-width:0.980347">desvio</text>
+  <text
+     x="576.95435"
+     y="447.55896"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text476"
+     style="stroke-width:0.980347">Poucos rótulos bastam para reposicionar a percepção,</text>
+  <text
+     x="576.95435"
+     y="464.22485"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text478"
+     style="stroke-width:0.980347">não para reaprender o vocabulário de classes:</text>
+  <text
+     x="576.95435"
+     y="480.89075"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text480"
+     style="stroke-width:0.980347">adapta-se o encoder, congela-se a cabeça.</text>
+  <text
+     x="936.74152"
+     y="211.65157"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text482"
+     style="stroke-width:0.980347">Alvo observável, porém sem qualquer rótulo</text>
+  <text
+     x="854.3924"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text484"
+     style="stroke-width:0.980347">Fonte (S)</text>
+  <text
+     x="854.3924"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#15803d"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text486"
+     style="stroke-width:0.980347">rotulada</text>
+  <text
+     x="1019.0906"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text488"
+     style="stroke-width:0.980347">Alvo (T)</text>
+  <text
+     x="1019.0906"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text490"
+     style="stroke-width:0.980347">classes desconhecidas</text>
+  <ellipse
+     cx="918.86371"
+     cy="63.100502"
+     rx="56.8601"
+     ry="39.213863"
+     fill="url(#haloGreen)"
+     transform="rotate(18)"
+     id="ellipse492"
+     style="fill:url(#radialGradient1636);stroke-width:0.980347" />
+  <ellipse
+     cx="898.45618"
+     cy="-591.29346"
+     rx="54.899406"
+     ry="37.25317"
+     fill="url(#haloGray)"
+     transform="rotate(52)"
+     id="ellipse494"
+     style="fill:url(#haloGray);stroke-width:0.980347" />
+  <circle
+     cx="828.02106"
+     cy="342.78027"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle496" />
+  <circle
+     cx="832.5307"
+     cy="339.05499"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle498" />
+  <circle
+     cx="833.02087"
+     cy="317.78146"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle500" />
+  <circle
+     cx="821.15863"
+     cy="332.58469"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle502" />
+  <circle
+     cx="821.25671"
+     cy="347.48596"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle504" />
+  <circle
+     cx="828.11914"
+     cy="307.6839"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle506" />
+  <circle
+     cx="833.51105"
+     cy="327.78101"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle508" />
+  <circle
+     cx="855.37274"
+     cy="305.13498"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle510" />
+  <circle
+     cx="832.92279"
+     cy="310.42886"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle512" />
+  <circle
+     cx="834.98157"
+     cy="299.64505"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle514" />
+  <circle
+     cx="836.64813"
+     cy="333.36899"
+     r="4.9017329"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     id="circle516" />
+  <polygon
+     points="867.9,392.6 857,392.6 862.5,382.4 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon518"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="872.4,433.4 861.6,433.4 867,423.2 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon520"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="882.8,397.5 871.9,397.5 877.4,387.3 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon522"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="874.4,411 863.5,411 869,400.9 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon524"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="844.4,420.5 833.5,420.5 838.9,410.4 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon526"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="874.1,399.4 863.3,399.4 868.7,389.2 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon528"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="876.3,410 865.5,410 870.9,399.8 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon530"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="876.7,414.8 865.8,414.8 871.2,404.6 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon532"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="859.8,408.3 848.9,408.3 854.3,398.1 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon534"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="878.7,387.4 867.9,387.4 873.3,377.2 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon536"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <polygon
+     points="865.4,410.4 854.6,410.4 860,400.3 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon538"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-48.181915)" />
+  <path
+     d="m 870.17596,295.42955 q -7.3526,51.27213 -31.56716,97.05431"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.9"
+     stroke-linecap="round"
+     opacity="1"
+     id="path540" />
+  <circle
+     cx="997.52307"
+     cy="335.03555"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle542" />
+  <circle
+     cx="1038.3053"
+     cy="318.85983"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle544" />
+  <circle
+     cx="1014.679"
+     cy="292.29245"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle546" />
+  <circle
+     cx="993.30743"
+     cy="356.50513"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle548" />
+  <circle
+     cx="990.07239"
+     cy="335.23163"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle550" />
+  <circle
+     cx="967.81848"
+     cy="342.2901"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle552" />
+  <circle
+     cx="981.64136"
+     cy="331.50629"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle554" />
+  <circle
+     cx="1011.5419"
+     cy="304.25269"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle556" />
+  <circle
+     cx="984.38635"
+     cy="337.29037"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle558" />
+  <circle
+     cx="1000.7582"
+     cy="338.95694"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle560" />
+  <circle
+     cx="1004.9736"
+     cy="332.19257"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle562" />
+  <circle
+     cx="1014.1889"
+     cy="367.28894"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle564" />
+  <circle
+     cx="1026.6393"
+     cy="368.75946"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle566" />
+  <circle
+     cx="1035.3643"
+     cy="359.93634"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle568" />
+  <circle
+     cx="1034.2859"
+     cy="375.03372"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle570" />
+  <circle
+     cx="1044.3835"
+     cy="356.60318"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle572" />
+  <circle
+     cx="1041.1483"
+     cy="379.15115"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle574" />
+  <circle
+     cx="1037.423"
+     cy="349.74075"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle576" />
+  <circle
+     cx="1034.4819"
+     cy="369.15164"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle578" />
+  <circle
+     cx="1023.3061"
+     cy="378.26883"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle580" />
+  <circle
+     cx="1033.1096"
+     cy="351.89752"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle582" />
+  <circle
+     cx="1014.0909"
+     cy="362.48526"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle584" />
+  <path
+     d="m 1033.5997,299.15487 q -7.0585,47.25271 -29.0183,89.60368"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="4.6"
+     stroke-linecap="round"
+     opacity="0.85"
+     id="path586" />
+  <path
+     d="m 1033.5997,299.15487 q -7.0585,47.25271 -29.0183,89.60368"
+     fill="none"
+     stroke="#9aa3af"
+     stroke-width="1.8"
+     stroke-linecap="round"
+     opacity="1"
+     stroke-dasharray="5, 4"
+     id="path588" />
+  <text
+     x="1021.0513"
+     y="271.41107"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.80347px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text590"
+     style="stroke-width:0.980347">sem rótulo: nenhuma forma, só pontos</text>
+  <text
+     x="979.87677"
+     y="318.46771"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text592"
+     style="stroke-width:0.980347">?</text>
+  <text
+     x="1060.2651"
+     y="377.28851"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.7445px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text594"
+     style="stroke-width:0.980347">?</text>
+  <text
+     x="1003.0513"
+     y="414.54166"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text596"
+     style="stroke-width:0.980347">a fronteira do alvo é inobservável</text>
+  <line
+     x1="923.01666"
+     y1="343.95673"
+     x2="948.50568"
+     y2="343.95673"
+     stroke="#4b5563"
+     stroke-width="2"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line598" />
+  <text
+     x="936.74152"
+     y="332.19257"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text600"
+     style="stroke-width:0.980347">desvio</text>
+  <text
+     x="936.74152"
+     y="447.55896"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#15803d"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text602"
+     style="stroke-width:0.980347">Vê-se onde os dados do alvo estão, nunca o que são.</text>
+  <text
+     x="936.74152"
+     y="464.22485"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#15803d"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text604"
+     style="stroke-width:0.980347">Só resta alinhar as duas distribuições no espaço</text>
+  <text
+     x="936.74152"
+     y="480.89075"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#15803d"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text606"
+     style="stroke-width:0.980347">latente e herdar a cabeça treinada na fonte.</text>
+  <text
+     x="1296.5287"
+     y="211.65157"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text608"
+     style="stroke-width:0.980347">O alvo sequer é observado no treino</text>
+  <text
+     x="1296.5287"
+     y="234.1579"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text610"
+     style="stroke-width:0.980347">Múltiplas variações simuladas da fonte</text>
+  <text
+     x="1296.5287"
+     y="249.84344"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text612"
+     style="stroke-width:0.980347">(augmentação + domain randomization)</text>
+  <g
+     transform="matrix(0.98034656,0,0,0.98034656,9.3336408,-66.181915)"
+     id="g712">
+    <ellipse
+       cx="1189"
+       cy="372"
+       rx="42"
+       ry="30"
+       fill="url(#haloOrange)"
+       transform="rotate(4,1189,372)"
+       id="ellipse614"
+       style="fill:url(#radialGradient1638)" />
+    <circle
+       cx="1169.4"
+       cy="369.79999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle616" />
+    <circle
+       cx="1179.8"
+       cy="382.60001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle618" />
+    <circle
+       cx="1181.4"
+       cy="343.70001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle620" />
+    <circle
+       cx="1163.1"
+       cy="393.70001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle622" />
+    <circle
+       cx="1166.6"
+       cy="369"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle624" />
+    <circle
+       cx="1163.9"
+       cy="380.5"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle626" />
+    <circle
+       cx="1174"
+       cy="368.89999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle628" />
+    <polygon
+       points="1211.9,354.1 1202.8,354.1 1207.3,345.6 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon630" />
+    <polygon
+       points="1217,383.1 1207.9,383.1 1212.5,374.6 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon632" />
+    <polygon
+       points="1221.2,367.4 1212.1,367.4 1216.6,358.9 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon634" />
+    <polygon
+       points="1213.8,348.1 1204.7,348.1 1209.2,339.6 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon636" />
+    <polygon
+       points="1213.1,364.7 1203.9,364.7 1208.5,356.2 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon638" />
+    <polygon
+       points="1219.8,370.4 1210.7,370.4 1215.3,361.8 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon640" />
+    <polygon
+       points="1207.4,358.6 1198.3,358.6 1202.8,350.1 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon642" />
+    <path
+       d="m 1191.5,336.1 q 3.5,36.3 -5,71.8"
+       fill="none"
+       stroke="#ea580c"
+       stroke-width="1.7"
+       stroke-linecap="round"
+       opacity="1"
+       id="path644" />
+    <ellipse
+       cx="1297"
+       cy="372"
+       rx="42"
+       ry="30"
+       fill="url(#haloOrange)"
+       transform="rotate(22,1297,372)"
+       id="ellipse646"
+       style="fill:url(#radialGradient1640)" />
+    <circle
+       cx="1285.8"
+       cy="346.10001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle648" />
+    <circle
+       cx="1287.3"
+       cy="366.29999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle650" />
+    <circle
+       cx="1278.7"
+       cy="380.79999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle652" />
+    <circle
+       cx="1284.3"
+       cy="366.5"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle654" />
+    <circle
+       cx="1288.4"
+       cy="376.60001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle656" />
+    <circle
+       cx="1279.7"
+       cy="334.10001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle658" />
+    <circle
+       cx="1272.7"
+       cy="364.60001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle660" />
+    <polygon
+       points="1314.9,375.4 1305.8,375.4 1310.3,366.9 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon662" />
+    <polygon
+       points="1336.9,381.8 1327.8,381.8 1332.3,373.3 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon664" />
+    <polygon
+       points="1327.7,384.3 1318.6,384.3 1323.2,375.8 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon666" />
+    <polygon
+       points="1331,377.7 1321.9,377.7 1326.4,369.1 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon668" />
+    <polygon
+       points="1323,374.6 1313.9,374.6 1318.4,366.1 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon670" />
+    <polygon
+       points="1326.5,381.1 1317.4,381.1 1322,372.5 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon672" />
+    <polygon
+       points="1329.4,375 1320.3,375 1324.8,366.5 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon674" />
+    <path
+       d="m 1310.5,338.6 q -7.9,35.6 -27,66.8"
+       fill="none"
+       stroke="#ea580c"
+       stroke-width="1.7"
+       stroke-linecap="round"
+       opacity="1"
+       id="path676" />
+    <ellipse
+       cx="1405"
+       cy="372"
+       rx="42"
+       ry="30"
+       fill="url(#haloOrange)"
+       transform="rotate(40,1405,372)"
+       id="ellipse678"
+       style="fill:url(#radialGradient1642)" />
+    <circle
+       cx="1401.3"
+       cy="369.5"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle680" />
+    <circle
+       cx="1374.6"
+       cy="336.39999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle682" />
+    <circle
+       cx="1390.3"
+       cy="371"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle684" />
+    <circle
+       cx="1386"
+       cy="364.5"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle686" />
+    <circle
+       cx="1401.7"
+       cy="362.20001"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle688" />
+    <circle
+       cx="1394.6"
+       cy="358.39999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle690" />
+    <circle
+       cx="1394.6"
+       cy="377.39999"
+       r="4.1999998"
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       id="circle692" />
+    <polygon
+       points="1425.4,397.1 1416.3,397.1 1420.9,388.5 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon694" />
+    <polygon
+       points="1402.9,408.1 1393.8,408.1 1398.4,399.5 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon696" />
+    <polygon
+       points="1407.7,404.1 1398.5,404.1 1403.1,395.6 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon698" />
+    <polygon
+       points="1410,382.2 1400.9,382.2 1405.5,373.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon700" />
+    <polygon
+       points="1421.5,414.6 1412.4,414.6 1417,406.1 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon702" />
+    <polygon
+       points="1432.6,376.3 1423.5,376.3 1428,367.8 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon704" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706" />
+    <path
+       d="m 1428.1,344.4 q -18.5,31.5 -46.2,55.2"
+       fill="none"
+       stroke="#ea580c"
+       stroke-width="1.7"
+       stroke-linecap="round"
+       opacity="1"
+       id="path708" />
+    <text
+       x="1447"
+       y="374"
+       font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+       font-size="15px"
+       fill="#4b5563"
+       text-anchor="middle"
+       font-weight="normal"
+       font-style="normal"
+       letter-spacing="0"
+       id="text710">···</text>
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3"
+       transform="matrix(0.65451636,0,0,0.65451636,447.59059,197.64946)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-6"
+       transform="matrix(0.65451636,0,0,0.65451636,426.04381,200.85856)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-7"
+       transform="matrix(0.65451636,0,0,0.65451636,309.8287,200.40012)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-5"
+       transform="matrix(0.65451636,0,0,0.65451636,337.56445,229.28198)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-3"
+       transform="matrix(0.65451636,0,0,0.65451636,413.43664,206.13064)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-56"
+       transform="matrix(0.65451636,0,0,0.65451636,440.48474,181.8332)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-2"
+       transform="matrix(0.65451636,0,0,0.65451636,367.82164,199.94167)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-9"
+       transform="matrix(0.65451636,0,0,0.65451636,369.19697,181.37476)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-1"
+       transform="matrix(0.65451636,0,0,0.65451636,300.43063,184.81308)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-27"
+       transform="matrix(0.65451636,0,0,0.65451636,378.13659,214.3826)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1412.3,410.2 1416.9,401.7 1421.5,410.2 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-0"
+       transform="matrix(0.65451636,0,0,0.65451636,431.28098,228.4224)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-93"
+       transform="matrix(0.65451636,0,0,0.65451636,402.43403,232.72029)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-60"
+       transform="matrix(0.65451636,0,0,0.65451636,441.63084,215.07027)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+    <polygon
+       points="1421.5,410.2 1412.3,410.2 1416.9,401.7 "
+       fill="#ffffff"
+       stroke="#ea580c"
+       stroke-width="1.6"
+       stroke-linejoin="round"
+       id="polygon706-3-62"
+       transform="matrix(0.65451636,0,0,0.65451636,426.96069,212.09039)"
+       style="fill:#f5f6f8;fill-opacity:1;stroke:#d5d9e0;stroke-opacity:1" />
+  </g>
+  <text
+     x="1664.3158"
+     y="211.65157"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text758"
+     style="stroke-width:0.980347">Nenhum rótulo: o sinal vem da própria amostra</text>
+  <text
+     x="1530.8314"
+     y="254.07928"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text760"
+     style="stroke-width:0.980347">Amostra</text>
+  <text
+     x="1530.8314"
+     y="269.76483"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="12.7445px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text768"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan762"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="8.62705px"
+       dy="3.0390742"
+       font-style="italic"
+       id="tspan764"
+       style="stroke-width:0.961079">i</tspan><tspan
+       dy="-3.0390742"
+       id="tspan766"
+       style="stroke-width:0.980347" /></text>
+  <text
+     x="1642.5909"
+     y="232.51166"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.5877px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text770"
+     style="stroke-width:0.980347">Vistas / augmentações da mesma amostra</text>
+  <text
+     x="1595.5343"
+     y="271.72552"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.01919px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text772"
+     style="stroke-width:0.980347">original</text>
+  <text
+     x="1642.5909"
+     y="271.72552"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.01919px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text774"
+     style="stroke-width:0.980347">geometria</text>
+  <text
+     x="1689.6476"
+     y="271.72552"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="9.01919px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text776"
+     style="stroke-width:0.980347">ruído/cor</text>
+  <rect
+     x="1513.1852"
+     y="277.6076"
+     width="37.25317"
+     height="139.20921"
+     rx="7.8427725"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.1"
+     id="rect778" />
+  <circle
+     cx="1531.8118"
+     cy="297.21454"
+     r="5.8820791"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="2"
+     id="circle780" />
+  <line
+     x1="1558.2811"
+     y1="297.21454"
+     x2="1577.8881"
+     y2="297.21454"
+     stroke="#9aa3af"
+     stroke-width="1.5"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line782" />
+  <rect
+     x="1581.8094"
+     y="283.48969"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="rect784"
+     style="stroke-width:0.980347" />
+  <g
+     id="g788"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <circle
+       cx="1602"
+       cy="336"
+       r="6.4000001"
+       fill="#1d4ed8"
+       stroke="#1d4ed8"
+       stroke-width="2"
+       id="circle786" />
+  </g>
+  <rect
+     x="1628.8661"
+     y="283.48969"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#1d4ed8"
+     opacity="0.11"
+     id="rect790"
+     style="stroke-width:0.980347" />
+  <g
+     transform="matrix(0.84900502,0.49017328,-0.49017328,0.84900502,406.43094,-796.83707)"
+     opacity="0.9"
+     id="g794">
+    <circle
+       cx="1650"
+       cy="336"
+       r="6.4000001"
+       fill="#1d4ed8"
+       stroke="#1d4ed8"
+       stroke-width="2"
+       id="circle792" />
+  </g>
+  <rect
+     x="1675.9227"
+     y="283.48969"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#1d4ed8"
+     opacity="0.07"
+     id="rect796"
+     style="stroke-width:0.980347" />
+  <g
+     filter="url(#blur1)"
+     opacity="0.95"
+     id="g800"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <circle
+       cx="1698"
+       cy="336"
+       r="6.4000001"
+       fill="#98a0ac"
+       stroke="#6b7280"
+       stroke-width="2"
+       id="circle798" />
+  </g>
+  <text
+     x="1730.8221"
+     y="301.13593"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text802"
+     style="stroke-width:0.980347">···</text>
+  <rect
+     x="1525.9297"
+     y="324.66425"
+     width="11.764158"
+     height="11.764158"
+     rx="1.1764159"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="2"
+     id="rect804" />
+  <line
+     x1="1558.2811"
+     y1="330.54633"
+     x2="1577.8881"
+     y2="330.54633"
+     stroke="#9aa3af"
+     stroke-width="1.5"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line806" />
+  <rect
+     x="1581.8094"
+     y="316.82147"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#15803d"
+     opacity="0.16"
+     id="rect808"
+     style="stroke-width:0.980347" />
+  <g
+     id="g812"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <rect
+       x="1595.6"
+       y="363.60001"
+       width="12.8"
+       height="12.8"
+       rx="1.2"
+       fill="#15803d"
+       stroke="#15803d"
+       stroke-width="2"
+       id="rect810" />
+  </g>
+  <rect
+     x="1628.8661"
+     y="316.82147"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#15803d"
+     opacity="0.11"
+     id="rect814"
+     style="stroke-width:0.980347" />
+  <g
+     transform="matrix(0.84900502,0.49017328,-0.49017328,0.84900502,423.09683,-792.37146)"
+     opacity="0.9"
+     id="g818">
+    <rect
+       x="1643.6"
+       y="363.60001"
+       width="12.8"
+       height="12.8"
+       rx="1.2"
+       fill="#15803d"
+       stroke="#15803d"
+       stroke-width="2"
+       id="rect816" />
+  </g>
+  <rect
+     x="1675.9227"
+     y="316.82147"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#15803d"
+     opacity="0.07"
+     id="rect820"
+     style="stroke-width:0.980347" />
+  <g
+     filter="url(#blur1)"
+     opacity="0.95"
+     id="g824"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <rect
+       x="1691.6"
+       y="363.60001"
+       width="12.8"
+       height="12.8"
+       rx="1.2"
+       fill="#98a0ac"
+       stroke="#6b7280"
+       stroke-width="2"
+       id="rect822" />
+  </g>
+  <text
+     x="1730.8221"
+     y="334.46771"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text826"
+     style="stroke-width:0.980347">···</text>
+  <polygon
+     points="1531.5,408.3 1537,398 1542.5,408.3 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="2"
+     stroke-linejoin="round"
+     id="polygon828"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)" />
+  <line
+     x1="1558.2811"
+     y1="363.87811"
+     x2="1577.8881"
+     y2="363.87811"
+     stroke="#9aa3af"
+     stroke-width="1.5"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line830" />
+  <rect
+     x="1581.8094"
+     y="350.15326"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#6d28d9"
+     opacity="0.16"
+     id="rect832"
+     style="stroke-width:0.980347" />
+  <g
+     id="g836"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <polygon
+       points="1596.1,408.6 1602,397.6 1607.9,408.6 "
+       fill="#6d28d9"
+       stroke="#6d28d9"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon834" />
+  </g>
+  <rect
+     x="1628.8661"
+     y="350.15326"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#6d28d9"
+     opacity="0.11"
+     id="rect838"
+     style="stroke-width:0.980347" />
+  <g
+     transform="matrix(0.84900502,0.49017328,-0.49017328,0.84900502,439.76272,-787.90584)"
+     opacity="0.9"
+     id="g842">
+    <polygon
+       points="1644.1,408.6 1650,397.6 1655.9,408.6 "
+       fill="#6d28d9"
+       stroke="#6d28d9"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon840" />
+  </g>
+  <rect
+     x="1675.9227"
+     y="350.15326"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#6d28d9"
+     opacity="0.07"
+     id="rect844"
+     style="stroke-width:0.980347" />
+  <g
+     filter="url(#blur1)"
+     opacity="0.95"
+     id="g848"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <polygon
+       points="1692.1,408.6 1698,397.6 1703.9,408.6 "
+       fill="#98a0ac"
+       stroke="#6b7280"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon846" />
+  </g>
+  <text
+     x="1730.8221"
+     y="367.7995"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text850"
+     style="stroke-width:0.980347">···</text>
+  <polygon
+     points="1531,438 1537,432 1543,438 1537,444 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="2"
+     stroke-linejoin="round"
+     id="polygon852"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)" />
+  <line
+     x1="1558.2811"
+     y1="397.20987"
+     x2="1577.8881"
+     y2="397.20987"
+     stroke="#9aa3af"
+     stroke-width="1.5"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line854" />
+  <rect
+     x="1581.8094"
+     y="383.48505"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#ea580c"
+     opacity="0.16"
+     id="rect856"
+     style="stroke-width:0.980347" />
+  <g
+     id="g860"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <polygon
+       points="1595.6,438 1602,431.6 1608.4,438 1602,444.4 "
+       fill="#ea580c"
+       stroke="#ea580c"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon858" />
+  </g>
+  <rect
+     x="1628.8661"
+     y="383.48505"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#ea580c"
+     opacity="0.11"
+     id="rect862"
+     style="stroke-width:0.980347" />
+  <g
+     transform="matrix(0.84900502,0.49017328,-0.49017328,0.84900502,456.42862,-783.44023)"
+     opacity="0.9"
+     id="g866">
+    <polygon
+       points="1643.6,438 1650,431.6 1656.4,438 1650,444.4 "
+       fill="#ea580c"
+       stroke="#ea580c"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon864" />
+  </g>
+  <rect
+     x="1675.9227"
+     y="383.48505"
+     width="27.449703"
+     height="27.449703"
+     rx="3.9213862"
+     fill="#ea580c"
+     opacity="0.07"
+     id="rect868"
+     style="stroke-width:0.980347" />
+  <g
+     filter="url(#blur1)"
+     opacity="0.95"
+     id="g872"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-32.181915)">
+    <polygon
+       points="1691.6,438 1698,431.6 1704.4,438 1698,444.4 "
+       fill="#98a0ac"
+       stroke="#6b7280"
+       stroke-width="2"
+       stroke-linejoin="round"
+       id="polygon870" />
+  </g>
+  <text
+     x="1730.8221"
+     y="401.13126"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text874"
+     style="stroke-width:0.980347">···</text>
+  <text
+     x="1531.8118"
+     y="432.50235"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.7249px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text876"
+     style="stroke-width:0.980347">···</text>
+  <text
+     x="1656.3158"
+     y="447.55896"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#be123c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text878"
+     style="stroke-width:0.980347">Duas vistas da mesma amostra devem colapsar;</text>
+  <text
+     x="1656.3158"
+     y="464.22485"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#be123c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text880"
+     style="stroke-width:0.980347">amostras distintas devem se repelir. A tarefa</text>
+  <text
+     x="1656.3158"
+     y="480.89075"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#be123c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text882"
+     style="stroke-width:0.980347">pretexto substitui o par (x, y) por completo.</text>
+  <text
+     x="217.16711"
+     y="524.026"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text884"
+     style="stroke-width:0.980347">Fine-tuning: tudo pode se mover</text>
+  <text
+     x="64.233047"
+     y="589.70923"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="14.7052px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text892"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan886"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.99953px"
+       dy="3.5292475"
+       font-style="italic"
+       id="tspan888"
+       style="stroke-width:0.961079">T</tspan><tspan
+       dy="-3.5292475"
+       id="tspan890"
+       style="stroke-width:0.980347" /></text>
+  <line
+     x1="77.957901"
+     y1="584.8075"
+     x2="97.564827"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line894" />
+  <rect
+     x="99.525513"
+     y="563.23987"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.8"
+     id="rect896" />
+  <text
+     x="144.62148"
+     y="582.8468"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text898"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="144.62148"
+     y="599.5127"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text906"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan900"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan902"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.137109"
+       id="tspan904"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="139.03349"
+     y="617.25696"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#6d28d9"
+     id="rect908"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 141.28829,617.25698 v -3.33318 a 3.33318,3.33318 0 0 1 6.66636,0"
+     fill="none"
+     stroke="#6d28d9"
+     stroke-width="2"
+     id="path910" />
+  <circle
+     cx="144.62148"
+     cy="622.06067"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle912"
+     style="stroke-width:0.980347" />
+  <text
+     x="144.62148"
+     y="639.70691"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#6d28d9"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text914"
+     style="stroke-width:0.980347">adapta</text>
+  <line
+     x1="191.6781"
+     y1="584.8075"
+     x2="211.28503"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line916" />
+  <rect
+     x="213.24573"
+     y="563.23987"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.8"
+     id="rect918" />
+  <text
+     x="258.34164"
+     y="582.8468"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text920"
+     style="stroke-width:0.980347">Cabeça</text>
+  <text
+     x="258.34164"
+     y="599.5127"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text928"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan922"
+       style="stroke-width:0.961079">g</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan924"
+       style="stroke-width:0.961079">φ</tspan><tspan
+       dy="-3.137109"
+       id="tspan926"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="252.75371"
+     y="617.25696"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#6d28d9"
+     id="rect930"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 255.00849,617.25698 v -3.33318 a 3.33318,3.33318 0 0 1 6.66636,0"
+     fill="none"
+     stroke="#6d28d9"
+     stroke-width="2"
+     id="path932" />
+  <circle
+     cx="258.34164"
+     cy="622.06067"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle934"
+     style="stroke-width:0.980347" />
+  <text
+     x="258.34164"
+     y="639.70691"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#6d28d9"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text936"
+     style="stroke-width:0.980347">adapta</text>
+  <line
+     x1="305.39828"
+     y1="584.8075"
+     x2="325.00522"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line938" />
+  <text
+     x="340.69077"
+     y="590.68958"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="15.6855px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="italic"
+     letter-spacing="0"
+     id="text940"
+     style="stroke-width:0.980347">ŷ</text>
+  <rect
+     x="77.957901"
+     y="680.88147"
+     width="115.68089"
+     height="60.781487"
+     rx="9.8034658"
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.8"
+     id="rect942" />
+  <text
+     x="135.79836"
+     y="706.37048"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text944"
+     style="stroke-width:0.980347">Modelo pré-treinado</text>
+  <text
+     x="135.79836"
+     y="722.05603"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text946"
+     style="stroke-width:0.980347">(fonte)</text>
+  <line
+     x1="199.52087"
+     y1="711.27222"
+     x2="262.26303"
+     y2="711.27222"
+     stroke="#4b5563"
+     stroke-width="2"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line948" />
+  <text
+     x="230.89197"
+     y="700.4884"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text950"
+     style="stroke-width:0.980347">fine-tuning</text>
+  <rect
+     x="268.14511"
+     y="680.88147"
+     width="115.68089"
+     height="60.781487"
+     rx="9.8034658"
+     fill="#6d28d9"
+     stroke="#6d28d9"
+     stroke-width="1.8"
+     id="rect952" />
+  <text
+     x="325.98557"
+     y="706.37048"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text954"
+     style="stroke-width:0.980347">Modelo</text>
+  <text
+     x="325.98557"
+     y="722.05603"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#ffffff"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text956"
+     style="stroke-width:0.980347">no alvo</text>
+  <text
+     x="217.16711"
+     y="786.75885"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text958"
+     style="stroke-width:0.980347">Requisito: rótulos do alvo em volume —</text>
+  <text
+     x="217.16711"
+     y="803.42474"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text960"
+     style="stroke-width:0.980347">justamente o gargalo que motiva 2–5.</text>
+  <text
+     x="576.95435"
+     y="524.026"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text962"
+     style="stroke-width:0.980347">Congelar a cabeça, adaptar o encoder</text>
+  <text
+     x="414.21677"
+     y="545.59363"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1d4ed8"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text964"
+     style="stroke-width:0.980347">1) Pré-treino na fonte (rótulos abundantes)</text>
+  <text
+     x="424.02023"
+     y="585.78784"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="14.7052px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text972"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan966"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.99953px"
+       dy="3.5292475"
+       font-style="italic"
+       id="tspan968"
+       style="stroke-width:0.961079">S</tspan><tspan
+       dy="-3.5292475"
+       id="tspan970"
+       style="stroke-width:0.980347" /></text>
+  <line
+     x1="437.74509"
+     y1="580.88611"
+     x2="457.35202"
+     y2="580.88611"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line974" />
+  <rect
+     x="459.31271"
+     y="559.31848"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.8"
+     id="rect976" />
+  <text
+     x="504.40866"
+     y="578.92542"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text978"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="504.40866"
+     y="595.59131"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text986"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan980"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan982"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.137109"
+       id="tspan984"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="498.82065"
+     y="613.33557"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#1d4ed8"
+     id="rect988"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 501.07548,613.33559 v -3.33318 a 3.3331783,3.3331783 0 0 1 6.66635,0"
+     fill="none"
+     stroke="#1d4ed8"
+     stroke-width="2"
+     id="path990" />
+  <circle
+     cx="504.40866"
+     cy="618.13928"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle992"
+     style="stroke-width:0.980347" />
+  <text
+     x="504.40866"
+     y="635.78552"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text994"
+     style="stroke-width:0.980347">treina</text>
+  <line
+     x1="551.46533"
+     y1="580.88611"
+     x2="571.07227"
+     y2="580.88611"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line996" />
+  <rect
+     x="573.03296"
+     y="559.31848"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.8"
+     id="rect998" />
+  <text
+     x="618.12885"
+     y="578.92542"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1000"
+     style="stroke-width:0.980347">Cabeça</text>
+  <text
+     x="618.12885"
+     y="595.59131"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1008"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1002"
+       style="stroke-width:0.961079">g</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1004"
+       style="stroke-width:0.961079">φ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1006"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="612.54089"
+     y="613.33557"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#1d4ed8"
+     id="rect1010"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 614.79568,613.33559 v -3.33318 a 3.3331783,3.3331783 0 0 1 6.66635,0"
+     fill="none"
+     stroke="#1d4ed8"
+     stroke-width="2"
+     id="path1012" />
+  <circle
+     cx="618.12885"
+     cy="618.13928"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1014"
+     style="stroke-width:0.980347" />
+  <text
+     x="618.12885"
+     y="635.78552"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1016"
+     style="stroke-width:0.980347">treina</text>
+  <line
+     x1="665.18549"
+     y1="580.88611"
+     x2="684.79242"
+     y2="580.88611"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1018" />
+  <text
+     x="700.47797"
+     y="586.76819"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="15.6855px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="italic"
+     letter-spacing="0"
+     id="text1020"
+     style="stroke-width:0.980347">ŷ</text>
+  <line
+     x1="414.21677"
+     y1="676.96008"
+     x2="739.69183"
+     y2="676.96008"
+     stroke="#dce0e6"
+     stroke-width="1.2"
+     stroke-dasharray="5, 5"
+     id="line1022" />
+  <text
+     x="414.21677"
+     y="702.4491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1d4ed8"
+     text-anchor="start"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1024"
+     style="stroke-width:0.980347">2) Adaptação no alvo (K rótulos)</text>
+  <text
+     x="424.02023"
+     y="742.64325"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="14.7052px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text1032"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1026"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.99953px"
+       dy="3.5292475"
+       font-style="italic"
+       id="tspan1028"
+       style="stroke-width:0.961079">T</tspan><tspan
+       dy="-3.5292475"
+       id="tspan1030"
+       style="stroke-width:0.980347" /></text>
+  <line
+     x1="437.74509"
+     y1="737.74152"
+     x2="457.35202"
+     y2="737.74152"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1034" />
+  <rect
+     x="459.31271"
+     y="716.17395"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.8"
+     id="rect1036" />
+  <text
+     x="504.40866"
+     y="735.78082"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1038"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="504.40866"
+     y="752.44672"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1046"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1040"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1042"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1044"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="498.82065"
+     y="770.19098"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#1d4ed8"
+     id="rect1048"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 501.07548,770.19104 v -3.33318 a 3.3331783,3.3331783 0 0 1 6.66635,0"
+     fill="none"
+     stroke="#1d4ed8"
+     stroke-width="2"
+     id="path1050" />
+  <circle
+     cx="504.40866"
+     cy="774.99469"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1052"
+     style="stroke-width:0.980347" />
+  <text
+     x="504.40866"
+     y="792.64093"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1d4ed8"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1054"
+     style="stroke-width:0.980347">adapta</text>
+  <line
+     x1="551.46533"
+     y1="737.74152"
+     x2="571.07227"
+     y2="737.74152"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1056" />
+  <rect
+     x="573.03296"
+     y="716.17395"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#1f2430"
+     stroke-width="1.8"
+     id="rect1058" />
+  <text
+     x="618.12885"
+     y="735.78082"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1060"
+     style="stroke-width:0.980347">Cabeça</text>
+  <text
+     x="618.12885"
+     y="752.44672"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1068"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1062"
+       style="stroke-width:0.961079">g</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1064"
+       style="stroke-width:0.961079">φ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1066"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="612.54089"
+     y="770.19098"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#1f2430"
+     id="rect1070"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 614.79568,770.19104 v -3.33318 a 3.3331783,3.3331783 0 0 1 6.66635,0 v 3.33318"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="2"
+     id="path1072" />
+  <circle
+     cx="618.12885"
+     cy="774.99469"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1074"
+     style="stroke-width:0.980347" />
+  <text
+     x="618.12885"
+     y="792.64093"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1076"
+     style="stroke-width:0.980347">congelada</text>
+  <line
+     x1="665.18549"
+     y1="737.74152"
+     x2="684.79242"
+     y2="737.74152"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1078" />
+  <text
+     x="700.47797"
+     y="743.6236"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="15.6855px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="italic"
+     letter-spacing="0"
+     id="text1080"
+     style="stroke-width:0.980347">ŷ</text>
+  <text
+     x="576.95435"
+     y="818.12994"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1082"
+     style="stroke-width:0.980347">Recalibrar o ouvido, não reescrever o dicionário:</text>
+  <text
+     x="576.95435"
+     y="834.79584"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1084"
+     style="stroke-width:0.980347">muda-se a percepção, preserva-se a semântica.</text>
+  <text
+     x="936.74152"
+     y="524.026"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1086"
+     style="stroke-width:0.980347">Alinhar os domínios no espaço latente</text>
+  <text
+     x="781.84674"
+     y="569.12195"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.7249px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text1094"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1088"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.31329px"
+       dy="3.3331783"
+       font-style="italic"
+       id="tspan1090"
+       style="stroke-width:0.961079">S</tspan><tspan
+       dy="-3.3331783"
+       id="tspan1092"
+       style="stroke-width:0.980347" /></text>
+  <text
+     x="781.84674"
+     y="614.2179"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.7249px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     id="text1102"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1096"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.31329px"
+       dy="3.3331783"
+       font-style="italic"
+       id="tspan1098"
+       style="stroke-width:0.961079">T</tspan><tspan
+       dy="-3.3331783"
+       id="tspan1100"
+       style="stroke-width:0.980347" /></text>
+  <line
+     x1="793.6109"
+     y1="564.22021"
+     x2="821.06061"
+     y2="580.88611"
+     stroke="#4b5563"
+     stroke-width="1.6"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1104" />
+  <line
+     x1="793.6109"
+     y1="609.31616"
+     x2="821.06061"
+     y2="592.65027"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1106" />
+  <rect
+     x="823.0213"
+     y="565.20056"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.8"
+     id="rect1108" />
+  <text
+     x="868.11725"
+     y="584.8075"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1110"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="868.11725"
+     y="601.47339"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1118"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1112"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1114"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1116"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="862.52924"
+     y="619.21765"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#15803d"
+     id="rect1120"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 864.78405,619.21767 v -3.33318 a 3.33318,3.33318 0 0 1 6.66636,0"
+     fill="none"
+     stroke="#15803d"
+     stroke-width="2"
+     id="path1122" />
+  <circle
+     cx="868.11725"
+     cy="624.02136"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1124"
+     style="stroke-width:0.980347" />
+  <text
+     x="868.11725"
+     y="641.6676"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#15803d"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1126"
+     style="stroke-width:0.980347">adapta</text>
+  <line
+     x1="915.17389"
+     y1="578.92542"
+     x2="938.70221"
+     y2="561.27917"
+     stroke="#4b5563"
+     stroke-width="1.6"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1128" />
+  <line
+     x1="915.17389"
+     y1="592.65027"
+     x2="938.70221"
+     y2="618.13928"
+     stroke="#dc2626"
+     stroke-width="1.6"
+     marker-end="url(#ahr)"
+     stroke-linecap="round"
+     id="line1130" />
+  <rect
+     x="940.6629"
+     y="539.71155"
+     width="90.191887"
+     height="39.213863"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.8"
+     id="rect1132" />
+  <text
+     x="985.75885"
+     y="555.39709"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1134"
+     style="stroke-width:0.980347">Cabeça</text>
+  <text
+     x="985.75885"
+     y="571.08264"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="12.2543px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1142"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1136"
+       style="stroke-width:0.961079">g</tspan><tspan
+       font-size="8.33295px"
+       dy="2.9410396"
+       font-style="italic"
+       id="tspan1138"
+       style="stroke-width:0.961079">φ</tspan><tspan
+       dy="-2.9410396"
+       id="tspan1140"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="940.6629"
+     y="604.41443"
+     width="90.191887"
+     height="39.213863"
+     rx="8.8231192"
+     fill="#fff5f5"
+     stroke="#dc2626"
+     stroke-width="1.8"
+     id="rect1144" />
+  <text
+     x="985.75885"
+     y="620.09998"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1146"
+     style="stroke-width:0.980347">Discriminador</text>
+  <text
+     x="985.75885"
+     y="634.80518"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1148"
+     style="stroke-width:0.980347">de domínio</text>
+  <text
+     x="1075.9507"
+     y="561.27917"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1150"
+     style="stroke-width:0.980347">perda de</text>
+  <text
+     x="1075.9507"
+     y="574.02368"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1152"
+     style="stroke-width:0.980347">classe</text>
+  <text
+     x="1075.9507"
+     y="620.09998"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1154"
+     style="stroke-width:0.980347">S ou T?</text>
+  <path
+     d="m 938.70218,665.19593 q -39.21386,27.4497 -82.34911,0"
+     fill="none"
+     stroke="#dc2626"
+     stroke-width="1.7"
+     stroke-dasharray="5, 4"
+     marker-end="url(#ahr)"
+     id="path1156" />
+  <text
+     x="897.52765"
+     y="688.72424"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.5877px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1158"
+     style="stroke-width:0.980347">gradiente revertido: o encoder aprende a</text>
+  <text
+     x="897.52765"
+     y="702.4491"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.5877px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1160"
+     style="stroke-width:0.980347">enganar o discriminador</text>
+  <text
+     x="936.74152"
+     y="731.85944"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.7642px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1162"
+     style="stroke-width:0.980347">Resultado: espaço latente alinhado</text>
+  <ellipse
+     cx="1080.6641"
+     cy="578.6424"
+     rx="94.113266"
+     ry="29.410397"
+     fill="url(#haloGreen)"
+     transform="rotate(12)"
+     id="ellipse1164"
+     style="fill:url(#radialGradient1644);stroke-width:0.980347" />
+  <circle
+     cx="879.39124"
+     cy="775.3869"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1166" />
+  <circle
+     cx="870.86218"
+     cy="793.52332"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1168" />
+  <circle
+     cx="877.72461"
+     cy="806.56189"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1170" />
+  <circle
+     cx="887.13599"
+     cy="790.77826"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1172" />
+  <circle
+     cx="897.33154"
+     cy="773.32812"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1174" />
+  <circle
+     cx="887.72418"
+     cy="774.89673"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1176" />
+  <circle
+     cx="875.17578"
+     cy="805.58154"
+     r="4.3135247"
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     id="circle1178" />
+  <polygon
+     points="920.6,887.3 911.1,887.3 915.9,878.4 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1180"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="905.3,875.9 895.7,875.9 900.5,866.9 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1182"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="921.2,872.2 911.6,872.2 916.4,863.3 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1184"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="909,882.9 899.4,882.9 904.2,874 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1186"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="912.6,889.3 903,889.3 907.8,880.3 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1188"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="920.5,858.1 910.9,858.1 915.7,849.2 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1190"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="914.8,875.3 905.2,875.3 910,866.4 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.6"
+     stroke-linejoin="round"
+     id="polygon1192"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <circle
+     cx="956.05432"
+     cy="807.15009"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1194" />
+  <circle
+     cx="965.46564"
+     cy="793.52332"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1196" />
+  <circle
+     cx="927.42822"
+     cy="788.81757"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1198" />
+  <circle
+     cx="949.19189"
+     cy="788.62158"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1200" />
+  <circle
+     cx="962.5246"
+     cy="775.09271"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1202" />
+  <circle
+     cx="964.77942"
+     cy="778.52393"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1204" />
+  <circle
+     cx="955.56415"
+     cy="792.54297"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1206" />
+  <circle
+     cx="986.44507"
+     cy="783.52374"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1208" />
+  <circle
+     cx="999.97388"
+     cy="798.13086"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1210" />
+  <circle
+     cx="999.67975"
+     cy="800.67981"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1212" />
+  <circle
+     cx="1008.993"
+     cy="778.13184"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1214" />
+  <circle
+     cx="993.60168"
+     cy="773.13202"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1216" />
+  <circle
+     cx="1000.2679"
+     cy="801.75818"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1218" />
+  <circle
+     cx="983.70013"
+     cy="782.34729"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.6"
+     id="circle1220" />
+  <path
+     d="m 943.70195,758.03474 q -1.17642,33.82196 -13.92092,65.29109"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.8"
+     stroke-linecap="round"
+     opacity="1"
+     id="path1222" />
+  <text
+     x="936.74152"
+     y="835.77618"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.9799px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1224"
+     style="stroke-width:0.980347">fonte e alvo estatisticamente indistinguíveis</text>
+  <text
+     x="1296.5287"
+     y="524.026"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1226"
+     style="stroke-width:0.980347">Robustez construída antes de ver o alvo</text>
+  <text
+     x="1145.5553"
+     y="589.70923"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="14.7052px"
+     fill="#1f2430"
+     text-anchor="middle"
+     id="text1234"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1228"
+       style="stroke-width:0.961079">x</tspan><tspan
+       font-size="9.99953px"
+       dy="3.5292475"
+       font-style="italic"
+       id="tspan1230"
+       style="stroke-width:0.961079">sim</tspan><tspan
+       dy="-3.5292475"
+       id="tspan1232"
+       style="stroke-width:0.980347" /></text>
+  <line
+     x1="1163.2015"
+     y1="584.8075"
+     x2="1180.8478"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1236" />
+  <rect
+     x="1182.8085"
+     y="563.23987"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.8"
+     id="rect1238" />
+  <text
+     x="1227.9044"
+     y="582.8468"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1240"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="1227.9044"
+     y="599.5127"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1248"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1242"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1244"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1246"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="1222.3164"
+     y="617.25696"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#ea580c"
+     id="rect1250"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 1224.5712,617.25698 v -3.33318 a 3.3332,3.3332 0 0 1 6.6664,0"
+     fill="none"
+     stroke="#ea580c"
+     stroke-width="2"
+     id="path1252" />
+  <circle
+     cx="1227.9044"
+     cy="622.06067"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1254"
+     style="stroke-width:0.980347" />
+  <text
+     x="1227.9044"
+     y="639.70691"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1256"
+     style="stroke-width:0.980347">treina</text>
+  <line
+     x1="1274.9611"
+     y1="584.8075"
+     x2="1294.568"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1258" />
+  <rect
+     x="1296.5287"
+     y="563.23987"
+     width="90.191887"
+     height="43.13525"
+     rx="8.8231192"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.8"
+     id="rect1260" />
+  <text
+     x="1341.6246"
+     y="582.8468"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="12.2543px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1262"
+     style="stroke-width:0.980347">Cabeça</text>
+  <text
+     x="1341.6246"
+     y="599.5127"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="13.2347px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1270"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1264"
+       style="stroke-width:0.961079">g</tspan><tspan
+       font-size="9.01919px"
+       dy="3.137109"
+       font-style="italic"
+       id="tspan1266"
+       style="stroke-width:0.961079">φ</tspan><tspan
+       dy="-3.137109"
+       id="tspan1268"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="1336.0366"
+     y="617.25696"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#ea580c"
+     id="rect1272"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 1338.2914,617.25698 v -3.33318 a 3.3332,3.3332 0 0 1 6.6664,0"
+     fill="none"
+     stroke="#ea580c"
+     stroke-width="2"
+     id="path1274" />
+  <circle
+     cx="1341.6246"
+     cy="622.06067"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1276"
+     style="stroke-width:0.980347" />
+  <text
+     x="1341.6246"
+     y="639.70691"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1278"
+     style="stroke-width:0.980347">treina</text>
+  <line
+     x1="1388.6812"
+     y1="584.8075"
+     x2="1408.2881"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1280" />
+  <text
+     x="1423.9736"
+     y="590.68958"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="15.6855px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="italic"
+     letter-spacing="0"
+     id="text1282"
+     style="stroke-width:0.980347">ŷ</text>
+  <text
+     x="1296.5287"
+     y="684.80286"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.7642px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1284"
+     style="stroke-width:0.980347">Representação latente invariante</text>
+  <ellipse
+     cx="1452.3549"
+     cy="361.21478"
+     rx="82.349113"
+     ry="33.331783"
+     fill="url(#haloOrange)"
+     transform="rotate(16)"
+     id="ellipse1286"
+     style="fill:url(#radialGradient1646);stroke-width:0.980347" />
+  <circle
+     cx="1276.0393"
+     cy="729.21252"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1288" />
+  <circle
+     cx="1256.9226"
+     cy="754.89758"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1290" />
+  <circle
+     cx="1282.0194"
+     cy="716.66412"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1292" />
+  <circle
+     cx="1267.4124"
+     cy="744.01581"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1294" />
+  <circle
+     cx="1248.6876"
+     cy="740.68256"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1296" />
+  <circle
+     cx="1285.1566"
+     cy="723.13434"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1298" />
+  <circle
+     cx="1266.3339"
+     cy="741.95703"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1300" />
+  <circle
+     cx="1272.6082"
+     cy="750.87823"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1302" />
+  <circle
+     cx="1292.8032"
+     cy="732.25165"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1304" />
+  <circle
+     cx="1273.5885"
+     cy="732.15356"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1306" />
+  <circle
+     cx="1253.4913"
+     cy="745.19214"
+     r="4.509594"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     id="circle1308" />
+  <polygon
+     points="1312.8,846.4 1302.9,846.4 1307.9,837 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1310"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1324,825.6 1314,825.6 1319,816.3 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1312"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1334.2,870.1 1324.2,870.1 1329.2,860.7 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1314"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1323.3,870.2 1313.3,870.2 1318.3,860.9 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1316"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1318.9,820.3 1308.9,820.3 1313.9,810.9 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1318"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1332,836.5 1322,836.5 1327,827.2 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1320"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1352.6,848.9 1342.6,848.9 1347.6,839.5 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1322"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1316.5,824.4 1306.5,824.4 1311.5,815 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1324"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1338.5,849 1328.5,849 1333.5,839.6 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1326"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1344.7,824.7 1334.7,824.7 1339.7,815.4 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1328"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1325.9,849.6 1315.9,849.6 1320.9,840.2 "
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.7"
+     stroke-linejoin="round"
+     id="polygon1330"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <path
+     d="m 1307.3124,709.80169 q -4.2154,39.606 -21.5676,75.48669"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.9"
+     stroke-linecap="round"
+     opacity="1"
+     id="path1332" />
+  <text
+     x="1296.5287"
+     y="804.40509"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.9799px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1334"
+     style="stroke-width:0.980347">fronteira estável sob qualquer variação</text>
+  <text
+     x="1296.5287"
+     y="822.05133"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.9799px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1336"
+     style="stroke-width:0.980347">coberta pelo suporte simulado</text>
+  <text
+     x="1656.3158"
+     y="524.026"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.2347px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1338"
+     style="stroke-width:0.980347">Aproximar vistas, afastar amostras distintas</text>
+  <rect
+     x="1501.421"
+     y="559.31848"
+     width="94.113266"
+     height="50.97802"
+     rx="9.8034658"
+     fill="#fff5f7"
+     stroke="#be123c"
+     stroke-width="1.8"
+     id="rect1340" />
+  <text
+     x="1548.4777"
+     y="580.88611"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1342"
+     style="stroke-width:0.980347">Encoder</text>
+  <text
+     x="1548.4777"
+     y="598.53235"
+     font-family="Georgia, 'Times New Roman', serif"
+     font-size="12.7445px"
+     fill="#4b5563"
+     text-anchor="middle"
+     id="text1350"
+     style="stroke-width:0.980347"><tspan
+       font-style="italic"
+       id="tspan1344"
+       style="stroke-width:0.961079">h</tspan><tspan
+       font-size="8.62705px"
+       dy="3.0390742"
+       font-style="italic"
+       id="tspan1346"
+       style="stroke-width:0.961079">ψ</tspan><tspan
+       dy="-3.0390742"
+       id="tspan1348"
+       style="stroke-width:0.980347" /></text>
+  <rect
+     x="1542.8898"
+     y="622.15869"
+     width="11.17595"
+     height="9.3132925"
+     rx="1.8626584"
+     fill="#be123c"
+     id="rect1352"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 1545.1445,622.15871 v -3.33318 a 3.3332,3.3332 0 0 1 6.6664,0"
+     fill="none"
+     stroke="#be123c"
+     stroke-width="2"
+     id="path1354" />
+  <circle
+     cx="1548.4777"
+     cy="626.9624"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1356"
+     style="stroke-width:0.980347" />
+  <text
+     x="1548.4777"
+     y="644.60864"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.2936px"
+     fill="#be123c"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1358"
+     style="stroke-width:0.980347">sem rótulos</text>
+  <line
+     x1="1599.4557"
+     y1="584.8075"
+     x2="1622.984"
+     y2="584.8075"
+     stroke="#4b5563"
+     stroke-width="1.8"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     id="line1360" />
+  <line
+     x1="1660.2372"
+     y1="555.39709"
+     x2="1779.8395"
+     y2="549.51501"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1362" />
+  <line
+     x1="1660.2372"
+     y1="555.39709"
+     x2="1650.4337"
+     y2="651.47107"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1364" />
+  <line
+     x1="1660.2372"
+     y1="555.39709"
+     x2="1787.6823"
+     y2="645.58899"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1366" />
+  <line
+     x1="1779.8395"
+     y1="549.51501"
+     x2="1650.4337"
+     y2="651.47107"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1368" />
+  <line
+     x1="1779.8395"
+     y1="549.51501"
+     x2="1787.6823"
+     y2="645.58899"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1370" />
+  <line
+     x1="1650.4337"
+     y1="651.47107"
+     x2="1787.6823"
+     y2="645.58899"
+     stroke="#dc2626"
+     stroke-width="1.3"
+     stroke-dasharray="5, 4"
+     opacity="0.55"
+     id="line1372" />
+  <ellipse
+     cx="1660.2372"
+     cy="555.39709"
+     rx="26.469357"
+     ry="18.626585"
+     fill="#1d4ed8"
+     opacity="0.1"
+     id="ellipse1374"
+     style="stroke-width:0.980347" />
+  <circle
+     cx="1648.473"
+     cy="555.39709"
+     r="5.4899406"
+     fill="#1d4ed8"
+     stroke="#1d4ed8"
+     stroke-width="1.9"
+     id="circle1376" />
+  <circle
+     cx="1672.0013"
+     cy="556.37744"
+     r="5.4899406"
+     fill="#ffffff"
+     stroke="#1d4ed8"
+     stroke-width="1.9"
+     id="circle1378" />
+  <path
+     d="m 1655.8256,566.18092 q 4.4116,3.92139 8.8232,0"
+     fill="none"
+     stroke="#16a34a"
+     stroke-width="1.8"
+     marker-start="url(#ahg)"
+     marker-end="url(#ahg)"
+     id="path1380" />
+  <ellipse
+     cx="1779.8395"
+     cy="549.51501"
+     rx="26.469357"
+     ry="18.626585"
+     fill="#15803d"
+     opacity="0.1"
+     id="ellipse1382"
+     style="stroke-width:0.980347" />
+  <polygon
+     points="1783.2,630 1772.8,630 1778,620.4 "
+     fill="#15803d"
+     stroke="#15803d"
+     stroke-width="1.9"
+     stroke-linejoin="round"
+     id="polygon1384"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1807.2,631 1796.8,631 1802,621.4 "
+     fill="#ffffff"
+     stroke="#15803d"
+     stroke-width="1.9"
+     stroke-linejoin="round"
+     id="polygon1386"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <path
+     d="m 1775.4279,560.29884 q 4.4116,3.92139 8.8231,0"
+     fill="none"
+     stroke="#16a34a"
+     stroke-width="1.8"
+     marker-start="url(#ahg)"
+     marker-end="url(#ahg)"
+     id="path1388" />
+  <ellipse
+     cx="1650.4337"
+     cy="651.47107"
+     rx="26.469357"
+     ry="18.626585"
+     fill="#6d28d9"
+     opacity="0.1"
+     id="ellipse1390"
+     style="stroke-width:0.980347" />
+  <polygon
+     points="1651.6,730 1646,735.6 1640.4,730 1646,724.4 "
+     fill="#6d28d9"
+     stroke="#6d28d9"
+     stroke-width="1.9"
+     stroke-linejoin="round"
+     id="polygon1392"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <polygon
+     points="1675.6,731 1670,736.6 1664.4,731 1670,725.4 "
+     fill="#ffffff"
+     stroke="#6d28d9"
+     stroke-width="1.9"
+     stroke-linejoin="round"
+     id="polygon1394"
+     transform="matrix(0.98034656,0,0,0.98034656,25.019186,-64.181915)" />
+  <path
+     d="m 1646.0222,662.25489 q 4.4115,3.92138 8.8231,0"
+     fill="none"
+     stroke="#16a34a"
+     stroke-width="1.8"
+     marker-start="url(#ahg)"
+     marker-end="url(#ahg)"
+     id="path1396" />
+  <ellipse
+     cx="1787.6823"
+     cy="645.58899"
+     rx="26.469357"
+     ry="18.626585"
+     fill="#ea580c"
+     opacity="0.1"
+     id="ellipse1398"
+     style="stroke-width:0.980347" />
+  <rect
+     x="1770.4282"
+     y="640.09906"
+     width="10.979881"
+     height="10.979881"
+     rx="1.1764159"
+     fill="#ea580c"
+     stroke="#ea580c"
+     stroke-width="1.9"
+     id="rect1400" />
+  <rect
+     x="1793.9565"
+     y="641.07941"
+     width="10.979881"
+     height="10.979881"
+     rx="1.1764159"
+     fill="#ffffff"
+     stroke="#ea580c"
+     stroke-width="1.9"
+     id="rect1402" />
+  <path
+     d="m 1783.2707,656.37281 q 4.4116,3.92138 8.8231,0"
+     fill="none"
+     stroke="#16a34a"
+     stroke-width="1.8"
+     marker-start="url(#ahg)"
+     marker-end="url(#ahg)"
+     id="path1404" />
+  <text
+     x="1664.1586"
+     y="684.80286"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#16a34a"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1406"
+     style="stroke-width:0.980347">— pares positivos (mesma amostra) se atraem</text>
+  <text
+     x="1664.1586"
+     y="700.4884"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="10.7838px"
+     fill="#dc2626"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1408"
+     style="stroke-width:0.980347">- - pares negativos (amostras distintas) se repelem</text>
+  <rect
+     x="1499.4603"
+     y="757.34845"
+     width="313.71091"
+     height="76.467033"
+     rx="9.8034658"
+     fill="#fbfbfc"
+     stroke="#dce0e6"
+     stroke-width="1.2"
+     id="rect1410" />
+  <text
+     x="1656.3158"
+     y="780.87677"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#1f2430"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1412"
+     style="stroke-width:0.980347">Na prática: CL não substitui os regimes 1–4</text>
+  <text
+     x="1656.3158"
+     y="801.46405"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1414"
+     style="stroke-width:0.980347">É pré-treino. Um encoder contrastivo dá o ponto</text>
+  <text
+     x="1656.3158"
+     y="818.12994"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1416"
+     style="stroke-width:0.980347">de partida sobre o qual SSDA ou UDA são aplicados.</text>
+  <line
+     x1="1587.6915"
+     y1="743.6236"
+     x2="1724.9401"
+     y2="743.6236"
+     stroke="#be123c"
+     stroke-width="1.6"
+     marker-end="url(#ah)"
+     stroke-linecap="round"
+     stroke-dasharray="5, 4"
+     id="line1418" />
+  <circle
+     cx="458.90421"
+     cy="875.67108"
+     r="5.2938714"
+     fill="#ffffff"
+     stroke="#1f2430"
+     stroke-width="1.86266"
+     id="circle1422" />
+  <text
+     x="477.53076"
+     y="880.57281"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1424"
+     style="stroke-width:0.980347">classe A (rotulada)</text>
+  <polygon
+     points="258.7,1096.5 247.3,1096.5 253,1085.8 "
+     fill="#ffffff"
+     stroke="#1f2430"
+     stroke-width="1.9"
+     stroke-linejoin="round"
+     id="polygon1426"
+     transform="matrix(0.98034656,0,0,0.98034656,430.47414,-194.86735)" />
+  <text
+     x="697.12842"
+     y="880.57281"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1428"
+     style="stroke-width:0.980347">classe B (rotulada)</text>
+  <circle
+     cx="941.23474"
+     cy="875.67108"
+     r="4.509594"
+     fill="#edeff2"
+     stroke="#9aa3af"
+     stroke-width="1.56855"
+     id="circle1430" />
+  <text
+     x="959.86133"
+     y="880.57281"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1432"
+     style="stroke-width:0.980347">amostra sem rótulo (classe desconhecida)</text>
+  <circle
+     cx="1227.4958"
+     cy="875.67108"
+     r="5.2938714"
+     fill="#8fb0f0"
+     stroke="#1d4ed8"
+     stroke-width="2.05873"
+     id="circle1434" />
+  <circle
+     cx="1227.4958"
+     cy="875.67108"
+     r="9.8034658"
+     fill="#1d4ed8"
+     opacity="0.16"
+     id="circle1436"
+     style="stroke-width:0.980347" />
+  <text
+     x="1246.1224"
+     y="880.57281"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1438"
+     style="stroke-width:0.980347">âncora rotulada do alvo (K)</text>
+  <path
+     d="m 448.12037,913.90469 q 10.78382,-6.86253 21.56763,-13.72493"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.86266"
+     id="path1440" />
+  <text
+     x="477.53076"
+     y="911.94403"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1442"
+     style="stroke-width:0.980347">fronteira estimada na fonte</text>
+  <path
+     d="m 667.718,913.90469 q 10.78381,-6.86253 21.56763,-13.72493"
+     fill="none"
+     stroke="#9aa3af"
+     stroke-width="1.56855"
+     stroke-dasharray="4, 4"
+     id="path1444" />
+  <text
+     x="697.12842"
+     y="911.94403"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1446"
+     style="stroke-width:0.980347">fronteira transferida (desajustada)</text>
+  <rect
+     x="935.94086"
+     y="905.27753"
+     width="10.587743"
+     height="8.8231192"
+     rx="1.7646238"
+     fill="#1f2430"
+     id="rect1448"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 938.09758,905.27756 v -3.1371 a 3.18613,3.18613 0 0 1 6.37226,0 v 3.1371"
+     fill="none"
+     stroke="#1f2430"
+     stroke-width="1.86266"
+     id="path1450" />
+  <circle
+     cx="941.23474"
+     cy="909.88513"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1452"
+     style="stroke-width:0.980347" />
+  <text
+     x="959.86133"
+     y="911.94403"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1454"
+     style="stroke-width:0.980347">parâmetros congelados</text>
+  <rect
+     x="1222.2019"
+     y="905.27753"
+     width="10.587743"
+     height="8.8231192"
+     rx="1.7646238"
+     fill="#1d4ed8"
+     id="rect1456"
+     style="stroke-width:0.980347" />
+  <path
+     d="m 1224.3587,905.27756 v -3.1371 a 3.18615,3.18615 0 0 1 6.3723,0"
+     fill="none"
+     stroke="#1d4ed8"
+     stroke-width="1.86266"
+     id="path1458" />
+  <circle
+     cx="1227.4958"
+     cy="909.88513"
+     r="1.3724852"
+     fill="#ffffff"
+     id="circle1460"
+     style="stroke-width:0.980347" />
+  <text
+     x="1246.1224"
+     y="911.94403"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#4b5563"
+     text-anchor="start"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text1462"
+     style="stroke-width:0.980347">parâmetros treináveis</text>
+  <text
+     x="1292.9723"
+     y="358.66968"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.274px"
+     fill="#4b5563"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text714"
+     style="stroke-width:0.980347">Alvo real: fora do treino, e desconhecido</text>
+  <circle
+     cx="1273.2949"
+     cy="381.88318"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle718" />
+  <circle
+     cx="1261.0103"
+     cy="404.47656"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle720" />
+  <circle
+     cx="1268.2948"
+     cy="374.80606"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle722" />
+  <circle
+     cx="1276.6937"
+     cy="407.26697"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle724" />
+  <circle
+     cx="1265.5255"
+     cy="366.42117"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle726" />
+  <circle
+     cx="1274.7565"
+     cy="368.49817"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle728" />
+  <circle
+     cx="1290.3201"
+     cy="382.09866"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle730" />
+  <circle
+     cx="1237.3298"
+     cy="367.63788"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle732" />
+  <circle
+     cx="1316.2194"
+     cy="379.03696"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle734" />
+  <circle
+     cx="1307.6807"
+     cy="379.03696"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle736" />
+  <circle
+     cx="1291.2325"
+     cy="411.72861"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle738" />
+  <circle
+     cx="1310.387"
+     cy="412.11325"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle740" />
+  <circle
+     cx="1303.1559"
+     cy="418.34421"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle742" />
+  <circle
+     cx="1302.2329"
+     cy="406.03613"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle744" />
+  <circle
+     cx="1292.925"
+     cy="417.95959"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle746" />
+  <circle
+     cx="1308.8345"
+     cy="381.57547"
+     r="3.2308614"
+     fill="#edeff2"
+     stroke="#d5d9e0"
+     stroke-width="1.17701"
+     id="circle748" />
+  <text
+     x="1331.6044"
+     y="368.11353"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="13.0773px"
+     fill="#9aa3af"
+     text-anchor="middle"
+     font-weight="bold"
+     font-style="normal"
+     letter-spacing="0"
+     id="text750"
+     style="stroke-width:0.769253">?</text>
+  <text
+     x="1292.9723"
+     y="449.13672"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text752"
+     style="stroke-width:0.980347">A aposta: se o suporte das simulações for largo</text>
+  <text
+     x="1292.9723"
+     y="465.80261"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text754"
+     style="stroke-width:0.980347">o bastante, o alvo real cai dentro dele.</text>
+  <text
+     x="1292.9723"
+     y="482.46851"
+     font-family="'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif"
+     font-size="11.5681px"
+     fill="#ea580c"
+     text-anchor="middle"
+     font-weight="normal"
+     font-style="normal"
+     letter-spacing="0"
+     id="text756"
+     style="stroke-width:0.980347">Hipótese forte — e não verificável sem amostra.</text>
+</svg>
