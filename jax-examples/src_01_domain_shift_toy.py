@@ -9,433 +9,295 @@
 #   kernelspec:
 #     display_name: WinterSchool
 #     language: python
-#     name: python3
+#     name: winterschool
 # ---
 
 # %% [markdown]
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy_v2.ipynb)
 #
-# # 🟢 Notebook 01 — Domain Shift: Quebrar e Consertar um Classificador
-# ### O ciclo de vida do domain shift em 4 atos
-# **I Escola de Inverno do IFUSP — Bloco L02_B02**
+# # Notebook 01 — Domain Shift: Quebrar e Consertar um Classificador
+# ### Treinar, avaliar, quebrar com shift, consertar com transfer learning
+# **I Escola de Inverno do IFUSP — Bloco L2B2**
 #
-# > **Modo de uso:** demo guiada pelo instrutor; você recebe o notebook depois.
-# > Objetivo: vivenciar, num universo 2D de brinquedo, todo o ciclo do domain
-# > shift — criar os dados, treinar na fonte, falhar no alvo, diagnosticar o
-# > problema sem rótulos do alvo, e comparar três estratégias de adaptação.
-#
-# ---
-#
-# ### 🗺️ Mapa do Curso
-#
-# | Dia | Bloco | Tema |
-# |-----|-------|------|
-# | Ter. 21/07 | L01_B01 | ML e Física: o mapa do território |
-# | Ter. 21/07 | L01_B02 | A caixa de ferramentas |
-# | Qua. 22/07 | L02_B01 | Domain shift: teoria |
-# | **Qua. 22/07** | **L02_B02 ← você está aqui** | **Mão na massa I — quebrar e consertar um classificador** |
-# | Qui. 23/07 | L03_B01 | Aprendizado contrastivo: teoria |
-# | Qui. 23/07 | L03_B02 | Mão na massa II — esculpindo embeddings |
-# | Sex. 24/07 | L04_B01 | Halos de matéria escura com segmentação de instâncias |
-# | Sex. 24/07 | L04_B02 | J-PAS: domain adaptation com quasares reais |
-
-# %% [markdown]
-# ## 🟢 Orientação: os 4 Atos
-#
-# Este notebook é uma peça de teatro em 4 atos, todos acontecendo num espaço
-# 2D onde podemos **ver** tudo:
-#
-# 1. **Ato 1 — Criar o universo de brinquedo.**
-#    Geramos duas distribuições Gaussianas (fonte e alvo) com 4 classes
-#    desbalanceadas. O shift é intencional: duas classes têm suas nuvens
-#    deslocadas entre domínios.
-#
-# 2. **Ato 2 — Treinar na fonte, quebrar no alvo.**
-#    Treinamos um encoder + cabeça classificadora na fonte. O modelo fica
-#    perfeito na fonte — e falha catastroficamente no alvo, com alta
-#    confiança nas predições erradas.
-#
-# 3. **Ato 3 — Diagnosticar o shift sem rótulos do alvo.**
-#    Treinamos um classificador binário Fonte-vs-Alvo. Se ele separa bem,
-#    o shift existe — e não precisamos de nenhum rótulo de classe do alvo
-#    para esse diagnóstico.
-#
-# 4. **Ato 4 — Três regimes de adaptação.**
-#    Comparamos (A) zero-shot, (B) somente alvo com K rótulos do zero,
-#    e (C) SSDA: encoder pré-treinado + cabeça congelada + K rótulos do
-#    alvo. O experimento aqui é **exatamente o mesmo** do artigo do J-PAS
-#    que veremos na sexta-feira.
-#
-# > **PRETRAINED = True** (padrão): se os checkpoints pré-computados estiverem
-# > em `assets/`, são carregados. Caso contrário o notebook os gera
-# > automaticamente e os salva para uso futuro. Mude para `False` para
-# > forçar treino ao vivo.
+# > **Modo de uso:** demo guiada pelo instrutor; vocês recebem o notebook depois.
+# > Ao final, teremos vivenciado todo o ciclo do domain shift num universo 2D
+# > de brinquedo: treinar um classificador, avalia-lo com ferramentas ricas,
+# > observar a degradacao quando o dominio muda, e conserta-lo com fine-tuning.
 
 # %%
-# ── Setup: importações e configuração global ──────────────────────────────────
-import os
-import pickle
-import pathlib
+# Instalacao de pacotes (so no Colab — localmente ja estao instalados)
+import subprocess, sys
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-q",
+         "jax", "jaxlib", "equinox", "optax", "matplotlib", "scikit-learn"])
+except ImportError:
+    pass
+
+# %%
 import numpy as np
 import jax
 import jax.numpy as jnp
-import matplotlib
+import equinox as eqx
+import optax
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from sklearn.metrics import (confusion_matrix, f1_score,
-                              roc_auc_score, roc_curve)
-from sklearn.model_selection import train_test_split
 
-# ── Flag global: True = carrega checkpoints (ou gera se ausentes)
-PRETRAINED = True
+# Semente de reprodutibilidade
+SEED = 42
+KEY = jax.random.PRNGKey(SEED)
 
-# ── Semente de reprodutibilidade
-SEMENTE  = 42
-CHAVE    = jax.random.PRNGKey(SEMENTE)
-
-# ── Número de classes
-N_CLASSES = 4
-
-# ── Caminho dos assets: resolve tanto ao executar como script quanto como
-# ── notebook Jupyter/Colab. Cria o diretório se não existir.
-try:
-    ASSETS = pathlib.Path(__file__).resolve().parent.parent / "assets"
-except NameError:
-    # Jupyter/Colab: __file__ não existe; tenta relativo ao CWD
-    _candidate = pathlib.Path("../assets").resolve()
-    ASSETS = _candidate if _candidate.parent.name == "jax-examples" \
-             else pathlib.Path("/tmp/nb01_assets")
-
-ASSETS.mkdir(exist_ok=True, parents=True)
-
-# ── Paleta de cores das classes (consistente em todos os plots)
-CORES_CLASSES  = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"]
-NOMES_CLASSES  = ["Classe 0", "Classe 1", "Classe 2", "Classe 3"]
-
-# ── Estilo global dos gráficos
+# Estilo dos graficos
 plt.rcParams.update({
-    "figure.dpi"   : 110,
+    "figure.dpi": 110,
     "axes.titlesize": 12,
     "axes.labelsize": 11,
     "legend.fontsize": 9,
 })
 
-# ── Helpers de I/O de checkpoints ─────────────────────────────────────────────
-
-def carregar_pkl(fname):
-    """Carrega lista de (W, b) a partir de um arquivo pickle."""
-    with open(ASSETS / fname, "rb") as f:
-        return pickle.load(f)
-
-
-def salvar_pkl(params, fname):
-    """Salva lista de (W, b) como numpy arrays (portabilidade entre JAX/numpy)."""
-    params_np = [(np.array(W), np.array(b)) for W, b in params]
-    with open(ASSETS / fname, "wb") as f:
-        pickle.dump(params_np, f)
-
-
-def _checkpoints_ok(*fnames):
-    """Retorna True se todos os arquivos existem em assets/."""
-    return PRETRAINED and all((ASSETS / f).exists() for f in fnames)
-
-
-print(f"JAX versão : {jax.__version__}")
-print(f"Dispositivo: {jax.devices()[0]}")
-print(f"PRETRAINED : {PRETRAINED}")
-print(f"Assets em  : {ASSETS.resolve()}")
+print(f"JAX versao  : {jax.__version__}")
+print(f"Dispositivo : {jax.devices()[0]}")
 
 # %% [markdown]
 # ---
-# ## 🟢 ATO 1 — O Universo de Brinquedo
-
-# %% [markdown]
-# Criamos um problema de classificação 2D com **4 classes desbalanceadas**
-# (pesos [50%, 25%, 15%, 10%]). Há dois domínios:
+# ## Bloco 1 — Gerador de dados 2D (dominio fonte)
 #
-# - **Fonte (Source):** onde temos rótulos abundantes.
-# - **Alvo (Target):** onde queremos classificar — mas as nuvens de duas
-#   classes estão deslocadas (~2,5 desvios padrão) em relação ao source.
+# Criamos um problema de classificacao 2D com **3 classes desbalanceadas**:
 #
-# **Por que desbalancear?** Porque em problemas reais (como classificação de
-# quasares no J-PAS) as classes raras são as mais interessantes fisicamente —
-# e as mais fáceis de ignorar durante o treino.
+# | Classe | Fracao | Descricao |
+# |--------|--------|-----------|
+# | 0 (majoritaria) | 50% | Nuvem larga, alongada |
+# | 1 (intermediaria) | 30% | Nuvem compacta |
+# | 2 (minoritaria) | 20% | Nuvem pequena e alongada |
+#
+# As classes se **sobrepoe parcialmente** — gerando erros reais de
+# classificacao — e tem **covariancia diferente**, o que forca fronteiras
+# de decisao nao-lineares.
+#
+# **Por que desbalancear?** Em problemas reais (e.g. classificacao de quasares),
+# as classes raras sao as mais interessantes fisicamente e as mais faceis de
+# ignorar durante o treino.
 
 # %%
-# ── ATO 1.1: parâmetros do universo ──────────────────────────────────────────
+# Parametros do dominio FONTE
+N_CLASSES = 3
+NOMES_CLASSES = ["Classe 0", "Classe 1", "Classe 2"]
+CORES_CLASSES = ["#e74c3c", "#3498db", "#2ecc71"]
 
-# Centros das nuvens no domínio FONTE
-MEDIAS_FONTE = np.array([
-    [-3.0, -3.0],   # classe 0 (50% dos dados)
-    [ 3.0, -3.0],   # classe 1 (25%)
-    [-3.0,  3.0],   # classe 2 (15%)
-    [ 3.0,  3.0],   # classe 3 (10% — rara!)
+# Centros e covariancias de cada classe no dominio fonte
+CENTROS_FONTE = np.array([
+    [-2.0, 0.0],   # classe 0
+    [2.0, 0.0],    # classe 1
+    [0.0, 2.8],    # classe 2
 ], dtype=np.float32)
 
-# Centros no domínio ALVO: classes 1 e 3 foram deslocadas
-MEDIAS_ALVO = np.array([
-    [-3.0, -3.0],   # classe 0 — mesma posição
-    [ 3.0,  1.5],   # classe 1 — deslocada em y  (+4,5 ≈ 2,5σ)
-    [-3.0,  3.0],   # classe 2 — mesma posição
-    [ 0.5,  3.0],   # classe 3 — deslocada em x  (-2,5 ≈ 2,5σ)
+COVARIANCIAS_FONTE = np.array([
+    [[1.2, 0.5], [0.5, 1.0]],    # classe 0: alongada, inclinada
+    [[0.8, -0.3], [-0.3, 0.8]],  # classe 1: ligeiramente inclinada
+    [[0.5, 0.0], [0.0, 1.3]],    # classe 2: alongada verticalmente
 ], dtype=np.float32)
 
-PESOS_CLASSES = np.array([0.50, 0.25, 0.15, 0.10], dtype=np.float32)
-N_POR_CLASSE  = 300    # amostras por classe em cada domínio
+# Proporcoes de cada classe
+FRACOES = np.array([0.50, 0.30, 0.20])
 
+# %%
+def gerar_dados(n_total, centros, covariancias, fracoes, chave):
+    """Gera mistura de Gaussianas 2D com classes desbalanceadas.
 
-def gerar_gmm(n_por_classe, medias, chave):
-    """Gera mistura de Gaussianas isotrópicas (σ=1) com 4 classes."""
+    Retorna X (n_total, 2) e y (n_total,) como arrays JAX.
+    """
     X_list, y_list = [], []
-    for c in range(N_CLASSES):
+    for c in range(len(fracoes)):
+        n_c = int(n_total * fracoes[c])
         chave, k = jax.random.split(chave)
-        pts = jax.random.normal(k, (n_por_classe, 2)) + medias[c]
-        X_list.append(np.array(pts))
-        y_list.append(np.full(n_por_classe, c, dtype=np.int32))
-    return np.concatenate(X_list), np.concatenate(y_list)
+        # Amostra de normal padrao e transforma com Cholesky
+        L = jnp.linalg.cholesky(jnp.array(covariancias[c]))
+        z = jax.random.normal(k, (n_c, 2))
+        pts = z @ L.T + centros[c]
+        X_list.append(pts)
+        y_list.append(jnp.full(n_c, c, dtype=jnp.int32))
+    return jnp.concatenate(X_list), jnp.concatenate(y_list)
 
 
-# Dados gerados inline com semente fixa — sem dependência de arquivos externos.
-# As mesmas sementes garantem reprodutibilidade exata entre execuções.
-chave_dados = jax.random.PRNGKey(SEMENTE)
-chave_dados, k_src, k_tgt = jax.random.split(chave_dados, 3)
-X_fonte, y_fonte = gerar_gmm(N_POR_CLASSE, MEDIAS_FONTE, k_src)
-X_alvo,  y_alvo  = gerar_gmm(N_POR_CLASSE, MEDIAS_ALVO,  k_tgt)
+# Gerar dados fonte: treino + validacao
+N_TREINO = 800
+N_VAL = 200
 
-print(f"Fonte: {X_fonte.shape}  |  Alvo: {X_alvo.shape}")
-print(f"Distribuição de classes (fonte): {np.bincount(y_fonte)}")
-print(f"Distribuição de classes (alvo) : {np.bincount(y_alvo)}")
+key_src_tr, key_src_val, KEY = jax.random.split(KEY, 3)
+X_treino, y_treino = gerar_dados(N_TREINO, CENTROS_FONTE, COVARIANCIAS_FONTE,
+                                 FRACOES, key_src_tr)
+X_val, y_val = gerar_dados(N_VAL, CENTROS_FONTE, COVARIANCIAS_FONTE,
+                           FRACOES, key_src_val)
+
+print(f"Treino: {X_treino.shape[0]} pontos")
+print(f"Validacao: {X_val.shape[0]} pontos")
+for c in range(N_CLASSES):
+    n_tr = int((y_treino == c).sum())
+    n_va = int((y_val == c).sum())
+    print(f"  {NOMES_CLASSES[c]}: {n_tr} treino, {n_va} val")
 
 # %%
-# ── ATO 1.2: Visualização Fonte vs. Alvo ─────────────────────────────────────
-# Os dados são gerados inline acima, então esta figura sempre funciona.
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
-fig.suptitle("Universo de brinquedo: domínio fonte vs. domínio alvo",
-             fontsize=13)
+fig, ax = plt.subplots(figsize=(6.5, 5))
 for c in range(N_CLASSES):
-    ax1.scatter(X_fonte[y_fonte==c, 0], X_fonte[y_fonte==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax1.set_title("Fonte (Source)"); ax1.set_xlabel("x₁"); ax1.set_ylabel("x₂")
-ax1.legend(); ax1.grid(True, alpha=0.3)
-
-for c in range(N_CLASSES):
-    ax2.scatter(X_alvo[y_alvo==c, 0], X_alvo[y_alvo==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax2.set_title("Alvo (Target)"); ax2.set_xlabel("x₁"); ax2.set_ylabel("x₂")
-ax2.legend(); ax2.grid(True, alpha=0.3)
-
+    mask = y_treino == c
+    ax.scatter(X_treino[mask, 0], X_treino[mask, 1],
+               s=15, color=CORES_CLASSES[c], alpha=0.6,
+               edgecolors="none", label=f"{NOMES_CLASSES[c]} ({int(FRACOES[c]*100)}%)")
+ax.set_xlabel("$x_1$")
+ax.set_ylabel("$x_2$")
+ax.set_title("Dominio fonte — dados de treino")
+ax.legend()
+ax.grid(True, alpha=0.3)
+ax.set_aspect("equal")
 plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# ## 🟡 Poll — Ato 1
+# ---
+# ## Bloco 2 — Treinar um classificador (Equinox + Optax)
 #
-# **Olhe as duas figuras.** Quais classes vão sofrer mais com o shift?
-# **Levante a mão** com sua previsão antes de continuar.
+# Usamos a mesma receita do Notebook 00:
 #
-# *(A resposta aparece no próximo passo depois que vermos o modelo falhar.)*
+# - **Equinox** define o modelo como modulo.
+# - **Optax** fornece o otimizador (Adam).
+#
+# A arquitetura: MLP `[2 -> 32 -> 32 -> 3]` com ativacao `tanh` nas
+# camadas ocultas e saida linear (logits para 3 classes).
+
+# %%
+class Classificador(eqx.Module):
+    """MLP classificador com camadas de tamanho variavel."""
+    layers: list
+
+    def __init__(self, camadas, key):
+        self.layers = []
+        for i in range(len(camadas) - 1):
+            key, subkey = jax.random.split(key)
+            self.layers.append(eqx.nn.Linear(camadas[i], camadas[i + 1], key=subkey))
+
+    def __call__(self, x):
+        """Forward pass: tanh nas ocultas, linear na saida."""
+        for layer in self.layers[:-1]:
+            x = jnp.tanh(layer(x))
+        return self.layers[-1](x)
+
+
+# Criar modelo
+CAMADAS = [2, 32, 32, N_CLASSES]
+modelo = Classificador(CAMADAS, key=jax.random.PRNGKey(0))
+
+# Teste rapido
+y_teste = jax.vmap(modelo)(X_treino[:3])
+print(f"Entrada: shape {X_treino[:3].shape}")
+print(f"Saida (logits): shape {y_teste.shape}")
+n_params = sum(jnp.size(p) for p in jax.tree_util.tree_leaves(modelo))
+print(f"Total de parametros: {n_params}")
+
+# %% [markdown]
+# ### Entropia cruzada ponderada
+#
+# Sem pesos, o modelo pode ignorar a classe minoritaria (20%) e ainda ter
+# acuracia alta. Pesos inversamente proporcionais a frequencia forcam o
+# modelo a levar as classes raras a serio.
+
+# %%
+# Pesos de classe: inverso da frequencia, normalizados
+pesos_classe = jnp.array(1.0 / FRACOES)
+pesos_classe = pesos_classe / pesos_classe.sum() * N_CLASSES
+print(f"Pesos de classe: {pesos_classe}")
+
+
+def perda_ce_ponderada(modelo, x_batch, y_batch):
+    """Entropia cruzada ponderada por classe."""
+    logits = jax.vmap(modelo)(x_batch)
+    log_p = jax.nn.log_softmax(logits, axis=-1)
+    N = y_batch.shape[0]
+    log_py = log_p[jnp.arange(N), y_batch]
+    pesos = pesos_classe[y_batch]
+    return -jnp.mean(pesos * log_py)
+
+# %%
+# Otimizador e passo de treino
+otimizador = optax.adam(learning_rate=3e-3)
+opt_state = otimizador.init(eqx.filter(modelo, eqx.is_array))
+
+
+@eqx.filter_jit
+def passo_treino(modelo, estado, x, y):
+    """Um passo: gradiente + atualizacao Adam."""
+    perda, grads = eqx.filter_value_and_grad(perda_ce_ponderada)(modelo, x, y)
+    atualizacoes, estado = otimizador.update(grads, estado, modelo)
+    modelo = eqx.apply_updates(modelo, atualizacoes)
+    return modelo, estado, perda
+
+# %%
+# Loop de treino com mini-batches
+N_EPOCAS = 1500
+BATCH_SIZE = 64
+
+historico_treino = []
+historico_val = []
+chave_treino = jax.random.PRNGKey(1)
+
+print(f"Treinando {N_EPOCAS} epocas — Adam (lr=3e-3, batch={BATCH_SIZE})")
+
+for epoca in range(1, N_EPOCAS + 1):
+    chave_treino, chave_perm = jax.random.split(chave_treino)
+    perm = jax.random.permutation(chave_perm, X_treino.shape[0])
+    X_emb = X_treino[perm]
+    y_emb = y_treino[perm]
+
+    for i in range(0, X_treino.shape[0], BATCH_SIZE):
+        x_b = X_emb[i:i + BATCH_SIZE]
+        y_b = y_emb[i:i + BATCH_SIZE]
+        modelo, opt_state, _ = passo_treino(modelo, opt_state, x_b, y_b)
+
+    if epoca % 50 == 0 or epoca == 1:
+        p_tr = float(perda_ce_ponderada(modelo, X_treino, y_treino))
+        p_va = float(perda_ce_ponderada(modelo, X_val, y_val))
+        historico_treino.append((epoca, p_tr))
+        historico_val.append((epoca, p_va))
+        if epoca <= 1 or epoca % 300 == 0:
+            print(f"  Epoca {epoca:4d}  treino={p_tr:.4f}  val={p_va:.4f}")
+
+print("Treino concluido.")
+
+# %%
+# Curvas de aprendizado
+ep_tr, l_tr = zip(*historico_treino)
+ep_va, l_va = zip(*historico_val)
+
+fig, ax = plt.subplots(figsize=(7, 3.5))
+ax.plot(ep_tr, l_tr, "-", lw=1.5, color="#2980b9", label="treino")
+ax.plot(ep_va, l_va, "-", lw=1.5, color="#e74c3c", label="validacao")
+ax.set_xlabel("Epoca")
+ax.set_ylabel("Perda (CE ponderada)")
+ax.set_title("Curvas de aprendizado — modelo fonte")
+ax.legend()
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ---
-# ## 🟢 ATO 2 — Arquitetura: Encoder + Cabeça Classificadora
+# ## Bloco 3 — Avaliacao: visualizacoes e metricas
 #
-# Separamos a rede em duas partes com papéis distintos:
-#
-# | Componente | Entrada → Saída | Papel |
-# |---|---|---|
-# | **Encoder** | dados 2D → espaço latente 2D | *Percepção*: aprende a representar os dados |
-# | **Cabeça (Head)** | latente 2D → 4 classes | *Vocabulário*: decide qual classe no espaço latente |
-#
-# Analogia: o encoder é como o sistema sensorial (aprende a "ver" os dados);
-# a cabeça é como o vocabulário de decisão (aprende "o que significa cada região").
-#
-# A arquitetura do encoder: **MLP [2 → 32 → 32 → 2]** com ativação tanh.
-# A cabeça: **camada linear [2 → 4]** (sem ativação — os logits vão para softmax).
-
-# %%
-# ── ATO 2.1: Definição da arquitetura ────────────────────────────────────────
-
-def init_mlp(tamanhos_camadas, chave):
-    """
-    Inicialização de Glorot uniforme.
-    Retorna lista de tuplas (W, b), uma por par de camadas.
-    (Mesmo estilo do Notebook 00.)
-    """
-    params = []
-    for i in range(len(tamanhos_camadas) - 1):
-        chave, kw = jax.random.split(chave)
-        entrada = tamanhos_camadas[i]
-        saida   = tamanhos_camadas[i + 1]
-        escala  = np.sqrt(6.0 / (entrada + saida))
-        W = jax.random.uniform(kw, (entrada, saida),
-                               minval=-escala, maxval=escala)
-        b = jnp.zeros(saida)
-        params.append((W, b))
-    return params
-
-
-def forward_encoder(enc_params, x):
-    """Encoder MLP [2→32→32→2] com ativação tanh nas camadas ocultas."""
-    h = x
-    for W, b in enc_params[:-1]:
-        h = jnp.tanh(h @ W + b)
-    W, b = enc_params[-1]
-    return h @ W + b
-
-
-def forward_head(head_params, z):
-    """Cabeça linear [2→4]: produz logits (sem softmax)."""
-    W, b = head_params[0]
-    return z @ W + b
-
-
-def predizer_classes(enc_params, head_params, X):
-    """Prediz índice de classe para um array numpy X."""
-    z      = forward_encoder(enc_params, jnp.array(X, dtype=jnp.float32))
-    logits = forward_head(head_params, z)
-    return np.array(jnp.argmax(logits, axis=-1))
-
-
-def obter_embeddings(enc_params, X):
-    """Retorna representações latentes 2D como array numpy."""
-    z = forward_encoder(enc_params, jnp.array(X, dtype=jnp.float32))
-    return np.array(z)
-
-
-# Teste rápido de shapes
-chave_teste = jax.random.PRNGKey(99)
-enc_teste  = init_mlp([2, 32, 32, 2], chave_teste)
-chave_teste, kt = jax.random.split(chave_teste)
-head_teste = init_mlp([2, N_CLASSES], kt)
-
-x_teste = jnp.ones((5, 2))
-z_teste = forward_encoder(enc_teste, x_teste)
-l_teste = forward_head(head_teste, z_teste)
-print(f"Encoder: entrada {x_teste.shape} → latente {z_teste.shape}")
-print(f"Cabeça : latente {z_teste.shape} → logits {l_teste.shape}")
-print("Shapes OK!")
-
-# %%
-# ── ATO 2.2: Perda de entropia cruzada ponderada ─────────────────────────────
-
-# Por que pesos de classe?
-# Sem pesos, o modelo ignora a classe rara (10% dos dados):
-# prever sempre "Classe 0" dá 50% de acurácia e perda baixa.
-# Pesos ∝ 1/frequência forçam o modelo a levar as classes raras a sério.
-
-def perda_ce_ponderada(enc_params, head_params, X, y, pesos_classes):
-    """
-    Entropia cruzada ponderada:
-      L = -média[ peso[y_i] · log P(y_i | x_i) ]
-
-    pesos_classes: array de forma (N_CLASSES,)
-    """
-    z      = forward_encoder(enc_params, X)
-    logits = forward_head(head_params, z)
-    log_p  = jax.nn.log_softmax(logits, axis=-1)     # (N, C)
-
-    N      = y.shape[0]
-    # log-probabilidade da classe verdadeira
-    log_py = log_p[jnp.arange(N), y]                 # (N,)
-    # peso da classe verdadeira de cada amostra
-    pesos  = pesos_classes[y]                         # (N,)
-
-    return -jnp.mean(pesos * log_py)
-
-
-print("Função de perda definida.")
-print("Pesos de classe (inversamente proporcionais à frequência):",
-      PESOS_CLASSES)
-
-# %%
-# ── Helpers de Adam (manual, sem optax — mesmo estilo do Notebook 00) ─────────
-
-def adam_init(params):
-    """Inicializa estados de momento (m, v) zerados."""
-    m = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
-    v = [(jnp.zeros_like(W), jnp.zeros_like(b)) for W, b in params]
-    return m, v
-
-
-def adam_passo(params, grads, m, v, t,
-               lr=3e-3, b1=0.9, b2=0.999, eps=1e-8):
-    """Um passo de Adam com correção de bias."""
-    new_m = [(b1*mW + (1-b1)*gW, b1*mb + (1-b1)*gb)
-             for (mW, mb), (gW, gb) in zip(m, grads)]
-    new_v = [(b2*vW + (1-b2)*gW**2, b2*vb + (1-b2)*gb**2)
-             for (vW, vb), (gW, gb) in zip(v, grads)]
-    mhat  = [(mW/(1-b1**t), mb/(1-b1**t)) for mW, mb in new_m]
-    vhat  = [(vW/(1-b2**t), vb/(1-b2**t)) for vW, vb in new_v]
-    new_p = [(W - lr*mWh/(jnp.sqrt(vWh)+eps),
-              b - lr*mbh/(jnp.sqrt(vbh)+eps))
-             for (W, b), (mWh, mbh), (vWh, vbh)
-             in zip(params, mhat, vhat)]
-    return new_p, new_m, new_v
-
-# %%
-# ── ATO 2.3: Treino no Source ─────────────────────────────────────────────────
-# Padrão "gerar se ausente": carrega checkpoints se existirem; caso contrário
-# treina inline e salva para execuções futuras (incluindo Colab limpo).
-
-pesos_jnp = jnp.array(PESOS_CLASSES)
-X_fonte_j = jnp.array(X_fonte, dtype=jnp.float32)
-y_fonte_j = jnp.array(y_fonte, dtype=jnp.int32)
-
-if _checkpoints_ok("nb1_encoder_source.pkl", "nb1_head_source.pkl"):
-    # ── Carga rápida (modo aula ou segunda execução) ──────────────────────────
-    enc_fonte  = carregar_pkl("nb1_encoder_source.pkl")
-    head_fonte = carregar_pkl("nb1_head_source.pkl")
-    print("Checkpoints do modelo fonte carregados.")
-else:
-    # ── Treino ao vivo e salvo para reusar ────────────────────────────────────
-    print("Treinando modelo na fonte... (pode levar ~10 s no CPU)")
-    chave_treino = jax.random.PRNGKey(0)
-    chave_treino, ke, kh = jax.random.split(chave_treino, 3)
-
-    enc_fonte  = init_mlp([2, 32, 32, 2], ke)
-    head_fonte = init_mlp([2, N_CLASSES], kh)
-
-    grad_fn = jax.jit(jax.grad(perda_ce_ponderada, argnums=(0, 1)))
-    m_enc,  v_enc  = adam_init(enc_fonte)
-    m_head, v_head = adam_init(head_fonte)
-
-    for t in range(1, 601):
-        g_enc, g_head = grad_fn(enc_fonte, head_fonte,
-                                X_fonte_j, y_fonte_j, pesos_jnp)
-        enc_fonte,  m_enc,  v_enc  = adam_passo(enc_fonte,  g_enc,  m_enc,  v_enc,  t)
-        head_fonte, m_head, v_head = adam_passo(head_fonte, g_head, m_head, v_head, t)
-        if t % 200 == 0:
-            l = float(perda_ce_ponderada(enc_fonte, head_fonte,
-                                         X_fonte_j, y_fonte_j, pesos_jnp))
-            print(f"  época {t:4d}  perda={l:.4f}")
-
-    salvar_pkl(enc_fonte,  "nb1_encoder_source.pkl")
-    salvar_pkl(head_fonte, "nb1_head_source.pkl")
-    print("Treino concluído — checkpoints salvos em assets/.")
-
-# Acurácias
-acc_fonte = np.mean(predizer_classes(enc_fonte, head_fonte, X_fonte) == y_fonte)
-acc_alvo0 = np.mean(predizer_classes(enc_fonte, head_fonte, X_alvo)  == y_alvo)
-print(f"\nAcurácia na FONTE : {acc_fonte:.3f}")
-print(f"Acurácia no ALVO  : {acc_alvo0:.3f}  ← catástrofe!")
+# O modelo treinou. Agora precisamos **entender** o que ele aprendeu.
+# Vamos construir 4 ferramentas de avaliacao, cada uma revelando um
+# aspecto diferente do classificador.
 
 # %% [markdown]
-# ## 🔵 ATO 2.4 — Figura-Assinatura: Mapa de Decisão
+# ### 3a) Mapa de probabilidade
 #
-# O mapa de decisão mostra quais regiões do espaço 2D o modelo atribui a
-# cada classe (fundo colorido). Os pontos sobrepostos são os dados reais.
-#
-# - **Painel esquerdo:** modelo fonte aplicado à fonte → perfeito.
-# - **Painel direito:** o mesmo modelo aplicado ao alvo → catástrofe.
+# Avaliamos o modelo numa malha densa cobrindo o espaco 2D. Para cada
+# ponto da malha, calculamos $P(\text{classe } k \mid x)$. Isso mostra
+# exatamente o que o modelo **acredita** em cada regiao — inclusive onde
+# ele esta confiante mas errado.
 
 # %%
-# ── ATO 2.4: Figura-assinatura — mapa de decisão ─────────────────────────────
-
-def criar_malha(xlim=(-7, 7), ylim=(-7, 7), passo=0.12):
-    """Cria malha 2D para o mapa de decisão."""
+def criar_malha(xlim=(-6, 6), ylim=(-4, 7), passo=0.10):
+    """Cria malha 2D para avaliacao densa."""
     xx, yy = np.meshgrid(
         np.arange(xlim[0], xlim[1], passo),
         np.arange(ylim[0], ylim[1], passo),
@@ -443,682 +305,655 @@ def criar_malha(xlim=(-7, 7), ylim=(-7, 7), passo=0.12):
     return xx, yy
 
 
-def plotar_mapa_decisao(ax, enc_params, head_params,
-                        X_overlay, y_overlay, titulo, xx, yy,
-                        alpha_fundo=0.35):
-    """
-    Plota o mapa de decisão (fundo pcolormesh) com pontos sobrepostos.
-    """
-    # Predições em todos os pontos da malha
-    pts    = np.c_[xx.ravel(), yy.ravel()].astype(np.float32)
-    preds  = predizer_classes(enc_params, head_params, pts)
-    Z      = preds.reshape(xx.shape)
+def probabilidades_malha(modelo, xx, yy):
+    """Calcula softmax do modelo em todos os pontos da malha."""
+    pts = jnp.array(np.c_[xx.ravel(), yy.ravel()], dtype=jnp.float32)
+    logits = jax.vmap(modelo)(pts)
+    probs = jax.nn.softmax(logits, axis=-1)
+    return np.array(probs)
 
-    # Fundo: regiões de decisão semitransparentes
+
+xx, yy = criar_malha()
+probs_malha = probabilidades_malha(modelo, xx, yy)
+
+# %%
+# Mapa de probabilidade — uma subpanel por classe
+fig, axes = plt.subplots(1, N_CLASSES, figsize=(14, 4))
+fig.suptitle("Mapa de probabilidade — $P$(classe $k$ | $x$)", fontsize=13)
+
+for c in range(N_CLASSES):
+    P_c = probs_malha[:, c].reshape(xx.shape)
+    im = axes[c].pcolormesh(xx, yy, P_c, cmap="RdBu_r", shading="auto",
+                            vmin=0, vmax=1)
+    # Sobrepor pontos de validacao
+    mask = y_val == c
+    axes[c].scatter(X_val[mask, 0], X_val[mask, 1],
+                    s=12, color=CORES_CLASSES[c], edgecolors="k",
+                    linewidths=0.3, zorder=3)
+    axes[c].set_title(NOMES_CLASSES[c])
+    axes[c].set_xlabel("$x_1$")
+    if c == 0:
+        axes[c].set_ylabel("$x_2$")
+    plt.colorbar(im, ax=axes[c], fraction=0.046)
+
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ### 3b) Mapa de decisao (regioes de classe)
+#
+# Aplicamos $\arg\max$ nas probabilidades: cada ponto da malha recebe
+# a classe de maior probabilidade. Isso mostra as **fronteiras de decisao**
+# aprendidas pelo modelo.
+
+# %%
+def plotar_mapa_decisao(ax, modelo, X_overlay, y_overlay, titulo,
+                        xx, yy, probs=None, alpha_fundo=0.35):
+    """Plota regioes de decisao com pontos sobrepostos."""
+    if probs is None:
+        probs = probabilidades_malha(modelo, xx, yy)
+    preds = probs.argmax(axis=1).reshape(xx.shape)
+
     cmap_bg = mcolors.ListedColormap(
         [mcolors.to_rgba(c, alpha_fundo) for c in CORES_CLASSES])
-    ax.pcolormesh(xx, yy, Z, cmap=cmap_bg, shading="auto",
+    ax.pcolormesh(xx, yy, preds, cmap=cmap_bg, shading="auto",
                   vmin=0, vmax=N_CLASSES - 1)
 
-    # Pontos sobrepostos
     for c in range(N_CLASSES):
         mask = y_overlay == c
-        ax.scatter(X_overlay[mask, 0], X_overlay[mask, 1],
-                   s=15, color=CORES_CLASSES[c],
-                   edgecolors="k", linewidths=0.3,
-                   zorder=3, label=NOMES_CLASSES[c])
+        ax.scatter(np.array(X_overlay[mask, 0]),
+                   np.array(X_overlay[mask, 1]),
+                   s=15, color=CORES_CLASSES[c], edgecolors="k",
+                   linewidths=0.3, zorder=3, label=NOMES_CLASSES[c])
 
     ax.set_title(titulo, fontsize=11)
-    ax.set_xlabel("x₁")
-    ax.set_ylabel("x₂")
+    ax.set_xlabel("$x_1$")
+    ax.set_ylabel("$x_2$")
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
 
 
-xx, yy = criar_malha()
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-fig.suptitle("Mapa de Decisão — modelo treinado na fonte", fontsize=13)
+fig, ax = plt.subplots(figsize=(6.5, 5))
+plotar_mapa_decisao(ax, modelo, X_val, y_val,
+                    "Mapa de decisao — validacao fonte", xx, yy,
+                    probs=probs_malha)
+ax.legend()
+plt.tight_layout()
+plt.show()
 
-plotar_mapa_decisao(ax1, enc_fonte, head_fonte, X_fonte, y_fonte,
-                    "Fonte (Source) — perfeito", xx, yy)
+# %% [markdown]
+# ### 3c) Matriz de confusao e metricas por classe
+#
+# A **acuracia** global pode ser enganosa com classes desbalanceadas:
+# se o modelo prever sempre "Classe 0", ja tera 50% de acerto!
+#
+# Metricas por classe revelam a verdade:
+#
+# | Metrica | O que mede |
+# |---------|-----------|
+# | **TPR** (recall) | Dos exemplos reais da classe, quantos o modelo acertou? |
+# | **PPV** (precision) | Das predicoes nessa classe, quantas estavam corretas? |
+# | **F1** | Media harmonica de TPR e PPV — resume ambos num numero |
+
+# %%
+def metricas_classificacao(y_true, y_pred, n_classes=N_CLASSES):
+    """Calcula matriz de confusao, TPR, PPV e F1 por classe.
+
+    Retorna: cm (n,n), tpr (n,), ppv (n,), f1 (n,), acc (float)
+    """
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+
+    cm = np.zeros((n_classes, n_classes), dtype=int)
+    for i in range(len(y_true)):
+        cm[y_true[i], y_pred[i]] += 1
+
+    tpr = np.zeros(n_classes)
+    ppv = np.zeros(n_classes)
+    f1 = np.zeros(n_classes)
+
+    for c in range(n_classes):
+        tp = cm[c, c]
+        fn = cm[c, :].sum() - tp
+        fp = cm[:, c].sum() - tp
+        tpr[c] = tp / max(tp + fn, 1)
+        ppv[c] = tp / max(tp + fp, 1)
+        if tpr[c] + ppv[c] > 0:
+            f1[c] = 2 * tpr[c] * ppv[c] / (tpr[c] + ppv[c])
+
+    acc = np.trace(cm) / max(cm.sum(), 1)
+    return cm, tpr, ppv, f1, acc
+
+
+def plotar_matriz_confusao(ax, cm, titulo):
+    """Plota a matriz de confusao como heatmap."""
+    ax.imshow(cm, cmap="Blues", aspect="equal")
+    ax.set_title(titulo, fontsize=10)
+    ax.set_xlabel("Predito")
+    ax.set_ylabel("Real")
+    ax.set_xticks(range(N_CLASSES))
+    ax.set_yticks(range(N_CLASSES))
+    ax.set_xticklabels([f"C{c}" for c in range(N_CLASSES)], fontsize=9)
+    ax.set_yticklabels([f"C{c}" for c in range(N_CLASSES)], fontsize=9)
+    for i in range(N_CLASSES):
+        for j in range(N_CLASSES):
+            cor = "white" if cm[i, j] > cm.max() * 0.5 else "black"
+            ax.text(j, i, str(cm[i, j]), ha="center", va="center",
+                    color=cor, fontsize=10)
+
+# %%
+# Predicoes no conjunto de validacao fonte
+preds_val_fonte = np.array(jnp.argmax(jax.vmap(modelo)(X_val), axis=-1))
+cm_fonte, tpr_fonte, ppv_fonte, f1_fonte, acc_fonte = metricas_classificacao(
+    np.array(y_val), preds_val_fonte)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+plotar_matriz_confusao(ax1, cm_fonte, "Matriz de confusao — val. fonte")
+
+# Tabela de metricas como barplot
+x_pos = np.arange(N_CLASSES)
+largura = 0.25
+ax2.bar(x_pos - largura, tpr_fonte, largura, label="TPR (recall)",
+        color="#3498db")
+ax2.bar(x_pos, ppv_fonte, largura, label="PPV (precision)",
+        color="#e74c3c")
+ax2.bar(x_pos + largura, f1_fonte, largura, label="F1",
+        color="#2ecc71")
+ax2.set_xticks(x_pos)
+ax2.set_xticklabels(NOMES_CLASSES, fontsize=9)
+ax2.set_ylim(0, 1.1)
+ax2.set_ylabel("Score")
+ax2.set_title("Metricas por classe — val. fonte")
+ax2.legend(fontsize=8)
+ax2.grid(True, alpha=0.3, axis="y")
+
+plt.tight_layout()
+plt.show()
+
+print(f"Acuracia global: {acc_fonte:.3f}")
+print(f"Macro-F1       : {f1_fonte.mean():.3f}")
+for c in range(N_CLASSES):
+    print(f"  {NOMES_CLASSES[c]}: TPR={tpr_fonte[c]:.3f}  "
+          f"PPV={ppv_fonte[c]:.3f}  F1={f1_fonte[c]:.3f}")
+
+# %% [markdown]
+# ### 3d) Curva ROC e AUC (por classe, one-vs-rest)
+#
+# A curva ROC mostra o trade-off entre **taxa de verdadeiro positivo**
+# (TPR) e **taxa de falso positivo** (FPR) ao variar o limiar de decisao.
+#
+# - **AUC = 1.0**: separacao perfeita.
+# - **AUC = 0.5**: classificador aleatorio (a diagonal).
+#
+# A AUC captura o que a acuracia nao captura: quao bem o modelo *ordena*
+# as probabilidades, independentemente do limiar escolhido.
+
+# %%
+def calcular_roc_auc(y_true, probs, n_classes=N_CLASSES):
+    """Calcula curva ROC e AUC por classe (one-vs-rest).
+
+    Trata o caso degenerado (classe ausente no conjunto) retornando None.
+    """
+    y_true = np.asarray(y_true)
+    probs = np.asarray(probs)
+    resultados = []
+
+    for c in range(n_classes):
+        y_bin = (y_true == c).astype(int)
+        # Caso degenerado: todos da mesma classe
+        if y_bin.sum() == 0 or y_bin.sum() == len(y_bin):
+            resultados.append({"fpr": None, "tpr": None, "auc": None})
+            continue
+
+        scores = probs[:, c]
+        # Ordenar por score decrescente
+        ordem = np.argsort(-scores)
+        y_sorted = y_bin[ordem]
+        scores_sorted = scores[ordem]
+
+        # Calcular TPR e FPR para cada limiar unico
+        n_pos = y_bin.sum()
+        n_neg = len(y_bin) - n_pos
+
+        tpr_list = [0.0]
+        fpr_list = [0.0]
+        tp_acum = 0
+        fp_acum = 0
+
+        # Limiares unicos (pontos onde o score muda)
+        for i in range(len(y_sorted)):
+            if y_sorted[i] == 1:
+                tp_acum += 1
+            else:
+                fp_acum += 1
+            # Registrar ponto se proximo score e diferente ou e o ultimo
+            if i == len(y_sorted) - 1 or scores_sorted[i] != scores_sorted[i + 1]:
+                tpr_list.append(tp_acum / n_pos)
+                fpr_list.append(fp_acum / n_neg)
+
+        fpr_arr = np.array(fpr_list)
+        tpr_arr = np.array(tpr_list)
+
+        # AUC via regra do trapezio
+        auc_val = float(np.trapezoid(tpr_arr, fpr_arr))
+        resultados.append({"fpr": fpr_arr, "tpr": tpr_arr, "auc": auc_val})
+
+    return resultados
+
+# %%
+# ROC/AUC para o modelo fonte na validacao
+probs_val_fonte = np.array(jax.nn.softmax(jax.vmap(modelo)(X_val), axis=-1))
+roc_fonte = calcular_roc_auc(np.array(y_val), probs_val_fonte)
+
+fig, ax = plt.subplots(figsize=(5.5, 5))
+for c in range(N_CLASSES):
+    r = roc_fonte[c]
+    if r["auc"] is not None:
+        ax.plot(r["fpr"], r["tpr"], lw=2, color=CORES_CLASSES[c],
+                label=f'{NOMES_CLASSES[c]} (AUC={r["auc"]:.3f})')
+
+ax.plot([0, 1], [0, 1], "--", color="gray", lw=1, label="Aleatorio (0.5)")
+ax.set_xlabel("Taxa de Falso Positivo (FPR)")
+ax.set_ylabel("Taxa de Verdadeiro Positivo (TPR)")
+ax.set_title("Curvas ROC — validacao fonte (one-vs-rest)")
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.3)
+ax.set_aspect("equal")
+plt.tight_layout()
+plt.show()
+
+for c in range(N_CLASSES):
+    auc_val = roc_fonte[c]["auc"]
+    auc_str = f"{auc_val:.3f}" if auc_val is not None else "N/A"
+    print(f"  {NOMES_CLASSES[c]}: AUC = {auc_str}")
+
+# %% [markdown]
+# ---
+# ## Bloco 4 — Introduzindo o domain shift
+#
+# Agora geramos dados de um **dominio alvo** (target) onde as distribuicoes
+# mudaram. Duas classes foram deslocadas:
+#
+# - **Classe 1**: centro deslocou de (2, 0) para (2, 2) — shift vertical.
+# - **Classe 2**: centro deslocou de (0, 2.8) para (-1.5, 2.8) — shift horizontal.
+#
+# A Classe 0 (majoritaria) **nao mudou** — o modelo ainda acerta nela,
+# mascarando o problema na acuracia global.
+
+# %%
+# Parametros do dominio ALVO — classes 1 e 2 deslocadas
+CENTROS_ALVO = np.array([
+    [-2.0, 0.0],    # classe 0 — mesma posicao
+    [2.0, 2.0],     # classe 1 — deslocada +2 em y
+    [-1.5, 2.8],    # classe 2 — deslocada -1.5 em x
+], dtype=np.float32)
+
+# Covariancias sao as mesmas (covariate shift, nao concept shift)
+COVARIANCIAS_ALVO = COVARIANCIAS_FONTE.copy()
+
+# Gerar dados do alvo
+N_ALVO = 600
+key_tgt, KEY = jax.random.split(KEY)
+X_alvo, y_alvo = gerar_dados(N_ALVO, CENTROS_ALVO, COVARIANCIAS_ALVO,
+                             FRACOES, key_tgt)
+
+print(f"Dados do alvo: {X_alvo.shape[0]} pontos")
+for c in range(N_CLASSES):
+    n_c = int((y_alvo == c).sum())
+    print(f"  {NOMES_CLASSES[c]}: {n_c} pontos")
+
+# %%
+# Figura: fonte vs. alvo lado a lado
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig.suptitle("Domain shift: fonte vs. alvo", fontsize=13)
+
+for c in range(N_CLASSES):
+    mask = y_treino == c
+    ax1.scatter(X_treino[mask, 0], X_treino[mask, 1],
+                s=15, color=CORES_CLASSES[c], alpha=0.6,
+                edgecolors="none", label=NOMES_CLASSES[c])
+ax1.set_title("Fonte (Source)")
+ax1.set_xlabel("$x_1$"); ax1.set_ylabel("$x_2$")
+ax1.legend(fontsize=9)
+ax1.grid(True, alpha=0.3)
+ax1.set_xlim(-6, 6); ax1.set_ylim(-4, 7)
+
+for c in range(N_CLASSES):
+    mask = y_alvo == c
+    ax2.scatter(X_alvo[mask, 0], X_alvo[mask, 1],
+                s=15, color=CORES_CLASSES[c], alpha=0.6,
+                edgecolors="none", label=NOMES_CLASSES[c])
+    # Indicar deslocamento com seta
+    if c > 0:
+        dx = CENTROS_ALVO[c, 0] - CENTROS_FONTE[c, 0]
+        dy = CENTROS_ALVO[c, 1] - CENTROS_FONTE[c, 1]
+        ax2.annotate("", xy=CENTROS_ALVO[c], xytext=CENTROS_FONTE[c],
+                     arrowprops=dict(arrowstyle="->", lw=2,
+                                     color=CORES_CLASSES[c]))
+
+ax2.set_title("Alvo (Target) — classes 1 e 2 deslocadas")
+ax2.set_xlabel("$x_1$"); ax2.set_ylabel("$x_2$")
+ax2.legend(fontsize=9)
+ax2.grid(True, alpha=0.3)
+ax2.set_xlim(-6, 6); ax2.set_ylim(-4, 7)
+
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ---
+# ## Bloco 5 — Quanto o modelo se degrada no alvo?
+#
+# Aplicamos o modelo fonte (sem nenhuma modificacao) aos dados do alvo.
+# Vamos reutilizar as 4 ferramentas do Bloco 3 para medir a degradacao.
+
+# %%
+# Predicoes do modelo fonte no alvo
+preds_alvo = np.array(jnp.argmax(jax.vmap(modelo)(X_alvo), axis=-1))
+cm_alvo, tpr_alvo, ppv_alvo, f1_alvo, acc_alvo = metricas_classificacao(
+    np.array(y_alvo), preds_alvo)
+
+print("=== Modelo fonte aplicado ao ALVO ===")
+print(f"Acuracia: {acc_alvo:.3f}  (fonte: {acc_fonte:.3f})")
+print(f"Macro-F1: {f1_alvo.mean():.3f}  (fonte: {f1_fonte.mean():.3f})")
+print()
+for c in range(N_CLASSES):
+    print(f"  {NOMES_CLASSES[c]}: TPR={tpr_alvo[c]:.3f} (fonte: {tpr_fonte[c]:.3f})  "
+          f"F1={f1_alvo[c]:.3f} (fonte: {f1_fonte[c]:.3f})")
+
+# %%
+# Mapas de decisao: fonte vs. alvo
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig.suptitle("Modelo fonte — aplicado a fonte vs. aplicado ao alvo", fontsize=13)
+
+plotar_mapa_decisao(ax1, modelo, X_val, y_val,
+                    f"Fonte (acc={acc_fonte:.2f}, F1={f1_fonte.mean():.2f})",
+                    xx, yy, probs=probs_malha)
 ax1.legend(fontsize=8)
 
-plotar_mapa_decisao(ax2, enc_fonte, head_fonte, X_alvo, y_alvo,
-                    "Alvo (Target) — falha catastrófica!", xx, yy)
+plotar_mapa_decisao(ax2, modelo, X_alvo, y_alvo,
+                    f"Alvo (acc={acc_alvo:.2f}, F1={f1_alvo.mean():.2f})",
+                    xx, yy, probs=probs_malha)
 ax2.legend(fontsize=8)
 
 plt.tight_layout()
 plt.show()
 
+# %% [markdown]
+# As fronteiras de decisao **nao mudaram** (o modelo e o mesmo), mas os
+# dados do alvo se deslocaram para regioes que o modelo atribui a outras
+# classes. O modelo esta **confiante e errado** — o pior cenario possivel.
+
 # %%
-# ── ATO 2.5: Matrizes de confusão e histograma de confiança ──────────────────
+# Matrizes de confusao comparadas
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+plotar_matriz_confusao(ax1, cm_fonte, "Confusao — val. fonte")
+plotar_matriz_confusao(ax2, cm_alvo, "Confusao — alvo (degradado)")
+# Trocar colormap do segundo para vermelho
+ax2.images[0].set_cmap("Reds")
+plt.tight_layout()
+plt.show()
 
-# Predições do modelo fonte no domínio alvo
-preds_alvo  = predizer_classes(enc_fonte, head_fonte, X_alvo)
-logits_alvo = forward_head(head_fonte,
-    forward_encoder(enc_fonte, jnp.array(X_alvo, dtype=jnp.float32)))
-probs_alvo  = np.array(jax.nn.softmax(logits_alvo, axis=-1))
-confianca   = probs_alvo.max(axis=1)    # max softmax = "confiança"
-correto     = (preds_alvo == y_alvo)
+# %%
+# ROC/AUC no alvo
+probs_alvo_full = np.array(jax.nn.softmax(jax.vmap(modelo)(X_alvo), axis=-1))
+roc_alvo = calcular_roc_auc(np.array(y_alvo), probs_alvo_full)
 
-fig, axes = plt.subplots(1, 3, figsize=(16, 4.5))
-fig.suptitle("Diagnóstico da falha — modelo fonte aplicado ao alvo", fontsize=13)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+fig.suptitle("Curvas ROC — fonte vs. alvo", fontsize=13)
 
-# Matriz de confusão na fonte
-cm_fonte = confusion_matrix(y_fonte,
-                             predizer_classes(enc_fonte, head_fonte, X_fonte))
-axes[0].imshow(cm_fonte, cmap="Blues")
-axes[0].set_title("Conf. Fonte (acurácia ≈ 100%)")
-axes[0].set_xlabel("Predito"); axes[0].set_ylabel("Real")
-for i in range(N_CLASSES):
-    for j in range(N_CLASSES):
-        axes[0].text(j, i, cm_fonte[i, j], ha="center", va="center",
-                     color="white" if cm_fonte[i, j] > cm_fonte.max()*0.5 else "black",
-                     fontsize=9)
-axes[0].set_xticks(range(N_CLASSES)); axes[0].set_yticks(range(N_CLASSES))
-axes[0].set_xticklabels(NOMES_CLASSES, rotation=30, fontsize=8)
-axes[0].set_yticklabels(NOMES_CLASSES, fontsize=8)
+for c in range(N_CLASSES):
+    r = roc_fonte[c]
+    if r["auc"] is not None:
+        ax1.plot(r["fpr"], r["tpr"], lw=2, color=CORES_CLASSES[c],
+                 label=f'{NOMES_CLASSES[c]} ({r["auc"]:.3f})')
+ax1.plot([0, 1], [0, 1], "--", color="gray", lw=1)
+ax1.set_title("Fonte")
+ax1.set_xlabel("FPR"); ax1.set_ylabel("TPR")
+ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
+ax1.set_aspect("equal")
 
-# Matriz de confusão no alvo
-cm_alvo = confusion_matrix(y_alvo, preds_alvo)
-axes[1].imshow(cm_alvo, cmap="Reds")
-axes[1].set_title("Conf. Alvo (falha catastrófica)")
-axes[1].set_xlabel("Predito"); axes[1].set_ylabel("Real")
-for i in range(N_CLASSES):
-    for j in range(N_CLASSES):
-        axes[1].text(j, i, cm_alvo[i, j], ha="center", va="center",
-                     color="white" if cm_alvo[i, j] > cm_alvo.max()*0.5 else "black",
-                     fontsize=9)
-axes[1].set_xticks(range(N_CLASSES)); axes[1].set_yticks(range(N_CLASSES))
-axes[1].set_xticklabels(NOMES_CLASSES, rotation=30, fontsize=8)
-axes[1].set_yticklabels(NOMES_CLASSES, fontsize=8)
-
-# Histograma de confiança: certo vs. errado
-axes[2].hist(confianca[correto],  bins=25, alpha=0.7, color="#2ecc71",
-             label=f"Correto  (N={correto.sum()})")
-axes[2].hist(confianca[~correto], bins=25, alpha=0.7, color="#e74c3c",
-             label=f"Errado   (N={(~correto).sum()})")
-axes[2].set_xlabel("Confiança (max softmax)")
-axes[2].set_ylabel("Contagem")
-axes[2].set_title("'Errado E confiante' — o pior cenário")
-axes[2].legend()
-axes[2].grid(True, alpha=0.3)
+for c in range(N_CLASSES):
+    r = roc_alvo[c]
+    if r["auc"] is not None:
+        ax2.plot(r["fpr"], r["tpr"], lw=2, color=CORES_CLASSES[c],
+                 label=f'{NOMES_CLASSES[c]} ({r["auc"]:.3f})')
+ax2.plot([0, 1], [0, 1], "--", color="gray", lw=1)
+ax2.set_title("Alvo (degradado)")
+ax2.set_xlabel("FPR"); ax2.set_ylabel("TPR")
+ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
+ax2.set_aspect("equal")
 
 plt.tight_layout()
 plt.show()
 
-f1_zs = f1_score(y_alvo, preds_alvo, average="macro", zero_division=0)
-print(f"\nMacro-F1 (zero-shot no alvo): {f1_zs:.3f}")
-print(f"Confiança média — predições ERRADAS: "
-      f"{confianca[~correto].mean():.3f}")
-print(f"Confiança média — predições CORRETAS: "
-      f"{confianca[correto].mean():.3f}")
+print("\nResumo AUC:")
+print(f"{'Classe':<12} {'Fonte':>8} {'Alvo':>8} {'Delta':>8}")
+for c in range(N_CLASSES):
+    a_f = roc_fonte[c]["auc"] if roc_fonte[c]["auc"] is not None else 0
+    a_a = roc_alvo[c]["auc"] if roc_alvo[c]["auc"] is not None else 0
+    print(f"{NOMES_CLASSES[c]:<12} {a_f:>8.3f} {a_a:>8.3f} {a_a - a_f:>+8.3f}")
 
 # %% [markdown]
 # ---
-# ## 🟢 ATO 3 — Diagnosticar o Shift Sem Rótulos do Alvo
+# ## Bloco 6 — Transfer learning supervisionado (fine-tuning)
 #
-# Aqui está a ideia elegante: **não precisamos de rótulos de classe no alvo**
-# para saber se o shift existe. Basta treinar um classificador binário que
-# responde: "Este ponto veio da fonte ou do alvo?"
+# Temos um modelo que funciona bem na fonte mas falha no alvo.
+# A solucao mais simples: **fine-tuning** — re-treinar o modelo usando
+# uma pequena amostra rotulada do dominio alvo.
 #
-# - Se o classificador binário consegue separar bem (AUC > 0,7), o shift
-#   é detectável — as distribuições são diferentes.
-# - Se ele falha (AUC ≈ 0,5), as distribuições são indistinguíveis — não
-#   há shift relevante.
+# Concretamente:
+# - Partimos do modelo ja treinado na fonte (todos os pesos).
+# - Re-treinamos com um learning rate menor e poucos dados do alvo.
+# - Isso e o **supervised transfer learning** apresentado na teoria (L2B1).
 #
-# Este diagnóstico funciona em qualquer dimensão, com qualquer dado, e
-# sem um único rótulo de classe do alvo.
+# Usamos apenas **K = 60 rotulos do alvo** (10% dos dados do alvo).
 
 # %%
-# ── ATO 3.1: Classificador de domínio ────────────────────────────────────────
-
-def treinar_classificador_dominio(X_src, X_tgt, chave, n_epochs=400, lr=3e-3):
-    """
-    Treina MLP binário [2→16→1] para separar Fonte (y=0) de Alvo (y=1).
-
-    O AUC é calculado num subconjunto de TESTE (20% dos dados, nunca vistos
-    durante o treino). Isso evita viés de avaliação: um classificador que
-    simplesmente memoriza os dados de treino teria AUC artificialmente alto.
-    Um AUC de teste > 0,7 é evidência genuína de shift detectável.
-
-    Retorna (params, prob_teste, y_true_teste, auc)
-    """
-    # Dados binários: 0 = fonte, 1 = alvo
-    X_bin = np.concatenate([X_src, X_tgt]).astype(np.float32)
-    y_bin = np.concatenate([np.zeros(len(X_src)),
-                            np.ones(len(X_tgt))]).astype(np.float32)
-
-    # ── Divisão 80/20 estratificada (treino / teste) ──────────────────────────
-    # Estratificada: garante mesma proporção 0/1 em treino e teste.
-    X_tr, X_te, y_tr, y_te = train_test_split(
-        X_bin, y_bin,
-        test_size=0.2,
-        random_state=SEMENTE,
-        stratify=y_bin.astype(int),
-    )
-
-    Xj = jnp.array(X_tr, dtype=jnp.float32)
-    yj = jnp.array(y_tr, dtype=jnp.float32)
-
-    # Inicialização do MLP binário [2→16→1]
-    chave, ke = jax.random.split(chave)
-    params = init_mlp([2, 16, 1], ke)
-
-    def bce_loss(params, X, y):
-        """Binary cross-entropy com sigmoid."""
-        h = X
-        for W, b in params[:-1]:
-            h = jnp.tanh(h @ W + b)
-        W, b = params[-1]
-        logit = (h @ W + b).squeeze(-1)
-        return jnp.mean(jax.nn.softplus(logit) - y * logit)
-
-    grad_fn = jax.jit(jax.grad(bce_loss))
-    m, v = adam_init(params)
-
-    for t in range(1, n_epochs + 1):
-        g  = grad_fn(params, Xj, yj)
-        params, m, v = adam_passo(params, g, m, v, t, lr=lr)
-
-    # ── Avaliar no CONJUNTO DE TESTE (não visto durante treino) ──────────────
-    h_te = jnp.array(X_te, dtype=jnp.float32)
-    for W, b in params[:-1]:
-        h_te = jnp.tanh(h_te @ W + b)
-    W, b = params[-1]
-    logit_te  = (h_te @ W + b).squeeze(-1)
-    prob_te   = np.array(jax.nn.sigmoid(logit_te))
-    y_true_te = y_te
-
-    auc = roc_auc_score(y_true_te, prob_te)
-    return params, prob_te, y_true_te, auc
+# Amostrar K rotulos do alvo (estratificado por classe)
+K_ROTULOS = 60
 
 
-chave_dom = jax.random.PRNGKey(7)
-_, prob_dom, y_true_dom, auc_dom = treinar_classificador_dominio(
-    X_fonte, X_alvo, chave_dom)
-
-print(f"AUC do classificador de domínio (teste): {auc_dom:.3f}")
-if auc_dom > 0.7:
-    print("→ AUC > 0,7: shift detectável — os domínios são separáveis!")
-else:
-    print("→ AUC ≈ 0,5: domínios indistinguíveis — sem shift relevante.")
-
-# Curva ROC no conjunto de teste
-fpr, tpr, _ = roc_curve(y_true_dom, prob_dom)
-fig, ax = plt.subplots(figsize=(5.5, 4.5))
-ax.plot(fpr, tpr, lw=2, color="#8e44ad",
-        label=f"Classificador de Domínio (AUC = {auc_dom:.2f})")
-ax.plot([0, 1], [0, 1], "--", color="gray", lw=1, label="Aleatório (AUC = 0,5)")
-ax.set_xlabel("Taxa de Falso Positivo")
-ax.set_ylabel("Taxa de Verdadeiro Positivo")
-ax.set_title("Curva ROC — Diagnóstico do Shift (conjunto de teste)")
-ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.show()
-
-# %%
-# ── ATO 3.2: Scatter latente — shift visível no espaço latente ───────────────
-
-Z_fonte = obter_embeddings(enc_fonte, X_fonte)
-Z_alvo  = obter_embeddings(enc_fonte, X_alvo)
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
-fig.suptitle("Espaço Latente do Encoder — shift visível", fontsize=13)
-
-for c in range(N_CLASSES):
-    ax1.scatter(Z_fonte[y_fonte==c, 0], Z_fonte[y_fonte==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax1.set_title("Fonte no espaço latente")
-ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
-ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
-
-for c in range(N_CLASSES):
-    ax2.scatter(Z_alvo[y_alvo==c, 0], Z_alvo[y_alvo==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax2.set_title("Alvo no espaço latente (shift!)")
-ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
-ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
-
-plt.tight_layout(); plt.show()
-
-# %% [markdown]
-# ---
-# ## 🟢 ATO 4 — Os Três Regimes de Adaptação
-#
-# Temos K rótulos do domínio alvo disponíveis. O que fazemos com eles?
-#
-# | Regime | Descrição | Quando usar? |
-# |--------|-----------|-------------|
-# | **(A) Zero-shot** | Aplica o modelo fonte diretamente — sem adaptar nada | Baseline; K=0 |
-# | **(B) Somente alvo** | Treina encoder + cabeça do zero nos K exemplos do alvo | Quando não há pré-treino ou shift é severo |
-# | **(C) SSDA** | Carrega encoder pré-treinado, **congela a cabeça**, adapta só o encoder com K exemplos | Baixo K; pré-treino rico |
-#
-# **SSDA = Semi-Supervised Domain Adaptation.**
-#
-# O parâmetro K controla o trade-off: para K pequeno, o pré-treino do SSDA
-# é muito valioso. Para K grande, o regime (B) pode superar o (C) porque
-# o encoder tem liberdade de se especializar no alvo.
-
-# %%
-# ── ATO 4.1: Regime (A) — Zero-shot (já pronto) ──────────────────────────────
-# O modelo fonte é o regime A. Já calculamos o Macro-F1 acima.
-
-print("=== Regime (A): Zero-shot ===")
-preds_A = predizer_classes(enc_fonte, head_fonte, X_alvo)
-f1_A    = f1_score(y_alvo, preds_A, average="macro", zero_division=0)
-print(f"  Macro-F1 no alvo: {f1_A:.3f}")
-
-# %%
-# ── ATO 4.2: Regime (B) — Target-only com K=50 ───────────────────────────────
-
-K = 50   # número de rótulos do alvo disponíveis
-
-
-def amostrar_k_rotulos(X, y, K, chave, n_classes=N_CLASSES):
-    """Amostragem estratificada: K total, distribuídos entre as classes."""
-    k_por_classe = max(1, K // n_classes)
+def amostrar_k_rotulos(X, y, K, chave):
+    """Amostra K pontos rotulados, estratificado por classe."""
+    k_por_classe = max(2, K // N_CLASSES)
     idx_list = []
-    for c in range(n_classes):
-        idx_c  = np.where(y == c)[0]
+    for c in range(N_CLASSES):
+        idx_c = jnp.where(y == c)[0]
         chave, k = jax.random.split(chave)
-        escolhidos = jax.random.permutation(k, len(idx_c))[:k_por_classe]
-        idx_list.append(idx_c[np.array(escolhidos)])
-    return X[np.concatenate(idx_list)], y[np.concatenate(idx_list)]
+        escolhidos = jax.random.permutation(k, idx_c.shape[0])[:k_por_classe]
+        idx_list.append(idx_c[escolhidos])
+    idx = jnp.concatenate(idx_list)
+    return X[idx], y[idx]
 
 
-# Amostrar K rótulos do alvo (sempre definido — também usado no SSDA)
-chave_k = jax.random.PRNGKey(1)
-X_k, y_k = amostrar_k_rotulos(X_alvo, y_alvo, K, chave_k)
-Xk_j = jnp.array(X_k, dtype=jnp.float32)
-yk_j = jnp.array(y_k, dtype=jnp.int32)
-
-if _checkpoints_ok("nb1_encoder_targetonly.pkl", "nb1_head_targetonly.pkl"):
-    enc_to  = carregar_pkl("nb1_encoder_targetonly.pkl")
-    head_to = carregar_pkl("nb1_head_targetonly.pkl")
-    print(f"=== Regime (B): Target-only (K={K}) — checkpoint carregado. ===")
-else:
-    print(f"=== Regime (B): Target-only (K={K}) — treinando do zero... ===")
-    chave_b = jax.random.PRNGKey(2)
-    chave_b, ke, kh = jax.random.split(chave_b, 3)
-    enc_to   = init_mlp([2, 32, 32, 2], ke)
-    head_to  = init_mlp([2, N_CLASSES], kh)
-
-    grad_fn_b = jax.jit(jax.grad(perda_ce_ponderada, argnums=(0, 1)))
-    m_e, v_e = adam_init(enc_to)
-    m_h, v_h = adam_init(head_to)
-
-    for t in range(1, 601):
-        g_e, g_h = grad_fn_b(enc_to, head_to, Xk_j, yk_j, pesos_jnp)
-        enc_to,  m_e, v_e = adam_passo(enc_to,  g_e, m_e, v_e, t)
-        head_to, m_h, v_h = adam_passo(head_to, g_h, m_h, v_h, t)
-
-    salvar_pkl(enc_to,  "nb1_encoder_targetonly.pkl")
-    salvar_pkl(head_to, "nb1_head_targetonly.pkl")
-    print("  Treino concluído — checkpoints salvos.")
-
-preds_B = predizer_classes(enc_to, head_to, X_alvo)
-f1_B    = f1_score(y_alvo, preds_B, average="macro", zero_division=0)
-print(f"  Macro-F1 no alvo: {f1_B:.3f}")
-
-# %%
-# ── ATO 4.3: Regime (C) — SSDA (encoder adaptado, cabeça congelada) ──────────
-
-# Como congelamos a cabeça?
-# Usamos jax.grad(..., argnums=0) — gradiente APENAS em relação ao primeiro
-# argumento (enc_params). O head_params não recebe gradiente.
-
-def perda_ce_so_encoder(enc_params, head_params_congelado, X, y, pesos):
-    """CE loss diferenciável apenas em enc_params."""
-    return perda_ce_ponderada(enc_params, head_params_congelado, X, y, pesos)
-
-
-if _checkpoints_ok("nb1_encoder_ssda.pkl", "nb1_head_ssda.pkl"):
-    enc_ssda  = carregar_pkl("nb1_encoder_ssda.pkl")
-    head_ssda = carregar_pkl("nb1_head_ssda.pkl")
-    print(f"=== Regime (C): SSDA (K={K}) — checkpoint carregado. ===")
-else:
-    print(f"=== Regime (C): SSDA (K={K}) — adaptando encoder... ===")
-    # Parte do encoder pré-treinado na fonte; cabeça CONGELADA
-    enc_ssda  = enc_fonte
-    head_ssda = head_fonte
-
-    grad_fn_c = jax.jit(jax.grad(perda_ce_so_encoder, argnums=0))
-    m_e2, v_e2 = adam_init(enc_ssda)
-
-    for t in range(1, 601):
-        g_e = grad_fn_c(enc_ssda, head_ssda, Xk_j, yk_j, pesos_jnp)
-        enc_ssda, m_e2, v_e2 = adam_passo(enc_ssda, g_e, m_e2, v_e2, t)
-
-    salvar_pkl(enc_ssda,  "nb1_encoder_ssda.pkl")
-    salvar_pkl(head_ssda, "nb1_head_ssda.pkl")
-    print("  Adaptação concluída — checkpoints salvos.")
-
-preds_C = predizer_classes(enc_ssda, head_ssda, X_alvo)
-f1_C    = f1_score(y_alvo, preds_C, average="macro", zero_division=0)
-print(f"  Macro-F1 no alvo: {f1_C:.3f}")
-
-# Resumo
-print("\n── Resumo dos 3 regimes (Macro-F1 no alvo) ──────────────────────────")
-print(f"  (A) Zero-shot    : {f1_A:.3f}")
-print(f"  (B) Somente alvo : {f1_B:.3f}")
-print(f"  (C) SSDA         : {f1_C:.3f}")
-
-# %%
-# ── ATO 4.4: Comparação — 3 mapas de decisão lado a lado ─────────────────────
-
-xx, yy = criar_malha()
-fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
-fig.suptitle("Comparação dos 3 Regimes — Alvo sobreposto", fontsize=13)
-
-regimes = [
-    (f"(A) Zero-shot\nMacro-F1 = {f1_A:.2f}", enc_fonte, head_fonte),
-    (f"(B) Somente alvo (K={K})\nMacro-F1 = {f1_B:.2f}", enc_to,   head_to),
-    (f"(C) SSDA (K={K})\nMacro-F1 = {f1_C:.2f}",          enc_ssda, head_ssda),
-]
-for ax, (titulo, enc_, head_) in zip(axes, regimes):
-    plotar_mapa_decisao(ax, enc_, head_, X_alvo, y_alvo, titulo, xx, yy)
-    ax.legend(fontsize=7, loc="upper right")
-
-plt.tight_layout(); plt.show()
-
-# %%
-# ── ATO 4.5: Figura-síntese — Macro-F1 × K ───────────────────────────────────
-# Padrão "gerar se ausente": carrega varredura pré-computada se disponível;
-# caso contrário calcula inline (5 K × 3 repetições ≈ 15–20 s no CPU).
-
-_ksweep_path = ASSETS / "nb1_ksweep.npz"
-
-if _ksweep_path.exists():
-    ksweep = np.load(_ksweep_path)
-    K_vals  = ksweep["K_values"]
-    f1_zs   = ksweep["f1_zeroshot"]
-    f1_to_k = ksweep["f1_targetonly"]
-    f1_ss_k = ksweep["f1_ssda"]
-    print("K-sweep carregado de assets/.")
-else:
-    print("Computando K-sweep inline... (pode levar ~20 s no CPU)")
-    K_vals     = np.array([10, 25, 50, 100, 200])
-    N_REPEATS  = 3
-    f1_zs_list, f1_to_list, f1_ss_list = [], [], []
-
-    chave_ks = jax.random.PRNGKey(55)
-    grad_fn_to = jax.jit(jax.grad(perda_ce_ponderada, argnums=(0, 1)))
-    grad_fn_ss = jax.jit(jax.grad(perda_ce_so_encoder, argnums=0))
-
-    for K_v in K_vals:
-        to_rep, ss_rep = [], []
-        for rep in range(N_REPEATS):
-            chave_ks, kk, kt, ks = jax.random.split(chave_ks, 4)
-            Xkv, ykv = amostrar_k_rotulos(X_alvo, y_alvo, int(K_v), kk)
-            Xkv_j = jnp.array(Xkv, dtype=jnp.float32)
-            ykv_j = jnp.array(ykv, dtype=jnp.int32)
-
-            # Regime B: target-only do zero
-            kt, ke_b, kh_b = jax.random.split(kt, 3)
-            e_to = init_mlp([2, 32, 32, 2], ke_b)
-            h_to = init_mlp([2, N_CLASSES], kh_b)
-            m_eb, v_eb = adam_init(e_to)
-            m_hb, v_hb = adam_init(h_to)
-            for t in range(1, 401):
-                g_e, g_h = grad_fn_to(e_to, h_to, Xkv_j, ykv_j, pesos_jnp)
-                e_to, m_eb, v_eb = adam_passo(e_to, g_e, m_eb, v_eb, t)
-                h_to, m_hb, v_hb = adam_passo(h_to, g_h, m_hb, v_hb, t)
-            to_rep.append(f1_score(y_alvo,
-                                   predizer_classes(e_to, h_to, X_alvo),
-                                   average="macro", zero_division=0))
-
-            # Regime C: SSDA
-            e_ss = enc_fonte
-            h_ss = head_fonte
-            m_es, v_es = adam_init(e_ss)
-            for t in range(1, 401):
-                g_e = grad_fn_ss(e_ss, h_ss, Xkv_j, ykv_j, pesos_jnp)
-                e_ss, m_es, v_es = adam_passo(e_ss, g_e, m_es, v_es, t)
-            ss_rep.append(f1_score(y_alvo,
-                                   predizer_classes(e_ss, h_ss, X_alvo),
-                                   average="macro", zero_division=0))
-
-        # Regime A: zero-shot (constante em K)
-        f1_zs_list.append(f1_score(y_alvo, preds_A, average="macro",
-                                   zero_division=0))
-        f1_to_list.append(float(np.mean(to_rep)))
-        f1_ss_list.append(float(np.mean(ss_rep)))
-        print(f"  K={K_v:3d}  zero-shot={f1_zs_list[-1]:.3f}  "
-              f"target-only={f1_to_list[-1]:.3f}  ssda={f1_ss_list[-1]:.3f}")
-
-    f1_zs   = np.array(f1_zs_list)
-    f1_to_k = np.array(f1_to_list)
-    f1_ss_k = np.array(f1_ss_list)
-
-    np.savez(_ksweep_path,
-             K_values=K_vals,
-             f1_zeroshot=f1_zs,
-             f1_targetonly=f1_to_k,
-             f1_ssda=f1_ss_k)
-    print("K-sweep salvo em assets/ para reusar.")
-
-# Gráfico
-fig, ax = plt.subplots(figsize=(7.5, 4.8))
-ax.plot(K_vals, f1_zs,   "o--", color="#7f8c8d", lw=2, label="(A) Zero-shot")
-ax.plot(K_vals, f1_to_k, "s-",  color="#3498db", lw=2, label="(B) Somente alvo")
-ax.plot(K_vals, f1_ss_k, "^-",  color="#e74c3c", lw=2, label="(C) SSDA")
-ax.set_xlabel("K (rótulos do alvo disponíveis)")
-ax.set_ylabel("Macro-F1 no alvo")
-ax.set_title("Macro-F1 × K — curvas dos 3 regimes de adaptação")
-ax.legend(fontsize=10); ax.grid(True, alpha=0.3)
-ax.set_xticks(K_vals)
-
-# Anotar a região onde SSDA vence
-ax.annotate("SSDA vence\n(K pequeno)",
-            xy=(K_vals[0], f1_ss_k[0]), xytext=(K_vals[0]+5, f1_ss_k[0]-0.08),
-            fontsize=9, color="#e74c3c",
-            arrowprops=dict(arrowstyle="->", color="#e74c3c"))
-
-plt.tight_layout(); plt.show()
-
-print("Valores do K-sweep:")
-print(f"{'K':>5}  {'Zero-shot':>10}  {'Somente alvo':>13}  {'SSDA':>6}")
-for i, k in enumerate(K_vals):
-    print(f"{k:5d}  {f1_zs[i]:10.3f}  {f1_to_k[i]:13.3f}  {f1_ss_k[i]:6.3f}")
-
-# %% [markdown]
-# ## 🟡 Poll — Ato 4
-#
-# **Por que congelamos a CABEÇA e não o encoder?**
-#
-# *(Dica: pense em alguém que muda de país mas fala o mesmo idioma.)*
-#
-# **Levante a mão** com sua hipótese antes de ler a célula seguinte.
-
-# %% [markdown]
-# ## 🟢 Resposta ao Poll
-#
-# A resposta está na separação de papéis entre encoder e cabeça:
-#
-# - **A cabeça** aprendeu **conceitos**: "o que é a Classe 0 no espaço
-#   latente", "onde fica a Classe 3", etc. Este vocabulário foi aprendido
-#   com muitos dados da fonte e é conceitualmente correto — não queremos
-#   desaprender isso com apenas K exemplos.
-#
-# - **O encoder** aprendeu **percepção**: como mapear dados brutos para
-#   o espaço latente. Este mapeamento está calibrado para a fonte.
-#   Adaptar o encoder = recalibrar a percepção para o novo domínio,
-#   sem mudar os conceitos.
-#
-# Analogia: **adaptar ao sotaque, não reaprender o idioma.**
-# Se você fala português do Brasil e vai para Portugal, não precisa
-# reaprender o vocabulário — basta calibrar o ouvido para o novo sotaque.
-#
-# Em física: é como recalibrar um detector para um novo ambiente sem
-# reescrever o manual de análise dos dados.
-
-# %%
-# ── ATO 4.6: Latente pós-SSDA — alvo entrou nas regiões da cabeça ────────────
-
-Z_antes  = obter_embeddings(enc_fonte, X_alvo)
-Z_depois = obter_embeddings(enc_ssda,  X_alvo)
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.8))
-fig.suptitle("Espaço Latente: antes vs. após SSDA", fontsize=13)
-
+key_ft, KEY = jax.random.split(KEY)
+X_ft, y_ft = amostrar_k_rotulos(X_alvo, y_alvo, K_ROTULOS, key_ft)
+print(f"Amostra para fine-tuning: {X_ft.shape[0]} pontos do alvo")
 for c in range(N_CLASSES):
-    ax1.scatter(Z_antes[y_alvo==c, 0], Z_antes[y_alvo==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax1.set_title("Antes da adaptação\n(alvo fora das regiões da cabeça)")
-ax1.set_xlabel("z₁"); ax1.set_ylabel("z₂")
-ax1.legend(fontsize=9); ax1.grid(True, alpha=0.3)
+    print(f"  {NOMES_CLASSES[c]}: {int((y_ft == c).sum())} pontos")
 
-for c in range(N_CLASSES):
-    ax2.scatter(Z_depois[y_alvo==c, 0], Z_depois[y_alvo==c, 1],
-                s=18, color=CORES_CLASSES[c], alpha=0.65,
-                edgecolors="none", label=NOMES_CLASSES[c])
-ax2.set_title("Após SSDA\n(alvo entrou nas regiões fixas da cabeça)")
-ax2.set_xlabel("z₁"); ax2.set_ylabel("z₂")
-ax2.legend(fontsize=9); ax2.grid(True, alpha=0.3)
+# %%
+# Fine-tuning: copiar modelo fonte e re-treinar com lr menor
+import copy
 
-plt.tight_layout(); plt.show()
+# Copiar o modelo fonte (deep copy dos parametros)
+modelo_ft = jax.tree.map(lambda x: x, modelo)
 
-# %% [markdown]
-# ## 🟢 Takeaway
-#
-# > **"Quebrar é fácil, falhar em silêncio é perigoso, adaptar é barato —
-# > se você souber o que congelar."**
-#
-# Resumo do que aprendemos hoje:
-#
-# 1. **Domain shift** acontece quando a distribuição dos dados muda entre
-#    treino (fonte) e inferência (alvo). O modelo fica confiante — e errado.
-#
-# 2. **Diagnóstico sem rótulos**: um classificador de domínio detecta shift
-#    com AUC > 0,7 no conjunto de teste sem precisar de nenhum rótulo de
-#    classe do alvo.
-#
-# 3. **SSDA vence para K pequeno**: se você tem poucos rótulos do alvo,
-#    o pré-treino na fonte é um ativo valioso. Congele a cabeça (os conceitos)
-#    e adapte só o encoder (a percepção).
-#
-# **Sexta-feira:** este experimento exato, com espectros de quasares reais
-# do telescópio J-PAS, com 56 bandas fotométricas e dezenas de milhares de
-# objetos. O que hoje foi 2D, será 56D.
+# Learning rate menor para fine-tuning (nao destruir o que ja aprendeu)
+otimizador_ft = optax.adam(learning_rate=1e-3)
+opt_state_ft = otimizador_ft.init(eqx.filter(modelo_ft, eqx.is_array))
+
+N_EPOCAS_FT = 800
+historico_ft = []
+chave_ft = jax.random.PRNGKey(7)
+
+
+@eqx.filter_jit
+def passo_ft(modelo, estado, x, y):
+    """Passo de fine-tuning."""
+    perda, grads = eqx.filter_value_and_grad(perda_ce_ponderada)(modelo, x, y)
+    atualizacoes, estado = otimizador_ft.update(grads, estado, modelo)
+    modelo = eqx.apply_updates(modelo, atualizacoes)
+    return modelo, estado, perda
+
+
+print(f"Fine-tuning: {N_EPOCAS_FT} epocas, lr=1e-3, K={X_ft.shape[0]} rotulos")
+
+for epoca in range(1, N_EPOCAS_FT + 1):
+    chave_ft, chave_perm = jax.random.split(chave_ft)
+    perm = jax.random.permutation(chave_perm, X_ft.shape[0])
+    modelo_ft, opt_state_ft, perda = passo_ft(modelo_ft, opt_state_ft,
+                                               X_ft[perm], y_ft[perm])
+
+    if epoca % 25 == 0 or epoca == 1:
+        p = float(perda_ce_ponderada(modelo_ft, X_ft, y_ft))
+        historico_ft.append((epoca, p))
+        if epoca <= 1 or epoca % 200 == 0:
+            print(f"  Epoca {epoca:4d}  perda={p:.4f}")
+
+print("Fine-tuning concluido.")
+
+# %%
+# Curva de perda do fine-tuning
+ep_ft, l_ft = zip(*historico_ft)
+
+fig, ax = plt.subplots(figsize=(7, 3.5))
+ax.plot(ep_ft, l_ft, "-", lw=1.5, color="#8e44ad")
+ax.set_xlabel("Epoca")
+ax.set_ylabel("Perda (CE ponderada)")
+ax.set_title(f"Fine-tuning — perda nos {X_ft.shape[0]} rotulos do alvo")
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ---
-# ## 🟣 Para quem quer mais — Extensões Opcionais
+# ## Bloco 7 — Comparacao final
 #
-# > O instrutor dirá: "Vocês não precisam fazer agora."
-# > Estas células estão aqui para quem quiser explorar depois.
+# Tres cenarios, lado a lado:
+#
+# | Cenario | Modelo | Dados avaliados |
+# |---------|--------|-----------------|
+# | (A) Baseline | fonte | validacao fonte |
+# | (B) Degradacao | fonte | alvo |
+# | (C) Reparacao | fine-tuned | alvo |
+#
+# Se o fine-tuning funcionou, (C) deve se aproximar de (A).
 
 # %%
-# 🟣 (Opcional) Mapas de probabilidade por classe ─────────────────────────────
-# Mostra P(classe=k | x) como mapa de calor para cada uma das 4 classes.
+# Metricas do modelo fine-tuned no alvo
+preds_ft = np.array(jnp.argmax(jax.vmap(modelo_ft)(X_alvo), axis=-1))
+cm_ft, tpr_ft, ppv_ft, f1_ft, acc_ft = metricas_classificacao(
+    np.array(y_alvo), preds_ft)
 
-if False:   # mude para True para executar
-    xx_p, yy_p = criar_malha(passo=0.15)
-    pts_p = np.c_[xx_p.ravel(), yy_p.ravel()].astype(np.float32)
-    logits_p = forward_head(head_ssda,
-        forward_encoder(enc_ssda, jnp.array(pts_p)))
-    probs_p = np.array(jax.nn.softmax(logits_p, axis=-1))
-
-    fig, axes = plt.subplots(1, N_CLASSES, figsize=(16, 4))
-    fig.suptitle("Mapas de Probabilidade por Classe (modelo SSDA)", fontsize=13)
-
-    for c in range(N_CLASSES):
-        P_c = probs_p[:, c].reshape(xx_p.shape)
-        im  = axes[c].pcolormesh(xx_p, yy_p, P_c,
-                                  cmap="viridis", shading="auto",
-                                  vmin=0, vmax=1)
-        axes[c].set_title(NOMES_CLASSES[c])
-        axes[c].set_xlabel("x₁")
-        if c == 0:
-            axes[c].set_ylabel("x₂")
-        plt.colorbar(im, ax=axes[c], fraction=0.046)
-
-    plt.tight_layout()
-    plt.show()
+probs_ft_full = np.array(jax.nn.softmax(jax.vmap(modelo_ft)(X_alvo), axis=-1))
+roc_ft = calcular_roc_auc(np.array(y_alvo), probs_ft_full)
 
 # %%
-# 🟣 (Opcional) Shift de prior (não de posição) ───────────────────────────────
-# Gera dados onde as frequências de classe mudam entre domínios,
-# mas as posições das nuvens são idênticas. Repete os 4 atos.
+# Figura-sintese: 3 mapas de decisao
+probs_malha_ft = probabilidades_malha(modelo_ft, xx, yy)
 
-if False:   # mude para True para executar
-    # Frequências: fonte [50,25,15,10] → alvo [10,15,25,50] (invertidas)
-    pesos_alvo_prior = np.array([0.10, 0.15, 0.25, 0.50], dtype=np.float32)
+fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+fig.suptitle("Comparacao final — tres cenarios", fontsize=14)
 
-    # Gera dados com as mesmas posições mas frequências diferentes no alvo
-    chave_prior = jax.random.PRNGKey(77)
-    n_total = N_POR_CLASSE * N_CLASSES
-    X_ap_list, y_ap_list = [], []
-    for c in range(N_CLASSES):
-        chave_prior, kc = jax.random.split(chave_prior)
-        n_c = int(n_total * pesos_alvo_prior[c])
-        pts = jax.random.normal(kc, (n_c, 2)) + MEDIAS_FONTE[c]
-        X_ap_list.append(np.array(pts))
-        y_ap_list.append(np.full(n_c, c, dtype=np.int32))
+plotar_mapa_decisao(axes[0], modelo, X_val, y_val,
+                    f"(A) Fonte->Fonte\nacc={acc_fonte:.2f}  F1={f1_fonte.mean():.2f}",
+                    xx, yy, probs=probs_malha)
+axes[0].legend(fontsize=7, loc="upper right")
 
-    X_alvo_prior = np.concatenate(X_ap_list)
-    y_alvo_prior = np.concatenate(y_ap_list)
+plotar_mapa_decisao(axes[1], modelo, X_alvo, y_alvo,
+                    f"(B) Fonte->Alvo\nacc={acc_alvo:.2f}  F1={f1_alvo.mean():.2f}",
+                    xx, yy, probs=probs_malha)
+axes[1].legend(fontsize=7, loc="upper right")
 
-    preds_prior = predizer_classes(enc_fonte, head_fonte, X_alvo_prior)
-    f1_prior    = f1_score(y_alvo_prior, preds_prior, average="macro",
-                           zero_division=0)
-    print(f"Prior shift — Macro-F1 (zero-shot): {f1_prior:.3f}")
-    print("(Dica: compara com o shift covariate acima.)")
+plotar_mapa_decisao(axes[2], modelo_ft, X_alvo, y_alvo,
+                    f"(C) Fine-tuned->Alvo\nacc={acc_ft:.2f}  F1={f1_ft.mean():.2f}",
+                    xx, yy, probs=probs_malha_ft)
+axes[2].legend(fontsize=7, loc="upper right")
+
+plt.tight_layout()
+plt.show()
 
 # %%
-# 🟣 (Opcional) Espiada no latente com t-SNE ──────────────────────────────────
-# Gancho para amanhã: t-SNE é uma ferramenta de inspeção de embeddings.
-# Amanhã veremos por quê — e quando ela mente.
+# Tabela-resumo de metricas
+print("=" * 62)
+print(f"{'Metrica':<14} {'(A) Fonte':>12} {'(B) Alvo':>12} {'(C) Fine-tuned':>14}")
+print("=" * 62)
+print(f"{'Acuracia':<14} {acc_fonte:>12.3f} {acc_alvo:>12.3f} {acc_ft:>14.3f}")
+print(f"{'Macro-F1':<14} {f1_fonte.mean():>12.3f} {f1_alvo.mean():>12.3f} {f1_ft.mean():>14.3f}")
+print("-" * 62)
+for c in range(N_CLASSES):
+    a_f = roc_fonte[c]["auc"] if roc_fonte[c]["auc"] is not None else 0
+    a_a = roc_alvo[c]["auc"] if roc_alvo[c]["auc"] is not None else 0
+    a_ft = roc_ft[c]["auc"] if roc_ft[c]["auc"] is not None else 0
+    print(f"AUC {NOMES_CLASSES[c]:<9} {a_f:>12.3f} {a_a:>12.3f} {a_ft:>14.3f}")
+print("-" * 62)
+for c in range(N_CLASSES):
+    print(f"F1  {NOMES_CLASSES[c]:<9} {f1_fonte[c]:>12.3f} {f1_alvo[c]:>12.3f} {f1_ft[c]:>14.3f}")
+print("=" * 62)
 
-if False:   # mude para True para executar
-    from sklearn.manifold import TSNE
+# %%
+# Barplot comparativo de F1 por classe nos 3 cenarios
+fig, ax = plt.subplots(figsize=(8, 4.5))
+x_pos = np.arange(N_CLASSES)
+largura = 0.25
 
-    # Embeddings 2D do encoder (já estão em 2D, então t-SNE é apenas exemplar)
-    Z_all = obter_embeddings(enc_ssda, np.concatenate([X_fonte, X_alvo]))
-    y_all = np.concatenate([y_fonte, y_alvo])
-    dom_all = np.concatenate([np.zeros(len(y_fonte)), np.ones(len(y_alvo))])
+ax.bar(x_pos - largura, f1_fonte, largura, label="(A) Fonte->Fonte",
+       color="#3498db")
+ax.bar(x_pos, f1_alvo, largura, label="(B) Fonte->Alvo",
+       color="#e74c3c")
+ax.bar(x_pos + largura, f1_ft, largura, label="(C) Fine-tuned->Alvo",
+       color="#2ecc71")
 
-    # t-SNE com 2 perplexidades para mostrar sensibilidade
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
-    for ax, perp in zip(axes, [5, 50]):
-        tsne = TSNE(n_components=2, perplexity=perp, random_state=42)
-        Z_tsne = tsne.fit_transform(Z_all)
-        for c in range(N_CLASSES):
-            mask = y_all == c
-            ax.scatter(Z_tsne[mask, 0], Z_tsne[mask, 1],
-                       s=10, color=CORES_CLASSES[c], alpha=0.6,
-                       label=NOMES_CLASSES[c])
-        ax.set_title(f"t-SNE (perplexidade={perp})")
-        ax.set_xlabel("t-SNE 1"); ax.set_ylabel("t-SNE 2")
-        ax.legend(fontsize=8)
+ax.set_xticks(x_pos)
+ax.set_xticklabels(NOMES_CLASSES)
+ax.set_ylim(0, 1.1)
+ax.set_ylabel("F1-score")
+ax.set_title("F1 por classe — comparacao dos 3 cenarios")
+ax.legend()
+ax.grid(True, alpha=0.3, axis="y")
+plt.tight_layout()
+plt.show()
 
-    fig.suptitle("t-SNE do latente SSDA — gancho para amanhã", fontsize=12)
-    plt.tight_layout()
-    plt.show()
+# %% [markdown]
+# ### Takeaway
+#
+# > **Domain shift degrada em silencio; fine-tuning com poucos rotulos conserta.**
+#
+# O que aprendemos:
+#
+# 1. Um modelo pode ter **alta confianca e estar errado** quando o dominio muda.
+#    Acuracia alta na fonte **nao garante** bom desempenho no alvo.
+#
+# 2. **Metricas por classe** (TPR, F1, AUC) revelam degradacoes que a
+#    acuracia global esconde — especialmente em classes minoritarias.
+#
+# 3. **Fine-tuning supervisionado** com poucos rotulos do alvo e suficiente
+#    para recuperar grande parte do desempenho. Nao precisamos re-treinar
+#    do zero: o conhecimento aprendido na fonte transfere.
+#
+# Na proxima aula (L3), veremos como **aprendizado contrastivo** constroi
+# representacoes que sao naturalmente mais robustas a mudancas de dominio.
 
 # %% [markdown]
 # ---
-# ## 🟡 Para Casa
+# ## Para casa
 #
-# Três exercícios para explorar depois da aula:
+# **Exercicio 1 — Magnitude do shift**
 #
-# **Exercício 1 — Magnitude do shift**
-# No script de assets (`make_assets_01_domain_shift_toy.py`), altere
-# `MEDIAS_ALVO` para deslocar as nuvens por 1σ em vez de 2,5σ.
-# Regenere os assets e observe: como muda a curva Macro-F1 × K?
-# Para qual magnitude o zero-shot começa a ser competitivo com o SSDA?
+# Altere `CENTROS_ALVO` para deslocar as classes por apenas 0.5 unidades
+# (em vez de 2.0). Repita a avaliacao. Para qual magnitude de shift o
+# modelo fonte comeca a ser aceitavel sem fine-tuning?
 #
-# **Exercício 2 — Orçamento de rótulos**
-# Na varredura de K (ATO 4.5), para qual valor de K o regime (B) supera
-# definitivamente o regime (C)? O que isso diz sobre o custo de rotulação
-# em projetos reais? Estime: se cada rótulo custa R$ 10 (telescópio-hora),
-# qual é o orçamento mínimo para abrir mão do pré-treino?
+# **Exercicio 2 — Orcamento de rotulos**
 #
-# **Exercício 3 — 🟣 Prior shift**
-# Execute a célula opcional de "shift de prior" (ATO 4, célula 🟣).
-# Compare o Macro-F1 do zero-shot no prior shift vs. no covariate shift
-# que vimos na aula. Por que o prior shift é mais "benevolente" com o
-# classificador fonte? (Dica: as regiões de decisão não mudaram.)
+# Varie `K_ROTULOS` entre 10 e 200 e plote o Macro-F1 do modelo fine-tuned
+# em funcao de K. A partir de qual K o modelo praticamente iguala o baseline?
+#
+# **Exercicio 3 — Quais camadas adaptar?**
+#
+# No fine-tuning, todos os pesos do modelo foram atualizados. Tente
+# congelar a primeira camada (usando `eqx.tree_at` para zerar seus
+# gradientes) e treinar apenas as camadas 2 e 3. O resultado melhora ou
+# piora? Por que?
