@@ -1,7 +1,24 @@
-[NbConvertApp] Converting notebook /home/dlopez/Documentos/0.profesional/Postdoc/USP/talks_conferences/I-Escola-de-Inverno-do-IFUSP/jax-examples/notebooks/02_contrastive_embeddings_v2.ipynb to notebook
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 862625 bytes to /home/dlopez/Documentos/0.profesional/Postdoc/USP/talks_conferences/I-Escola-de-Inverno-do-IFUSP/jax-examples/notebooks/02_contrastive_embeddings_v2.ipynb
+Build: 02_contrastive_embeddings_v2.ipynb
+Date: 2026-07-19
+Kernel: WinterSchool
+Elapsed: 385 seconds (~6.4 min)
+
+Changes applied (R2 + R3 + R5 polish pass):
+- R2: SimCLR architecture -- encoder (64D representation h) + MLP projection head (64D z, L2-normalized); InfoNCE computed on z; h used for downstream evaluation.
+- R3: Batch 256 (510 negatives/anchor), 80 epochs, tau=0.15, lr=1e-3; linear probe on frozen h.
+- R5: EncoderSSL with 3 conv layers (32->64->128 channels) + 128-unit FC hidden.
+
+Results:
+- Linear probe on frozen h (64D): 91.8%  (prior: 22.3% on 2D embedding)
+- Supervised classifier (Parte 2, 2D bottleneck): 88.1%  (unchanged from before)
+- t-SNE of h shows VISIBLY SEPARATED digit clusters at perplexity 30 and 50.
+- Parte 2 (supervised 2D scatter) is preserved exactly as before.
+
+Runtime budget: 385s < 600s limit. No artifacts written to committed paths.
+MNIST fetched at runtime to /tmp/mnist_cache.
+Optional 2D-forced-failure variant: NOT included (runtime comfortable but kept it focused).
+Temperature comparison figure: NOT included (delegated to exercise).
+
+Cell count: 44 (27 code, 17 markdown)
 
 BUILD GREEN
-36 cells (24 code, 12 markdown), 14 figures, 0 errors, 0 warnings
-Supervised accuracy: 87.8%, SSL+probe accuracy: 22.2% (chance: 10%)
