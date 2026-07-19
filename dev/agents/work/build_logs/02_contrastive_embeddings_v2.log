@@ -1,0 +1,7 @@
+[NbConvertApp] Converting notebook /home/dlopez/Documentos/0.profesional/Postdoc/USP/talks_conferences/I-Escola-de-Inverno-do-IFUSP/jax-examples/notebooks/02_contrastive_embeddings_v2.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 862625 bytes to /home/dlopez/Documentos/0.profesional/Postdoc/USP/talks_conferences/I-Escola-de-Inverno-do-IFUSP/jax-examples/notebooks/02_contrastive_embeddings_v2.ipynb
+
+BUILD GREEN
+36 cells (24 code, 12 markdown), 14 figures, 0 errors, 0 warnings
+Supervised accuracy: 87.8%, SSL+probe accuracy: 22.2% (chance: 10%)
