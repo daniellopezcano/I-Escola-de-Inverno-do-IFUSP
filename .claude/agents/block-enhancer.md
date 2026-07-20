@@ -29,9 +29,10 @@ of text.
    sets up what the hands-on block will demonstrate, without duplicating it.
 6. references/*.pdf only if the brief asks for them.
 
-## Output naming (NEW version, do not overwrite)
-Write to: course-materials/<BLOCK>_v2.md
-Leave the original untouched. The instructor diffs and promotes when satisfied.
+## Output (IN PLACE)
+Write to: course-materials/<BLOCK>.md, overwriting it in place. Do NOT create _v2/_v3
+variants. Git is the rollback mechanism, so write only the two files you are told to
+touch and nothing else in the repository.
 
 ## Standards to honor
 - Narrative, self-sufficient prose in pt-BR: a student can learn from it alone, and the

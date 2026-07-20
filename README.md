@@ -3,99 +3,128 @@
 **I Escola de Inverno do IFUSP** · 21–24 de julho de 2026 · Instituto de Física da USP  
 Minicurso de 4 aulas · Instrutor: Dr. Daniel López Cano
 
-[website link](https://portal.if.usp.br/pesquisa/pt-br/node/2745)
-
+- link para a página da I Escola de Inverno do IFUSP - “Redes neurais: princípios e aplicações na Física” [link](https://portal.if.usp.br/pesquisa/pt-br/node/2745)
+- link para o GitHub associado a este curso [GitHub][https://github.com/daniellopezcano/I-Escola-de-Inverno-do-IFUSP]
 ---
-
-## Arco do curso
-
-| Dia | Data | Objetivo |
-|-----|------|----------|
-| 1 | 21 jul | Mapa do território: o que ML faz (e não faz) em astrofísica; o espaço latente como fio condutor; os dois tópicos do curso como respostas a limitações reais. |
-| 2 | 22 jul | Mudança de domínio: diagnose, falha silenciosa e três regimes de adaptação num universo gaussiano 2D. |
-| 3 | 23 jul | Aprendizagem contrastiva: esculpir um espaço latente com potenciais pull/push e colher clusters sem rótulos. |
-| 4 | 24 jul | Estudos de caso reais: reconhecer os mesmos métodos em segmentação de halos e na adaptação mock→céu no J-PAS. |
-
----
-
 ## Blocos
 
 | Bloco    | Tipo     | Slides / Colab                                                                                                                                                                                                                       |
 | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [[L1B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1urJoVZ1Oeko21DEa6jq737MJcpetG1whUMFMDD05oq0/edit?usp=drive_link)                                                                                                                    |
+| [[L1B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1urJoVZ1Oeko21DEa6jq737MJcpetG1whUMFMDD05oq0/edit?usp=sharing)                                                                                                                       |
 | [[L1B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)   |
-| [[L2B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1pIMOeHfmTVYm2h_TUT8vcqtHDXz3jW1oxVN8rdWgm9s/edit?usp=drive_link)                                                                                                                    |
+| [[L2B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/13U9gfE1-IIt9lJbpV18IznFxp768jyux5gatREnji-w/edit?usp=sharing)                                                                                                                       |
 | [[L2B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)       |
-| [[L3B1]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
+| [[L3B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1N-hVLYVonRZqiuSYis2bbJG7moPyTj3N9Cf_e3LC1sI/edit?usp=sharing)                                                                                                                       |
 | [[L3B2]] | notebook | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb) |
-| [[L4B1]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
-| [[L4B2]] | teoria   | [Slides](??)                                                                                                                                                                                                                         |
+| [[L4B1]] | teoria   | [Slides](https://docs.google.com/presentation/d/1TO9SUE9_11Tf5H3PCXMgtE4I7jCwh4bhqmC3UIpp18M/edit?usp=sharing)                                                                                                                       |
+| [[L4B2]] | teoria   | [Slides](https://docs.google.com/presentation/d/1cp1CZIwPkHq28DFxMSgwyQ2K2t7z7phDAu6fZ54meEM/edit?usp=sharing)                                                                                                                       |
 
 ---
-
 ## Como usar estes materiais
 
-Cada dia tem dois blocos de 40 min. O material se organiza em três camadas:
+Cada dia tem dois blocos de 40 min. O material se organiza em:
 
-1. **Markdown teórico** (`course-materials/LxBy.md`, blocos L1B1, L2B1, L3B1, L4B1, L4B2) — narrativa compacta que explica os conceitos do bloco. É o **artefato primário**: o instrutor constrói os slides Google *a partir* deste texto. Para revisão, leia o markdown e siga as referências inline; use o link de slides para a versão visual.
-2. **Markdown de notebook** (`course-materials/LxBy.md`, blocos L1B2, L2B2, L3B2): link do Colab e uma linha de contexto.
+1. **Markdown teórico** (`course-materials/LxBy.md`, blocos L1B1, L2B1, L3B1, L4B1, L4B2) — narrativa compacta que explica os conceitos do bloco. Contém o link para o Google Slides
+2. **Markdown de notebook** (`course-materials/LxBy.md`, blocos L1B2, L2B2, L3B2): link do Google Colab.
 3. **Notebook JAX** (`jax-examples/notebooks/`) — código executável no Colab. Os notebooks geram todos os dados e cálculos no próprio runtime. Acesse pelo botão na tabela acima.
 
-No Obsidian, use os wikilinks `[[L1B1]]`, `[[L2B1]]` etc. para navegar entre blocos (`Ctrl+Click` abre numa nova aba). Os recursos de auto-estudo vivem em [[L1B1]].
-
 ---
-
 ## O arco dos quatro dias
 
+O curso segue uma única linha argumentativa: **redes neurais aprendem coordenadas**. Assim como a mecânica analítica troca variáveis emaranhadas por modos normais ou pelo referencial do centro de massa, um _encoder_ neural encontra o sistema de coordenadas em que objetos semelhantes ficam próximos e objetos distintos ficam distantes. Os quatro dias percorrem essa ideia em ordem: primeiro o mapa do campo e as ferramentas; depois o que acontece quando o mundo muda sob os pés do modelo; em seguida como esculpir deliberadamente essas coordenadas; e, por fim, tudo isso aplicado à cosmologia e a dois estudos de caso reais.
+
+Cada dia tem dois blocos de 40 minutos: um **bloco teórico**, acompanhado de slides, e um **bloco prático**, guiado por um notebook em JAX que roda no Google Colab.
+
+---
+
 ### Dia 1 — O mapa e as ferramentas (21 de julho)
-O primeiro dia responde a uma pergunta antes de qualquer outra: *o que este campo realmente é, e por que ele importa para um físico em 2026?* Começamos com dois números reveladores — os 20 TB de imagens que o Observatório Rubin produzirá por noite e o Nobel de Física de outubro de 2024 concedido a Hopfield e Hinton — e estabelecemos a tese central do curso: redes neurais aprendem coordenadas. Assim como a mecânica analítica troca variáveis emaranhadas por modos normais ou centro de massa, um encoder neural encontra o sistema de coordenadas onde objetos similares ficam perto e objetos distintos ficam longe. No segundo bloco do dia, você vê essa ideia ganhar corpo em código JAX: construímos uma rede completamente conexa do zero, ajustamos uma senoide amortecida ruidosa via descida do gradiente explícita — sem nenhuma biblioteca de otimizador — e plantamos a primeira semente do Dia 2 ao observar o que acontece quando a rede é grande demais para os dados que tem.
+
+O primeiro dia responde a uma pergunta anterior a todas as outras: _o que é este campo, e por que ele importa para um físico hoje?_
+
+#### [[L1B1]] — Aprendizado de máquina e Física: o mapa do território · _teoria_
+
+Duas linhas do tempo paralelas abrem o curso. De um lado, o dilúvio de dados em cosmologia: 2dFGRS → SDSS-I/II → SDSS-III/IV → DESI DR1 → Rubin/LSST. Do outro, a ascensão do aprendizado de máquina: Deep Blue (1997) → ImageNet (2009) → AlexNet (2012) → GANs (2014) → Transformers (2017) → AlphaFold (2020) → ChatGPT (2022). As duas curvas se encontram exatamente onde este curso vive.
+
+A seguir, um balanço honesto: o que o ML **faz** em astrofísica (emulação de simulações caras, reconhecimento de padrões, inferência baseada em simulações, problemas inversos, detecção de anomalias) e o que ele **não faz** (não extrapola de forma confiável, não certifica o próprio erro, herda os vieses dos dados, não modela causalidade e é difícil de interpretar). Os temas do curso surgem então como **respostas diretas a essas limitações**, unificados pela ideia de espaço latente — dados brutos → _encoder_ → representação, onde _distâncias cruas enganam e distâncias aprendidas revelam_. A **adaptação de domínio** alinha o treino à realidade; a **aprendizagem contrastiva** constrói o espaço em que distância significa semelhança.
+
+#### [[L1B2]] — A caixa de ferramentas: Python, Colab e JAX · _notebook_
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb) `jax-examples/notebooks/00_caixa_de_ferramentas.ipynb`
+
+Começamos pelo esqueleto matemático do ML, inteiramente em JAX: arrays, _shapes_, _broadcasting_ e as diferentes formas de multiplicar matrizes, tudo com prints explícitos para ver o que acontece. Só então medimos CPU × GPU — a diferença de velocidade que tornou o treino moderno viável — e passamos ao primeiro gráfico e às derivadas automáticas com `jax.grad`.
+
+O exercício central aparece **duas vezes, lado a lado**: uma rede completamente conexa ajustando uma senoide amortecida ruidosa, primeiro _do zero_ (matrizes e vieses definidos à mão, ativações, perda MSE, retropropagação via `jax.grad` e passo de SGD escrito explicitamente) e depois _com bibliotecas_ (Equinox e Optax), mapeada uma-a-uma sobre a versão anterior — para que se veja exatamente quais linhas cada chamada de biblioteca substitui.
+
+O fecho planta as sementes do Dia 2: uma célula de sobreajuste, a avaliação de um modelo pequeno e um grande sobre dados de teste novos, o desempenho fora do intervalo de treino (extrapolação) e o que acontece quando os dados vêm da mesma função com um parâmetro ligeiramente diferente.
+
+---
 
 ### Dia 2 — Quando os dados mudam (22 de julho)
-O segundo dia começa onde o primeiro terminou: a rede memorizou o ruído, mas o problema mais profundo não é memória — é quando os dados de teste vêm de uma distribuição completamente diferente da de treino. Isso tem um nome, *mudança de domínio*, e ocorre cronicamente na física e astrofísica toda vez que treinamos em simulações e aplicamos em observações reais. O bloco teórico constrói a taxonomia (covariate shift, prior shift, concept shift) e apresenta o modo de falha mais perigoso do ML científico: modelos que erram com 95% de confiança. Na sessão prática, você executa o ciclo completo num universo de brinquedo 2D — causa a falha, diagnostica o shift sem usar nenhum rótulo do domínio alvo (AUC ≈ 0,749 de um classificador de domínio binário), e compara três estratégias de adaptação culminando na curva que mostra quando o pré-treino vale ouro e quando não vale.
+
+O segundo dia começa onde o primeiro terminou. O problema mais profundo não é a rede memorizar ruído: é os dados de aplicação virem de uma distribuição diferente da de treino.
+
+#### [[L2B1]] — Mudança de domínio: quando o treino não é a prova · _teoria_
+
+Todo o aprendizado supervisionado supõe, silenciosamente, que treino e teste vêm da mesma distribuição. A **mudança de domínio** é essa suposição falhando. Construímos a taxonomia com exemplos visuais — _covariate shift_ (a distribuição dos dados se desloca), _prior shift_ (as proporções entre classes mudam) e _concept shift_ (a própria regra muda) — e enquadramos o caso simulação → observação como a versão científica do problema.
+
+Vem então o modo de falha mais perigoso do ML na ciência: sob mudança de domínio, modelos erram **com alta confiança**. Daí a distinção entre acurácia e calibração. O bloco fecha com o mapa das estratégias de mitigação, organizado pelo que se tem em mãos: aumento de dados e randomização de domínio; alinhamento de distribuições e reponderação; e, quando existem alguns rótulos do domínio alvo, **transferência de aprendizado e ajuste fino**.
+
+#### [[L2B2]] — Quebrar, diagnosticar e consertar um classificador · _notebook_
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb) `jax-examples/notebooks/01_domain_shift_toy.ipynb`
+
+Um modelo de brinquedo em 2D onde tudo é visível, construído sobre o _benchmark_ clássico de adaptação de domínio.
+
+Segue a caixa de ferramentas de avaliação, usada o dia inteiro: mapas de probabilidade sobre o espaço de atributos, regiões de decisão, matriz de confusão com TPR, PPV e F1 por classe, curvas ROC e AUC, calibração e mapas de erro. O domínio alvo é gerado por uma **rotação** — um único parâmetro que funciona como dial da severidade do desvio.
+
+---
 
 ### Dia 3 — Esculpindo representações (23 de julho)
-O terceiro dia faz da geometria do espaço latente o protagonista. A pergunta de abertura é um quebra-cabeça: entre um dígito "7" e o mesmo dígito deslocado 3 pixels, qual par está mais próximo em distância euclidiana bruta? A resposta contraintuitiva motiva tudo o que vem depois: aprendizagem contrastiva formulada como um potencial de interação físico — molas ($\mathcal{L}_\text{pull}$) atraem pontos de mesma classe para o centroide, cargas ($\mathcal{L}_\text{push}$) repelem centroides de classes diferentes, e um regularizador ancora o sistema. No bloco prático, você vê esse potencial em ação primeiro como dinâmica molecular pura (200 partículas se reorganizando sem nenhuma rede neural), depois como encoder treinando em dígitos MNIST, e por fim colhendo o espaço latente com k-means (ARI = 0,743) para fazer segmentação de instâncias sem usar rótulos na inferência — exatamente o pipeline que o Dia 4 aplicará em escala cosmológica.
 
-### Dia 4 — Da teoria à fronteira (24 de julho)
-O quarto dia aplica tudo que foi construído nos três dias anteriores a dois estudos de caso reais. No primeiro, você reconhece — não aprende do zero — a perda contrastiva do Dia 3 nas equações de um artigo publicado na *Astronomy & Astrophysics*: as "bolinhas coloridas" do sandbox são substituídas por partículas do universo primordial, e a pergunta é quais delas acabam no mesmo halo de matéria escura. No segundo estudo de caso, você vê o experimento de três regimes do Dia 2 reproduzido em escala real com quasares no J-PAS: um classificador treinado em espectros simulados degrada quando encontra o céu real, e a adaptação de encoder congela a cabeça e recalibra a percepção — exatamente como a analogia dos sotaques previu. O dia termina com o mapa do curso reaceso bloco a bloco, cada um acrescentando uma cláusula à sentença de síntese: *«Representações são coordenadas; coordenadas se esculpem; esculturas quebram quando o mundo muda; e adaptá-las é barato — se você souber o que congelar.»*
+O terceiro dia coloca a geometria do espaço latente como protagonista. A pergunta de abertura é um quebra-cabeça: entre um dígito e a sua cópia deslocada alguns pixels, e o mesmo dígito comparado a outro diferente, qual par está mais próximo em distância euclidiana bruta? A resposta motiva tudo o que vem depois.
 
----
+#### [[L3B1]] — Aprendizagem contrastiva: a geometria da similaridade · _teoria_
 
-## Notebooks interativos
+Primeiro, o que é um espaço latente e **por que ele domina o ML atual**: representações são a moeda reutilizável do aprendizado profundo — _encoders_ pré-treinados, transferência entre tarefas, busca por similaridade e recuperação de informação. É também o que torna possível a transferência do Dia 2.
 
-Os três notebooks ficam em `jax-examples/notebooks/` e executam no Google Colab. Cada um gera dados e cálculos no próprio runtime, sem artefatos comprometidos no repositório.
+Depois, o princípio contrastivo em uma frase: _escolha quais pares devem ficar perto (positivos) e quais devem ficar longe (negativos); a rede apenas geometriza a sua escolha_. Similaridade não se descobre — se declara. Os positivos vêm de rótulos ou de **augmentações**, e aqui está a ponte mais profunda com a física: escolher augmentações é declarar as **invariâncias** do problema (rotacionar diz que a orientação não importa; adicionar ruído diz que aquele nível de ruído é instrumental, não físico).
 
----
+O centro matemático do bloco é a perda **InfoNCE**, tratada com profundidade: âncora, positivo e negativos; similaridade do cosseno sobre representações normalizadas; a leitura como problema de classificação (identificar o positivo entre os negativos, ou seja, um _softmax_ sobre similaridades); o papel da **temperatura** e sua leitura em mecânica estatística; o efeito do número de negativos; o problema do **colapso** e por que os negativos existem. Uma subseção mapeia os tipos conceituais de aprendizagem contrastiva e quando cada um se aplica, e outra compara perdas alternativas com prós e contras práticos.
 
-### NB0 — A Caixa de Ferramentas
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/00_caixa_de_ferramentas.ipynb)
+Fecha o bloco o **t-SNE**, explicado de verdade — vizinhanças convertidas em probabilidades, o parâmetro de perplexidade, o núcleo de cauda pesada e o problema de aglomeração, e a divergência KL minimizada por gradiente — seguido de suas limitações honestas: distâncias entre grupos não têm significado, tamanhos e densidades não são fiéis, e a figura muda com a perplexidade e com a semente. A analogia é astronômica: constelações parecem grupos, mas suas estrelas estão a anos-luz umas das outras.
 
-`jax-examples/notebooks/00_caixa_de_ferramentas.ipynb` · Bloco [[L1B2]]
+#### [[L3B2]] — Esculpindo um espaço de embeddings · _notebook_
 
-Constrói do zero uma rede neural completamente conexa em JAX — parâmetros como lista de `(W, b)`, ativação `tanh`, perda MSE — e ajusta uma senoide amortecida ruidosa via descida do gradiente explícita sem nenhuma biblioteca de otimizador. A célula de sobreajuste demonstra o que acontece quando a rede `[1→128→128→128→1]` treina por 5 000 épocas, plantando a semente conceitual do Dia 2. O mapa de vocabulário da última célula conecta o código ao jargão padrão.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb) `jax-examples/notebooks/02_contrastive_embeddings.ipynb`
 
----
+Quatro partes sobre MNIST. Primeiro, a evidência de que **o espaço de pixels engana**: imagens do mesmo dígito podem estar mais distantes entre si do que de dígitos diferentes, e 784 dimensões não são interpretáveis.
 
-### NB1 — Domain Shift: Quebrar e Consertar
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/01_domain_shift_toy.ipynb)
+Em seguida, um _encoder_ convolucional com **gargalo de 2 dimensões**, treinado como classificador comum: o espaço latente se organiza sozinho por classe, e dígitos visualmente próximos (4/9, 3/8) acabam vizinhos — estrutura emergente, e a primeira justificativa concreta para estudar espaços latentes.
 
-`jax-examples/notebooks/01_domain_shift_toy.ipynb` · Bloco [[L2B2]]
+A terceira parte é visual: augmentações apropriadas ao MNIST (deformações elásticas, recortes e redimensionamentos, transformações afins, ruído) mostradas em grade, junto com a ilustração explícita de um **par positivo** contra pares negativos — incluindo o alerta de que uma rotação exagerada transforma um 6 em 9 e destrói o rótulo.
 
-Quatro atos num universo gaussiano 2D: gera dois domínios com covariate shift visual (4 classes desbalanceadas), treina encoder + cabeça na fonte e observa a falha catastrófica no alvo, diagnostica o shift sem nenhum rótulo de classe do alvo usando um classificador binário (AUC ≈ 0,749), e compara zero-shot / somente alvo / SSDA numa varredura de K rótulos. O experimento exato — mesma lógica, mesmos três regimes — que o estudo de caso do J-PAS no Dia 4 reproduz com quasares reais e 55 bandas fotométricas.
+Por fim, o treino **autossupervisionado com InfoNCE**: nenhum rótulo é usado, os positivos vêm das augmentações, e a estrutura por dígito reaparece no espaço aprendido — visualizada com t-SNE e verificada objetivamente por uma sondagem linear sobre a representação congelada.
 
 ---
 
-### NB2 — Embeddings Contrastivos
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/daniellopezcano/I-Escola-de-Inverno-do-IFUSP/blob/main/jax-examples/notebooks/02_contrastive_embeddings.ipynb)
+### Dia 4 — Da cosmologia à fronteira (24 de julho)
 
-`jax-examples/notebooks/02_contrastive_embeddings.ipynb` · Bloco [[L3B2]]
+O último dia inverte a perspectiva: em vez de partir do ML, parte-se da física. Primeiro o contexto cosmológico, depois os dois estudos de caso em que tudo o que foi construído nos três dias anteriores reaparece em escala real.
 
-Três atos de complexidade crescente: sandbox de partículas 2D relaxando sob potencial pull/push — com demonstração do colapso trivial quando a repulsão é removida; encoder MLP `[784→256→64→2]` treinando em MNIST com a mesma perda (dígitos 4/9 e 3/8 ficam adjacentes por "degenerescência física da escrita"); e colheita do espaço latente com k-means (ARI = 0,743) e t-SNE em três perplexidades.
+#### [[L4B1]] — Cosmologia: contexto físico e estado da arte · _teoria_
 
----
+Um bloco deliberadamente **centrado na física**. Começa com o arco da Relatividade Geral até o ΛCDM: as equações de Einstein, o modelo FLRW erguido sobre homogeneidade e isotropia, as evidências de **matéria escura** (curvas de rotação) e de **energia escura** (diagrama de Hubble de supernovas), até a imagem moderna — CMB, idades escuras, reionização, formação de estruturas e expansão acelerada.
 
-## Referências e recursos
+Segue um panorama das **sondas observacionais** que restringem a cosmologia — aglomeração de galáxias, lenteamento gravitacional fraco, radiação cósmica de fundo, floresta de Lyman-α e ondas gravitacionais — cada uma com o que observa, o que traça, em que época, o que informa e qual sua principal dificuldade. A mensagem é de complementaridade: épocas, escalas e sistemáticos diferentes, por isso combinados.
 
-- [references/2602.13902v1.pdf](references/2602.13902v1.pdf) — López-Cano et al., *arXiv:2602.13902* — J-PAS domain adaptation (âncora de L4B2)
-- [references/2311.12110v3.pdf](references/2311.12110v3.pdf) — López-Cano et al., *A&A 685 A37* — Instance segmentation / halo formation (âncora de L4B1)
-- [GoogleCollab_and_notebooks_setup.md](GoogleCollab_and_notebooks_setup.md) — instruções de ambiente e manutenção dos notebooks
+Depois, a lógica da inferência: parâmetros → modelo → observações, e o caminho de volta. Teorema de Bayes, MCMC com Metropolis–Hastings e — o ponto crucial — os **modelos implícitos**, em que não existe fórmula tratável para a verossimilhança, apenas um _prior_ e um simulador. É o que motiva a inferência baseada em simulações e o que torna as simulações indispensáveis. O bloco encerra explicando por que simulamos, o que são simulações de matéria escura não colisional e simulações hidrodinâmicas, e o compromisso inescapável entre volume, resolução e completude física.
+
+#### [[L4B2]] — Simulações, ML e adaptação de domínio: dois estudos de caso · _teoria_
+
+O compromisso que fechou o bloco anterior é o ponto de partida deste: simulações são caras, e o ML entra para aliviar o custo — emuladores de estatísticas de resumo, super-resolução condicionada a simulações baratas, emulação rápida de campos e correções aprendidas dentro de simulações de baixa resolução. Com a ressalva honesta de sempre: esses modelos herdam as hipóteses das simulações em que foram treinados.
+
+O **primeiro estudo de caso** é o momento de reconhecimento do curso. Dado o campo de densidade inicial, quais partículas terminam no mesmo halo de matéria escura? O problema é formulado como segmentação panóptica e dividido em duas partes: _semântica_ ("é halo?", classificação com número fixo de classes) e _de instância_ ("qual halo?", número arbitrário de instâncias e rótulos invariantes por permutação — logo, sem perda diferenciável óbvia). A solução é uma perda contrastiva do tipo Weinberger, que projeta cada partícula num pseudo-espaço onde halos viram aglomerados, com um termo de **atração** ao centro da instância e um de **repulsão** entre centros. É exatamente o princípio do Dia 3, agora fazendo física.
+
+O **segundo estudo de caso** é o experimento do Dia 2 em escala real. No J-PAS, dezenas de filtros estreitos produzem um "J-espectro" por objeto, e a tarefa é classificar galáxias, quasares de baixo e alto _redshift_ e estrelas. O domínio de origem são **mocks** construídos convolvendo espectros do DESI com as bandas do J-PAS (rótulos abundantes); o domínio alvo são as **observações reais**, cujos rótulos vêm apenas de um pequeno cruzamento com o DESI (rótulos escassos). Comparam-se três modelos — supervisionado apenas com observações, treinado em mocks e aplicado direto ao céu real, e o modelo **SSDA**, que reaproveita o anterior mantendo parte dos pesos fixa e readaptando o restante. As matrizes de confusão e as curvas ROC contam a história, com uma ressalva física: o corte em z ≈ 2,1 entre quasares de baixo e alto _redshift_ é arbitrário sobre uma variável contínua, e objetos próximos dele são ambíguos por natureza — distinguir "a física é difícil" de "o treino estava enviesado" é a habilidade mais transferível do curso.
+
+Entre os dois, uma seção sobre o **espaço entre observações e simulações**: instrumentos, filtros, profundidade, PSF e funções de seleção diferentes fazem com que dois levantamentos do mesmo céu não sejam os mesmos dados; e simulações que não reproduzem exatamente as observações levam a inferências enviesadas — posteriores estreitas e erradas.

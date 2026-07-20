@@ -1,0 +1,32 @@
+Use the notebook-enhancer agent (Opus, high reasoning) to redesign the L2B2 notebook
+IN PLACE.
+
+SCOPE LOCK: modify only jax-examples/notebooks/01_domain_shift_toy.ipynb and
+jax-examples/src_01_domain_shift_toy.py, in place. Produce no _v2 files and touch nothing
+else in the repository.
+
+Follow the brief's working procedure: resync the .py from the notebook with jupytext
+first, apply all changes to the .py, regenerate the .ipynb, and execute headless in the
+WinterSchool kernel until green, leaving both files consistent.
+
+Read dev/agents/work/enhance/L2B2_polish4_brief.md (authoritative) and the current
+notebook.
+
+Think hard before writing. The goal of this round is to make two lessons undeniable: how
+domain shift degrades a model in a controlled way, and why fine-tuning a pretrained model
+beats training from scratch on the target. Apply the brief: (R1) adopt the canonical
+inter-twinning-moons domain-adaptation benchmark generalized to three interleaved
+imbalanced arc-shaped classes, with the rotation angle as the shift parameter and ~20k/10k
+train/validation samples; (R2) an explicit short demonstration that a linear classifier
+fails on this data even in-domain; (R3) a degradation-vs-rotation-angle curve plus a chosen
+working angle with mild class-dependent secondary perturbations and a prior shift;
+(R4) the core experiment — metric vs number of labeled target examples K for zero-shot,
+from-scratch, and fine-tuned regimes on the same axes, plus side-by-side decision maps at
+small K showing that fine-tuning transfers structure while from-scratch overfits;
+(R5) full vs last-layer fine-tuning and a catastrophic-forgetting check back on the source;
+(R6) visualization polish with consistent colours and axis limits throughout.
+
+Keep the seven-block structure, the pt-BR narrative and all existing evaluation machinery.
+Save no figures. Keep runtime reasonable on CPU. Report ENHANCED GREEN with the working
+angle, zero-shot vs fine-tuned metrics at the smallest and largest K, the forgetting drop,
+and total runtime.
