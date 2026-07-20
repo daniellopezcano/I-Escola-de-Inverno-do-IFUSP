@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Se você usar este material em ensino, pesquisa ou apresentações, por favor cite-o desta forma."
+type: software
+title: "Das representações de redes neurais às aplicações em Física, Astrofísica e dados de levantamentos astronômicos"
+authors:
+  - family-names: "López-Cano"
+    given-names: "Daniel"
+date-released: 2026-07-21
+url: "https://github.com/daniellopezcano/I-Escola-de-Inverno-do-IFUSP"
+repository-code: "https://github.com/daniellopezcano/I-Escola-de-Inverno-do-IFUSP"

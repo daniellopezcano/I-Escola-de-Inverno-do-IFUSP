@@ -11,19 +11,13 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Obsidian
+# Obsidian (course-materials/ is meant to be opened as a vault — see COMO_USAR.md)
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 
 # OS
 .DS_Store
 Thumbs.db
-.venv/
 
-# ── Generated notebook artifacts (never version-controlled; see my_feedback_v2 §5) ──
-# Figures, checkpoints, and produced data must never be committed.
-jax-examples/assets/
-!jax-examples/assets/.gitkeep
-*.png
-*.pkl
-*.npz
+# Temporary polish-pass working log (delete before final release)
+.polish/
