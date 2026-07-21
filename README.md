@@ -14,16 +14,16 @@ Repositório de materiais da **I Escola de Inverno do IFUSP** — um minicurso d
 ---
 ## Estrutura do repositório
 
-| Caminho                                                          | Conteúdo                                                                                          |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`course-materials/`](course-materials/)                         | 8 arquivos `LxBy.md` — o material de cada bloco (narrativa teórica ou link do notebook), em pt-BR |
-| [`jax-examples/notebooks/`](jax-examples/notebooks/)             | os 3 notebooks Colab (JAX) dos blocos práticos                                                    |
-| [`jax-examples/requirements.txt`](jax-examples/requirements.txt) | dependências para rodar os notebooks localmente                                                   |
-| [`assets/references/`](assets/references/)                       | os dois artigos científicos por trás da Aula 4                                                    |
-| [`assets/figures_and_materials/`](assets/figures_and_materials/) | figuras de apoio usadas na preparação das aulas                                                   |
-| [`COMO_USAR.md`](COMO_USAR.md)                                   | guia prático de uso deste repositório                                                             |
-| [`LICENSE`](LICENSE)                                             | licença MIT                                                                                       |
-| [`CITATION.cff`](CITATION.cff)                                   | como citar este material                                                                          |
+| Caminho                        | Conteúdo                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| course-materials/              | 8 arquivos `LxBy.md` — o material de cada bloco (narrativa teórica ou link do notebook), em pt-BR |
+| jax-examples/notebooks/        | os 3 notebooks Colab (JAX) dos blocos práticos                                                    |
+| jax-examples/requirements.txt  | dependências para rodar os notebooks localmente                                                   |
+| assets/references/             | os dois artigos científicos por trás da Aula 4                                                    |
+| assets/figures_and_materials/  | figuras de apoio usadas na preparação das aulas                                                   |
+| [`COMO_USAR.md`](COMO_USAR.md) | guia prático de uso deste repositório                                                             |
+| LICENSE                        | licença MIT                                                                                       |
+| [`CITATION.cff`](CITATION.cff) | como citar este material                                                                          |
 
 ---
 ## Blocos
@@ -74,7 +74,7 @@ O curso segue uma ideia central: **redes neurais aprendem coordenadas** — um _
 
 ## Licença e citação
 
-Este material é distribuído sob a [licença MIT](LICENSE) — use, adapte e reutilize livremente, com atribuição.
+Este material é distribuído sob a licença MIT — use, adapte e reutilize livremente, com atribuição.
 
 Se este material for útil para sua aula, pesquisa ou apresentação, uma citação é bem-vinda:
 
